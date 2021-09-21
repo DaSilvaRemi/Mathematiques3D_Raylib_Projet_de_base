@@ -67,7 +67,7 @@ struct Line {
 
 struct Segment {
 	Vector3 pt1;
-	Vector2 pt2;
+	Vector3 pt2;
 };
 
 struct Plane {
@@ -103,7 +103,82 @@ sph.rho * sinf(sph.phi)*cosf(sph.theta) };
 }
 
 bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNormal) {
-	Vector3 AB = Vector3Substrac();
+	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
+	float dotABn = Vector3DotProduct(AB, plane.normal);
+
+	if (fabs(dotABn) < EPSILON) return false;
+	float t = (plane.d - Vector3DotProduct(seg.pt1, plane.normal)) / dotABn;
+
+	if (t < 0 || t > 1) return false;
+	interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
+	
+	if (dotABn < 0) interNormal = plane.normal;
+	else interNormal = Vector3Negate(plane.normal);
+
+	return true;
+}
+
+void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
+{
+	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
+
+	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
+	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,radius,0 });
+
+	int numVertex = nSegmentsTheta * nSegmentsPhi * 6;
+	if (rlCheckBufferLimit(numVertex)) rlglDraw();
+
+	rlPushMatrix();
+	// NOTE: Transformation is applied in inverse order (scale -> translate)
+	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
+	rlScalef(radius, radius, radius);
+
+	rlBegin(RL_TRIANGLES);
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	float deltaPhi = PI / nSegmentsPhi;
+	float deltaTheta = 2 * PI / nSegmentsTheta;
+
+	float phi = 0;
+	for (int i = 0; i < nSegmentsPhi; i++)
+	{
+		float theta = 0;
+		Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ radius,theta,phi + deltaPhi });
+
+		for (int j = 0; j < nSegmentsTheta; j++)
+		{
+			Vector3 topLeft = vertexBufferTheta[j];
+			Vector3 bottomLeft = tmpBottomLeft;
+			Vector3 topRight = vertexBufferTheta[j + 1];
+			Vector3 bottomRight = SphericalToCartesian(Spherical{ radius,theta + deltaTheta,phi + deltaPhi });
+
+
+			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+			rlVertex3f(topRight.x, topRight.y, topRight.z);
+			rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
+
+			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+			rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.z);
+			rlVertex3f(topRight.x, topRight.y, topRight.z);
+
+			theta += deltaTheta;
+
+			vertexBufferTheta[j] = tmpBottomLeft;
+			tmpBottomLeft = bottomRight;
+		}
+		vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
+		phi += deltaPhi;
+	}
+	rlEnd();
+	rlPopMatrix();
+}
+
+void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
+	DrawPlane(center, size, color);
+}
+
+void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
+	MyDrawQuad(center, size, color);
 }
 
 
@@ -185,11 +260,12 @@ BeginMode3D(camera);
 //
 
 //3D REFERENTIAL
-DrawGrid(20, 1.0f);        // Draw a grid
-DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
-DrawSphere({ 10,0,0 }, .2f, RED);
-DrawSphere({ 0,10,0 }, .2f, GREEN);
-DrawSphere({ 0,0,10 }, .2f, BLUE);
+	DrawGrid(20, 1.0f);        // Draw a grid
+	DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
+	DrawSphere({ 10,0,0 }, .2f, RED);
+	DrawSphere({ 0,10,0 }, .2f, GREEN);
+	DrawSphere({ 0,0,10 }, .2f, BLUE);
+	MyDrawQuad({ 0,0,0 }, { .5f, .5f }, YELLOW);
 }
 EndMode3D();
 
@@ -203,59 +279,4 @@ CloseWindow();        // Close window and OpenGL context
 //--------------------------------------------------------------------------------------
 
 return 0;
-}
-
-void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
-{
-	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
-
-	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
-	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,radius,0 });
-
-	int numVertex = nSegmentsTheta * nSegmentsPhi * 6;
-	if (rlCheckBufferLimit(numVertex)) rlglDraw();
-
-	rlPushMatrix();
-	// NOTE: Transformation is applied in inverse order (scale -> translate)
-	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
-	rlScalef(radius, radius, radius);
-
-	rlBegin(RL_TRIANGLES);
-	rlColor4ub(color.r, color.g, color.b, color.a);
-
-	float deltaPhi = PI / nSegmentsPhi;
-	float deltaTheta = 2 * PI / nSegmentsTheta;
-
-	float phi = 0;
-	for (int i = 0; i < nSegmentsPhi; i++)
-	{
-		float theta = 0;
-		Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ radius,theta,phi + deltaPhi });
-
-		for (int j = 0; j < nSegmentsTheta; j++)
-		{
-			Vector3 topLeft = vertexBufferTheta[j];
-			Vector3 bottomLeft = tmpBottomLeft;
-			Vector3 topRight = vertexBufferTheta[j + 1];
-			Vector3 bottomRight = SphericalToCartesian(Spherical{ radius,theta + deltaTheta,phi + deltaPhi });
-
-
-			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
-			rlVertex3f(topRight.x, topRight.y, topRight.z);
-			rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
-
-			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
-			rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.z);
-			rlVertex3f(topRight.x, topRight.y, topRight.z);
-
-			theta += deltaTheta;
-
-			vertexBufferTheta[j] = tmpBottomLeft;
-			tmpBottomLeft = bottomRight;
-		}
-		vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
-		phi += deltaPhi;
-	}
-	rlEnd();
-	rlPopMatrix();
 }
