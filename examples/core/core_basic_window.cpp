@@ -210,10 +210,9 @@ void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nS
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
 	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
-	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{0, radius, 0});
+	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,radius,0 });
 
 	int numVertex = nSegmentsTheta * nSegmentsPhi * 6;
-
 	if (rlCheckBufferLimit(numVertex)) rlglDraw();
 
 	rlPushMatrix();
@@ -227,32 +226,35 @@ void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nS
 	float deltaPhi = PI / nSegmentsPhi;
 	float deltaTheta = 2 * PI / nSegmentsTheta;
 
-	for (int i = 0; i < (nSegmentsPhi + 2); i++)
+	float phi = 0;
+	for (int i = 0; i < nSegmentsPhi; i++)
 	{
 		float theta = 0;
-		Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ radius, theta, phi + deltaPhi });
+		Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ radius,theta,phi + deltaPhi });
+
 		for (int j = 0; j < nSegmentsTheta; j++)
 		{
-			rlVertex3f(cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * i)) * sinf(DEG2RAD * (j * 360 / nSegmentsPhi)),
-			sinf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * i)),
-			cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * i)) * cosf(DEG2RAD * (j * 360 / nSegmentsPhi)));
-			rlVertex3f(cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))) * sinf(DEG2RAD * ((j + 1) * 360 / nSegmentsPhi)),
-			sinf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))),
-			cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))) * cosf(DEG2RAD * ((j + 1) * 360 / nSegmentsPhi)));
-			rlVertex3f(cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))) * sinf(DEG2RAD * (j * 360 / nSegmentsPhi)),
-			sinf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))),
-			cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))) * cosf(DEG2RAD * (j * 360 / nSegmentsPhi)));
+			Vector3 topLeft = vertexBufferTheta[j];
+			Vector3 bottomLeft = tmpBottomLeft;
+			Vector3 topRight = vertexBufferTheta[j + 1];
+			Vector3 bottomRight = SphericalToCartesian(Spherical{ radius,theta + deltaTheta,phi + deltaPhi });
 
-			rlVertex3f(cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * i)) * sinf(DEG2RAD * (j * 360 / nSegmentsPhi)),
-			sinf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * i)),
-			cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * i)) * cosf(DEG2RAD * (j * 360 / nSegmentsPhi)));
-			rlVertex3f(cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i))) * sinf(DEG2RAD * ((j + 1) * 360 / nSegmentsPhi)),
-			sinf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i))),
-			cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i))) * cosf(DEG2RAD * ((j + 1) * 360 / nSegmentsPhi)));
-			rlVertex3f(cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))) * sinf(DEG2RAD * ((j + 1) * 360 / nSegmentsPhi)),
-			sinf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))),
-			cosf(DEG2RAD * (270 + (180 / (nSegmentsTheta + 1)) * (i + 1))) * cosf(DEG2RAD * ((j + 1) * 360 / nSegmentsPhi)));
+
+			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+			rlVertex3f(topRight.x, topRight.y, topRight.z);
+			rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
+
+			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+			rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.z);
+			rlVertex3f(topRight.x, topRight.y, topRight.z);
+
+			theta += deltaTheta;
+
+			vertexBufferTheta[j] = tmpBottomLeft;
+			tmpBottomLeft = bottomRight;
 		}
+		vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
+		phi += deltaPhi;
 	}
 	rlEnd();
 	rlPopMatrix();
