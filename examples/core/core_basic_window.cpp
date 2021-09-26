@@ -174,9 +174,13 @@ void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nS
 }
 
 void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
+	//Center - Hauteur / 2
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
+	//Center + Hauteur / 2
 	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
+	//Center - Largeur / 2
 	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
+	//Center + Largeur / 2
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	//Left
@@ -293,8 +297,8 @@ BeginMode3D(camera);
 	DrawSphere({ 10,0,0 }, .2f, RED);
 	DrawSphere({ 0,10,0 }, .2f, GREEN);
 	DrawSphere({ 0,0,10 }, .2f, BLUE);
-	MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
-	//MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+	//MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+	MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
 }
 EndMode3D();
 
