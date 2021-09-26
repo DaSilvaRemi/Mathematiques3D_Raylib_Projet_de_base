@@ -192,15 +192,18 @@ void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
-	//The 4 points
+	//Left
 	DrawLine3D({ point3.x, center.y, point1.z }, { point3.x, center.y, point2.z }, color);
+	//Right
 	DrawLine3D({ point4.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
+	//Up
+	DrawLine3D({ point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
+	//Down
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point1.z }, color);
-	DrawLine3D({ point4.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
-
+	
 	//The Intersec Line
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
-	DrawLine3D({ point4.x, center.y, point2.z }, { point4.x, center.y, point1.z }, color);
+	DrawLine3D({ point3.x, center.y, point2.z }, { point4.x, center.y, point1.z }, color);
 }
 
 
@@ -287,7 +290,8 @@ BeginMode3D(camera);
 	DrawSphere({ 10,0,0 }, .2f, RED);
 	DrawSphere({ 0,10,0 }, .2f, GREEN);
 	DrawSphere({ 0,0,10 }, .2f, BLUE);
-	MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, YELLOW);
+	MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+	//MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
 }
 EndMode3D();
 
