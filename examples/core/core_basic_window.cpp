@@ -174,6 +174,7 @@ void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nS
 	rlPopMatrix();
 }
 
+/* Use DrawTriangle3D method*/
 void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	//Center - Hauteur / 2
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
@@ -190,6 +191,7 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	DrawTriangle3D({ point3.x, center.y,  point1.z } , { point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
 }
 
+/* Use rlVertex3f method*/
 void MyDrawQuad2(Vector3 center, Vector2 size, Color color) {
 	//Center - Hauteur / 2
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
@@ -215,7 +217,7 @@ void MyDrawQuad2(Vector3 center, Vector2 size, Color color) {
 	rlEnd();
 }
 
-
+/* Use DrawLine3D method*/
 void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
 	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
@@ -235,6 +237,7 @@ void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
 }
 
+/* Use rlVertex3f method*/
 void MyDrawQuadWire2(Vector3 center, Vector2 size, Color color) {
 	//Center - Hauteur / 2
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
@@ -358,8 +361,8 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
-			MyDrawQuadWire2(plane.normal, { plane.d, plane.d }, DARKPURPLE);
-			MyDrawQuad2(plane.normal, { plane.d, plane.d }, BLUE);
+			MyDrawQuadWire(plane.normal, { plane.d, plane.d }, DARKPURPLE);
+			MyDrawQuad(plane.normal, { plane.d, plane.d }, BLUE);
 			
 			if (isIntersec) {
 				DrawSphere(interSectPt, .2f, DARKBROWN);
