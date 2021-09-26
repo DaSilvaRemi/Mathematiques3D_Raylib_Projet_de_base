@@ -36,7 +36,7 @@
 
 
 template <typename T> int sgn(T val) {
-return (T(0) < val) - (val < T(0));
+	return (T(0) < val) - (val < T(0));
 }
 
 struct Cylindrical {
@@ -45,7 +45,7 @@ struct Cylindrical {
 	float y;
 
 	inline Cylindrical operator+(Cylindrical a) {
-		return { a.rho + rho,a.theta + theta,a.y+y };
+		return { a.rho + rho,a.theta + theta,a.y + y };
 	}
 };
 
@@ -77,29 +77,29 @@ struct Plane {
 
 Cylindrical CartesianToCylindrical(Vector3 cart)
 {
-Cylindrical cyl;
-cyl.rho = sqrtf(cart.x * cart.x + cart.z * cart.z);
-cyl.y = cart.y;
+	Cylindrical cyl;
+	cyl.rho = sqrtf(cart.x * cart.x + cart.z * cart.z);
+	cyl.y = cart.y;
 
-if (cyl.rho < EPSILON)cyl.theta = 0;
-else
-{
-cyl.theta = atan2f(cart.x, cart.z);
-if (cyl.theta < 0)cyl.theta += PI*2;
-}
-return cyl;
+	if (cyl.rho < EPSILON)cyl.theta = 0;
+	else
+	{
+		cyl.theta = atan2f(cart.x, cart.z);
+		if (cyl.theta < 0)cyl.theta += PI * 2;
+	}
+	return cyl;
 }
 
 Vector3 CylindricalToCartesian(Cylindrical cyl)
 {
-return Vector3{ cyl.rho*sinf(cyl.theta),cyl.y,cyl.rho * cosf(cyl.theta) };
+	return Vector3{ cyl.rho * sinf(cyl.theta),cyl.y,cyl.rho * cosf(cyl.theta) };
 }
 
 Vector3 SphericalToCartesian(Spherical sph)
 {
-return Vector3{ sph.rho * sinf(sph.phi)*sinf(sph.theta),
-sph.rho*cosf(sph.phi),
-sph.rho * sinf(sph.phi)*cosf(sph.theta) };
+	return Vector3{ sph.rho * sinf(sph.phi) * sinf(sph.theta),
+	sph.rho * cosf(sph.phi),
+	sph.rho * sinf(sph.phi) * cosf(sph.theta) };
 }
 
 bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNormal) {
@@ -111,7 +111,7 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 
 	if (t < 0 || t > 1) return false;
 	interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
-	
+
 	if (dotABn < 0) interNormal = plane.normal;
 	else interNormal = Vector3Negate(plane.normal);
 
@@ -184,13 +184,13 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	//Left
-	DrawTriangle3D({ point4.x, center.y, point1.z }, { center.x, center.y, center.z } , { point4.x, center.y, point2.z }, color);
+	DrawTriangle3D({ point4.x, center.y, point1.z }, { center.x, center.y, center.z }, { point4.x, center.y, point2.z }, color);
 	//Right
-	DrawTriangle3D({point3.x, center.y,  point1.z}, { point3.x, center.y, point2.z}, { center.x, center.y, center.z }, color);
+	DrawTriangle3D({ point3.x, center.y,  point1.z }, { point3.x, center.y, point2.z }, { center.x, center.y, center.z }, color);
 	//Up
 	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y, point1.z }, { center.x, center.y, center.z }, color);
 	//Down
-	DrawTriangle3D({ point4.x, center.y, point2.z }, { center.x, center.y, center.z } , { point3.x, center.y, point2.z } , color);
+	DrawTriangle3D({ point4.x, center.y, point2.z }, { center.x, center.y, center.z }, { point3.x, center.y, point2.z }, color);
 }
 
 void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
@@ -207,7 +207,7 @@ void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 	DrawLine3D({ point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
 	//Down
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point1.z }, color);
-	
+
 	//The Intersec Line
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
 	DrawLine3D({ point3.x, center.y, point2.z }, { point4.x, center.y, point1.z }, color);
@@ -216,100 +216,101 @@ void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 {
-static Spherical sphPos = {10,PI/4.f,PI / 4.f };
-static Spherical sphSpeed = { 10,.4f,.4f };
-float rhoMin = 4;
-float rhoMax = 40;
+	static Spherical sphPos = { 10,PI / 4.f,PI / 4.f };
+	static Spherical sphSpeed = { 10,.4f,.4f };
+	float rhoMin = 4;
+	float rhoMax = 40;
 
-static Vector2 prevMousePos = { 0,0 };
-Vector2 mousePos = GetMousePosition();
-Vector2 mouseVect = Vector2Subtract(mousePos ,prevMousePos);
-prevMousePos = mousePos;
+	static Vector2 prevMousePos = { 0,0 };
+	Vector2 mousePos = GetMousePosition();
+	Vector2 mouseVect = Vector2Subtract(mousePos, prevMousePos);
+	prevMousePos = mousePos;
 
-Spherical sphDelta = { -GetMouseWheelMove()*sphSpeed.rho*deltaTime,
-IsMouseButtonDown(MOUSE_RIGHT_BUTTON)? mouseVect.x * sphSpeed.theta * deltaTime:0,
-IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.y * sphSpeed.phi * deltaTime:0 };
+	Spherical sphDelta = { -GetMouseWheelMove() * sphSpeed.rho * deltaTime,
+	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.x * sphSpeed.theta * deltaTime : 0,
+	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.y * sphSpeed.phi * deltaTime : 0 };
 
-Spherical newSphPos = sphPos + sphDelta;
-newSphPos = { Clamp(newSphPos.rho,rhoMin,rhoMax),
-newSphPos.theta,
-Clamp(newSphPos.phi,PI / 100.f,.99f * PI) };
+	Spherical newSphPos = sphPos + sphDelta;
+	newSphPos = { Clamp(newSphPos.rho,rhoMin,rhoMax),
+	newSphPos.theta,
+	Clamp(newSphPos.phi,PI / 100.f,.99f * PI) };
 
-sphPos = newSphPos;
+	sphPos = newSphPos;
 
-camera->position = SphericalToCartesian(sphPos);
+	camera->position = SphericalToCartesian(sphPos);
 
 }
 
 int main(int argc, char* argv[])
 {
-// Initialization
-//--------------------------------------------------------------------------------------
-float screenSizeCoef = 1.4f;
-const int screenWidth = 1920 * screenSizeCoef;
-const int screenHeight = 1080 * screenSizeCoef;
+	// Initialization
+	//--------------------------------------------------------------------------------------
+	float screenSizeCoef = 1.4f;
+	const int screenWidth = 1920 * screenSizeCoef;
+	const int screenHeight = 1080 * screenSizeCoef;
 
-InitWindow(screenWidth, screenHeight, "Bouncy Sphere");
+	InitWindow(screenWidth, screenHeight, "Bouncy Sphere");
 
-SetTargetFPS(60);
+	SetTargetFPS(60);
 
-//CAMERA
-Vector3 cameraPos = { 8.0f, 15.0f, 14.0f };
-Camera camera = { 0 };
-camera.position = cameraPos;
-camera.target = { 0.0f, 0.0f, 0.0f };
-camera.up = { 0.0f, 1.0f, 0.0f };
-camera.fovy = 45.0f;
-camera.type = CAMERA_PERSPECTIVE;
-SetCameraMode(camera, CAMERA_CUSTOM);  // Set an orbital camera mode
+	//CAMERA
+	Vector3 cameraPos = { 8.0f, 15.0f, 14.0f };
+	Camera camera = { 0 };
+	camera.position = cameraPos;
+	camera.target = { 0.0f, 0.0f, 0.0f };
+	camera.up = { 0.0f, 1.0f, 0.0f };
+	camera.fovy = 45.0f;
+	camera.type = CAMERA_PERSPECTIVE;
+	SetCameraMode(camera, CAMERA_CUSTOM);  // Set an orbital camera mode
 
-//TEST CONVERSION CARTESIAN->CYLINDRICAL
-Vector3 pos={ 1,1,1 };
-Cylindrical cyl = CartesianToCylindrical(pos);
-cyl = cyl + cyl;
+	//TEST CONVERSION CARTESIAN->CYLINDRICAL
+	Vector3 pos = { 1,1,1 };
+	Cylindrical cyl = CartesianToCylindrical(pos);
+	cyl = cyl + cyl;
 
-// Main game loop
-while (!WindowShouldClose())    // Detect window close button or ESC key
-{
-// Update
-//----------------------------------------------------------------------------------
-// TODO: Update your variables here
-//----------------------------------------------------------------------------------
+	// Main game loop
+	while (!WindowShouldClose())    // Detect window close button or ESC key
+	{
+		// Update
+		//----------------------------------------------------------------------------------
+		// TODO: Update your variables here
+		//----------------------------------------------------------------------------------
 
-float deltaTime = GetFrameTime();
-float time = (float)GetTime();
+		float deltaTime = GetFrameTime();
+		float time = (float)GetTime();
 
-MyUpdateOrbitalCamera(&camera, deltaTime);
+		MyUpdateOrbitalCamera(&camera, deltaTime);
 
-// Draw
-//----------------------------------------------------------------------------------
-BeginDrawing();
+		// Draw
+		//----------------------------------------------------------------------------------
+		BeginDrawing();
 
-ClearBackground(RAYWHITE);
+		ClearBackground(RAYWHITE);
 
-BeginMode3D(camera);
-{
-//
+		BeginMode3D(camera);
+		{
+			//
 
-//3D REFERENTIAL
-	DrawGrid(20, 1.0f);        // Draw a grid
-	DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
-	DrawSphere({ 10,0,0 }, .2f, RED);
-	DrawSphere({ 0,10,0 }, .2f, GREEN);
-	DrawSphere({ 0,0,10 }, .2f, BLUE);
-	//MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
-	MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
-}
-EndMode3D();
+			//3D REFERENTIAL
+			DrawGrid(20, 1.0f);        // Draw a grid
+			DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
+			DrawSphere({ 10,0,0 }, .2f, RED);
+			DrawSphere({ 0,10,0 }, .2f, GREEN);
+			DrawSphere({ 0,0,10 }, .2f, BLUE);
+			MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+			MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+			InterSegPlane();
+		}
+		EndMode3D();
 
-EndDrawing();
-//----------------------------------------------------------------------------------
-}
+		EndDrawing();
+		//----------------------------------------------------------------------------------
+	}
 
-// De-Initialization
-//--------------------------------------------------------------------------------------  
-CloseWindow();        // Close window and OpenGL context
-//--------------------------------------------------------------------------------------
+	// De-Initialization
+	//--------------------------------------------------------------------------------------  
+	CloseWindow();        // Close window and OpenGL context
+	//--------------------------------------------------------------------------------------
 
-return 0;
+	return 0;
 }
