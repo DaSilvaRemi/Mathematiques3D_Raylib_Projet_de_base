@@ -25,6 +25,7 @@
 #include <math.h>
 #include <float.h>
 #include <vector>
+#include <iostream>
 
 #if defined(PLATFORM_DESKTOP)
 #define GLSL_VERSION            330
@@ -268,6 +269,13 @@ int main(int argc, char* argv[])
 	Cylindrical cyl = CartesianToCylindrical(pos);
 	cyl = cyl + cyl;
 
+	Segment segment = { { -4, 0, -4 } , { 4, 0, 4 } };
+	Plane plane = { {-4, 0, 0}, 2 };
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 intersecNormal = { 0, 0, 0 };
+	bool isIntersec = InterSegPlane(segment, plane, interSectPt, intersecNormal);
+	std::cout << isIntersec;
+
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
@@ -290,16 +298,20 @@ int main(int argc, char* argv[])
 		BeginMode3D(camera);
 		{
 			//
-
 			//3D REFERENTIAL
 			DrawGrid(20, 1.0f);        // Draw a grid
 			DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
 			DrawSphere({ 10,0,0 }, .2f, RED);
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
-			MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
-			MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
-			InterSegPlane();
+			//MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+			//MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+			
+			if (isIntersec) {
+				DrawSphere(interSectPt, .2f, DARKBROWN);
+			}
+			DrawLine3D(segment.pt1, segment.pt2, DARKPURPLE);
+			MyDrawQuad(plane.normal, { plane.d, plane.d }, RED);
 		}
 		EndMode3D();
 
