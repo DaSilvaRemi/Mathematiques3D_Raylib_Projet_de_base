@@ -174,11 +174,33 @@ void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nS
 }
 
 void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
-	DrawPlane(center, size, color);
+	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
+	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
+	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
+	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+
+	DrawTriangle3D({ point4.x, center.y, point1.z }, { point4.x, center.y, point2.z }, { center.x, center.y, center.z }, color);
+	DrawTriangle3D({point3.x, center.y,  point1.z}, {point3.x, center.y, point2.z}, { center.x, center.y, center.z }, color);
+	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y, point1.z }, { center.x, center.y, center.z }, color);
+	DrawTriangle3D({ point4.x, center.y, point2.z }, { point3.x, center.y, point2.z }, { center.x, center.y, center.z }, color);
 }
 
 void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
-	MyDrawQuad(center, size, color);
+	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
+	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
+	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
+	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+	//The 4 points
+	DrawLine3D({ point3.x, center.y, point1.z }, { point3.x, center.y, point2.z }, color);
+	DrawLine3D({ point4.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
+	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point1.z }, color);
+	DrawLine3D({ point4.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
+
+	//The Intersec Line
+	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
+	DrawLine3D({ point4.x, center.y, point2.z }, { point4.x, center.y, point1.z }, color);
 }
 
 
@@ -265,7 +287,7 @@ BeginMode3D(camera);
 	DrawSphere({ 10,0,0 }, .2f, RED);
 	DrawSphere({ 0,10,0 }, .2f, GREEN);
 	DrawSphere({ 0,0,10 }, .2f, BLUE);
-	MyDrawQuad({ 0,0,0 }, { .5f, .5f }, YELLOW);
+	MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, YELLOW);
 }
 EndMode3D();
 
