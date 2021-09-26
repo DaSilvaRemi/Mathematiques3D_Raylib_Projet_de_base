@@ -185,13 +185,9 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	//Left
-	DrawTriangle3D({ point4.x, center.y, point1.z }, { center.x, center.y, center.z }, { point4.x, center.y, point2.z }, color);
+	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y,  point1.z }, { point4.x, center.y, point2.z }, color);
 	//Right
-	DrawTriangle3D({ point3.x, center.y,  point1.z }, { point3.x, center.y, point2.z }, { center.x, center.y, center.z }, color);
-	//Up
-	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y, point1.z }, { center.x, center.y, center.z }, color);
-	//Down
-	DrawTriangle3D({ point4.x, center.y, point2.z }, { center.x, center.y, center.z }, { point3.x, center.y, point2.z }, color);
+	DrawTriangle3D({ point3.x, center.y,  point1.z } , { point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
 }
 
 void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
@@ -211,7 +207,6 @@ void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 
 	//The Intersec Line
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
-	DrawLine3D({ point3.x, center.y, point2.z }, { point4.x, center.y, point1.z }, color);
 }
 
 
@@ -270,11 +265,11 @@ int main(int argc, char* argv[])
 	cyl = cyl + cyl;
 
 	Segment segment = { { -4, 0, -4 } , { 4, 0, 4 } };
-	Plane plane = { {-4, 0, 0}, 2 };
+	Plane plane = { {-1, 0, 0}, 2 };
 	Vector3 interSectPt = { 0, 0, 0 };
 	Vector3 intersecNormal = { 0, 0, 0 };
 	bool isIntersec = InterSegPlane(segment, plane, interSectPt, intersecNormal);
-	std::cout << isIntersec;
+	std::cout << "Is Intersec ? " << isIntersec;
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -304,14 +299,14 @@ int main(int argc, char* argv[])
 			DrawSphere({ 10,0,0 }, .2f, RED);
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
-			//MyDrawQuad({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
-			//MyDrawQuadWire({ 0, 0, 0 }, { 5, 5 }, DARKPURPLE);
+
+			MyDrawQuadWire(plane.normal, { plane.d, plane.d }, DARKPURPLE);
+			MyDrawQuad(plane.normal, { plane.d, plane.d }, BLUE);
 			
 			if (isIntersec) {
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKPURPLE);
-			MyDrawQuad(plane.normal, { plane.d, plane.d }, RED);
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 		}
 		EndMode3D();
 
