@@ -190,6 +190,32 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	DrawTriangle3D({ point3.x, center.y,  point1.z } , { point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
 }
 
+void MyDrawQuad2(Vector3 center, Vector2 size, Color color) {
+	//Center - Hauteur / 2
+	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
+	//Center + Hauteur / 2
+	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
+	//Center - Largeur / 2
+	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
+	//Center + Largeur / 2
+	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+	rlBegin(RL_TRIANGLES);
+		rlColor4ub(color.r, color.g, color.b, color.a);
+
+		//Left
+		rlVertex3f(point4.x, center.y, point1.z);
+		rlVertex3f(point3.x, center.y, point1.z);
+		rlVertex3f(point4.x, center.y, point2.z);
+
+		//Right
+		rlVertex3f(point3.x, center.y, point1.z);
+		rlVertex3f(point3.x, center.y, point2.z);
+		rlVertex3f(point4.x, center.y, point2.z);
+	rlEnd();
+}
+
+
 void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
 	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
@@ -209,6 +235,38 @@ void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
 }
 
+void MyDrawQuadWire2(Vector3 center, Vector2 size, Color color) {
+	//Center - Hauteur / 2
+	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
+	//Center + Hauteur / 2
+	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
+	//Center - Largeur / 2
+	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
+	//Center + Largeur / 2
+	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+	rlBegin(RL_LINES);
+		rlColor4ub(color.r, color.g, color.b, color.a);
+
+		//Left
+		rlColor4ub(color.r, color.g, color.b, color.a);
+		rlVertex3f(point3.x, center.y, point1.z);
+		rlVertex3f(point3.x, center.y, point2.z);
+		//Right
+		rlVertex3f(point4.x, center.y, point1.z);
+		rlVertex3f(point4.x, center.y, point2.z);
+		//Up
+		rlVertex3f(point3.x, center.y, point2.z);
+		rlVertex3f(point4.x, center.y, point2.z);
+		//Down
+		rlVertex3f(point3.x, center.y, point1.z);
+		rlVertex3f(point4.x, center.y, point1.z);
+
+		//The Intersec Line
+		rlVertex3f(point3.x, center.y, point1.z);
+		rlVertex3f(point4.x, center.y, point2.z);
+	rlEnd();
+}
 
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 {
@@ -300,8 +358,8 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
-			MyDrawQuadWire(plane.normal, { plane.d, plane.d }, DARKPURPLE);
-			MyDrawQuad(plane.normal, { plane.d, plane.d }, BLUE);
+			MyDrawQuadWire2(plane.normal, { plane.d, plane.d }, DARKPURPLE);
+			MyDrawQuad2(plane.normal, { plane.d, plane.d }, BLUE);
 			
 			if (isIntersec) {
 				DrawSphere(interSectPt, .2f, DARKBROWN);
