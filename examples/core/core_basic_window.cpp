@@ -179,11 +179,14 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
-
-	DrawTriangle3D({ point4.x, center.y, point1.z }, { point4.x, center.y, point2.z }, { center.x, center.y, center.z }, color);
-	DrawTriangle3D({point3.x, center.y,  point1.z}, {point3.x, center.y, point2.z}, { center.x, center.y, center.z }, color);
+	//Left
+	DrawTriangle3D({ point4.x, center.y, point1.z }, { center.x, center.y, center.z } , { point4.x, center.y, point2.z }, color);
+	//Right
+	DrawTriangle3D({point3.x, center.y,  point1.z}, { point3.x, center.y, point2.z}, { center.x, center.y, center.z }, color);
+	//Up
 	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y, point1.z }, { center.x, center.y, center.z }, color);
-	DrawTriangle3D({ point4.x, center.y, point2.z }, { point3.x, center.y, point2.z }, { center.x, center.y, center.z }, color);
+	//Down
+	DrawTriangle3D({ point4.x, center.y, point2.z }, { center.x, center.y, center.z } , { point3.x, center.y, point2.z } , color);
 }
 
 void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
