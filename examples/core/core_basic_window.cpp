@@ -125,7 +125,35 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 }
 
 bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& interNormal) {
+	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
+	Vector3 OA = Vector3Subtract(seg.pt1, sphere.omega);
+	Vector3 A0 = Vector3Negate(OA);
 
+	float a = Vector3DotProduct(AB, OA);
+	float b = Vector3DotProduct(AB, AB);
+	float c = Vector3DotProduct(A0, A0) - sphere.rayon;
+
+	float discrimin = powf(b, 2) - 4 * a * c;
+	if (discrimin < 0) return false;
+
+	float t1 = 0.0f;
+	float t2 = 0.0f;
+
+	if (discrimin < EPSILON) {
+		t1 = -(b / 2 * a);
+		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t1));
+	}
+	else {
+		discrimin = sqrtf(discrimin);
+		t1 = (-b + discrimin) / 2 * a;
+		t2 = (-b - discrimin) / 2 * a;
+
+		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t1));
+		interNormal = Vector3Add(seg.pt2, Vector3Scale(AB, t1));
+	}
+
+	if ((t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1)) return true;
+	else return false;
 }
 
 void MyDrawSphereEx2(Quaternion qOrient, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
@@ -258,7 +286,7 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	//Left
 	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y,  point1.z }, { point4.x, center.y, point2.z }, color);
 	//Right
-	DrawTriangle3D({ point3.x, center.y,  point1.z } , { point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
+	DrawTriangle3D({ point3.x, center.y,  point1.z }, { point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
 }
 
 /* Use rlVertex3f method*/
@@ -273,17 +301,17 @@ void MyDrawQuad2(Vector3 center, Vector2 size, Color color) {
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	rlBegin(RL_TRIANGLES);
-		rlColor4ub(color.r, color.g, color.b, color.a);
+	rlColor4ub(color.r, color.g, color.b, color.a);
 
-		//Left
-		rlVertex3f(point4.x, center.y, point1.z);
-		rlVertex3f(point3.x, center.y, point1.z);
-		rlVertex3f(point4.x, center.y, point2.z);
+	//Left
+	rlVertex3f(point4.x, center.y, point1.z);
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point2.z);
 
-		//Right
-		rlVertex3f(point3.x, center.y, point1.z);
-		rlVertex3f(point3.x, center.y, point2.z);
-		rlVertex3f(point4.x, center.y, point2.z);
+	//Right
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point3.x, center.y, point2.z);
+	rlVertex3f(point4.x, center.y, point2.z);
 	rlEnd();
 }
 
@@ -319,25 +347,25 @@ void MyDrawQuadWire2(Vector3 center, Vector2 size, Color color) {
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	rlBegin(RL_LINES);
-		rlColor4ub(color.r, color.g, color.b, color.a);
+	rlColor4ub(color.r, color.g, color.b, color.a);
 
-		//Left
-		rlColor4ub(color.r, color.g, color.b, color.a);
-		rlVertex3f(point3.x, center.y, point1.z);
-		rlVertex3f(point3.x, center.y, point2.z);
-		//Right
-		rlVertex3f(point4.x, center.y, point1.z);
-		rlVertex3f(point4.x, center.y, point2.z);
-		//Up
-		rlVertex3f(point3.x, center.y, point2.z);
-		rlVertex3f(point4.x, center.y, point2.z);
-		//Down
-		rlVertex3f(point3.x, center.y, point1.z);
-		rlVertex3f(point4.x, center.y, point1.z);
+	//Left
+	rlColor4ub(color.r, color.g, color.b, color.a);
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point3.x, center.y, point2.z);
+	//Right
+	rlVertex3f(point4.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point2.z);
+	//Up
+	rlVertex3f(point3.x, center.y, point2.z);
+	rlVertex3f(point4.x, center.y, point2.z);
+	//Down
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point1.z);
 
-		//The Intersec Line
-		rlVertex3f(point3.x, center.y, point1.z);
-		rlVertex3f(point4.x, center.y, point2.z);
+	//The Intersec Line
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point2.z);
 	rlEnd();
 }
 
@@ -395,12 +423,18 @@ int main(int argc, char* argv[])
 	Cylindrical cyl = CartesianToCylindrical(pos);
 	cyl = cyl + cyl;
 
+	/*	TEST INTERSECTIONS	*/
+
+	//TEST INTERSECTION SEGMENT PLANE
 	Segment segment = { { -4, 0, -4 } , { 4, 0, 4 } };
 	Plane plane = { {-1, 0, 0}, 2 };
 	Vector3 interSectPt = { 0, 0, 0 };
-	Vector3 intersecNormal = { 0, 0, 0 };
-	bool isIntersec = InterSegPlane(segment, plane, interSectPt, intersecNormal);
-	std::cout << "Is Intersec ? " << isIntersec;
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool planeHaveIntersec = InterSegPlane(segment, plane, interSectPt, interSecNormal);
+
+	//TEST INTERSECTION SEGMENT PLANE
+	Sphere sphere = { {0, 0, 0}, 2 };
+	bool sphereHaveIntersec = InterSegSphere(segment, sphere, interSectPt, interSecNormal);
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -425,22 +459,31 @@ int main(int argc, char* argv[])
 		{
 			//
 			//3D REFERENTIAL
-			Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
-			MyDrawSphereEx2(qOrient, Vector3{ 0, 0, 0 }, 2, 40, 20, BLUE);
-			MyDrawSphereWiresEx2(qOrient, Vector3{ 0, 0, 0 }, 2, 40, 20, WHITE);
 			DrawGrid(20, 1.0f);        // Draw a grid
 			DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
 			DrawSphere({ 10,0,0 }, .2f, RED);
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
+			//INTERSEC BETWEEN SEGMENT AND PLANE
 			/*MyDrawQuadWire(plane.normal, {plane.d, plane.d}, DARKPURPLE);
 			MyDrawQuad(plane.normal, { plane.d, plane.d }, BLUE);
-			
-			if (isIntersec) {
+
+			if (planeHaveIntersec) {
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
 			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
+
+			// INTERSEC BETWEEN SEGMENT AND SPHERE
+			Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
+			//MyDrawSphereEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, BLUE);
+			MyDrawSphereWiresEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, WHITE);
+
+
+			if (sphereHaveIntersec) {
+				DrawSphere(interSectPt, .2f, DARKBROWN);
+			}
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 		}
 		EndMode3D();
 
