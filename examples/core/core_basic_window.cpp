@@ -76,6 +76,11 @@ struct Plane {
 	float d;
 };
 
+struct Sphere {
+	Vector3 omega;
+	float rayon;
+};
+
 Cylindrical CartesianToCylindrical(Vector3 cart)
 {
 	Cylindrical cyl;
@@ -119,7 +124,11 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 	return true;
 }
 
-void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
+bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& interNormal) {
+
+}
+
+void MyDrawSphereEx2(Quaternion qOrient, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
 {
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
@@ -132,6 +141,12 @@ void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nS
 	rlPushMatrix();
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
 	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
+
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(qOrient, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
 	rlScalef(radius, radius, radius);
 
 	rlBegin(RL_TRIANGLES);
@@ -166,6 +181,61 @@ void MyDrawSphereEx2(Vector3 centerPos, float radius, int nSegmentsTheta, int nS
 
 			vertexBufferTheta[j] = tmpBottomLeft;
 			tmpBottomLeft = bottomRight;
+		}
+		vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
+		phi += deltaPhi;
+	}
+	rlEnd();
+	rlPopMatrix();
+}
+
+void MyDrawSphereWiresEx2(Quaternion qOrient, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
+{
+	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
+
+	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
+	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,radius,0 });
+
+	int numVertex = nSegmentsTheta * nSegmentsPhi * 4;
+	if (rlCheckBufferLimit(numVertex)) rlglDraw();
+
+	rlPushMatrix();
+	// NOTE: Transformation is applied in inverse order (scale -> translate)
+	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
+
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(qOrient, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
+	rlScalef(radius, radius, radius);
+
+	rlBegin(RL_LINES);
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	float deltaPhi = PI / nSegmentsPhi;
+	float deltaTheta = 2 * PI / nSegmentsTheta;
+
+	float phi = 0;
+	for (int i = 0; i < nSegmentsPhi; i++)
+	{
+		float theta = 0;
+
+		for (int j = 0; j < nSegmentsTheta; j++)
+		{
+			Vector3 topLeft = vertexBufferTheta[j];
+			Vector3 bottomLeft = SphericalToCartesian(Spherical{ radius,theta,phi + deltaPhi });
+			Vector3 topRight = vertexBufferTheta[j + 1];
+
+			rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
+			rlVertex3f(topRight.x, topRight.y, topRight.z);
+
+			rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
+			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+
+			theta += deltaTheta;
+
+			vertexBufferTheta[j] = bottomLeft;
 		}
 		vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
 		phi += deltaPhi;
@@ -355,19 +425,22 @@ int main(int argc, char* argv[])
 		{
 			//
 			//3D REFERENTIAL
+			Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
+			MyDrawSphereEx2(qOrient, Vector3{ 0, 0, 0 }, 2, 40, 20, BLUE);
+			MyDrawSphereWiresEx2(qOrient, Vector3{ 0, 0, 0 }, 2, 40, 20, WHITE);
 			DrawGrid(20, 1.0f);        // Draw a grid
 			DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
 			DrawSphere({ 10,0,0 }, .2f, RED);
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
-			MyDrawQuadWire(plane.normal, { plane.d, plane.d }, DARKPURPLE);
+			/*MyDrawQuadWire(plane.normal, {plane.d, plane.d}, DARKPURPLE);
 			MyDrawQuad(plane.normal, { plane.d, plane.d }, BLUE);
 			
 			if (isIntersec) {
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 		}
 		EndMode3D();
 
