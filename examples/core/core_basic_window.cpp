@@ -156,7 +156,7 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 	else return false;
 }
 
-void MyDrawSphereEx2(Quaternion qOrient, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
+void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
 {
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
@@ -167,15 +167,19 @@ void MyDrawSphereEx2(Quaternion qOrient, Vector3 centerPos, float radius, int nS
 	if (rlCheckBufferLimit(numVertex)) rlglDraw();
 
 	rlPushMatrix();
+
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
 	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
 
+	//ROTATION
 	Vector3 vect;
 	float angle;
-	QuaternionToAxisAngle(qOrient, &vect, &angle);
+	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//
 
 	rlScalef(radius, radius, radius);
+
 
 	rlBegin(RL_TRIANGLES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
@@ -217,7 +221,7 @@ void MyDrawSphereEx2(Quaternion qOrient, Vector3 centerPos, float radius, int nS
 	rlPopMatrix();
 }
 
-void MyDrawSphereWiresEx2(Quaternion qOrient, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
+void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
 {
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
@@ -231,10 +235,12 @@ void MyDrawSphereWiresEx2(Quaternion qOrient, Vector3 centerPos, float radius, i
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
 	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
 
+	//ROTATION
 	Vector3 vect;
 	float angle;
-	QuaternionToAxisAngle(qOrient, &vect, &angle);
+	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//
 
 	rlScalef(radius, radius, radius);
 
@@ -273,7 +279,7 @@ void MyDrawSphereWiresEx2(Quaternion qOrient, Vector3 centerPos, float radius, i
 }
 
 /* Use DrawTriangle3D method*/
-void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
+void MyDrawQuad(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	//Center - Hauteur / 2
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
 	//Center + Hauteur / 2
@@ -282,6 +288,14 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
 	//Center + Largeur / 2
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//
+	rlScalef(size.x, size.y, center.y);
 
 	//Left
 	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y,  point1.z }, { point4.x, center.y, point2.z }, color);
@@ -289,38 +303,20 @@ void MyDrawQuad(Vector3 center, Vector2 size, Color color) {
 	DrawTriangle3D({ point3.x, center.y,  point1.z }, { point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
 }
 
-/* Use rlVertex3f method*/
-void MyDrawQuad2(Vector3 center, Vector2 size, Color color) {
-	//Center - Hauteur / 2
-	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
-	//Center + Hauteur / 2
-	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
-	//Center - Largeur / 2
-	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
-	//Center + Largeur / 2
-	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
-
-	rlBegin(RL_TRIANGLES);
-	rlColor4ub(color.r, color.g, color.b, color.a);
-
-	//Left
-	rlVertex3f(point4.x, center.y, point1.z);
-	rlVertex3f(point3.x, center.y, point1.z);
-	rlVertex3f(point4.x, center.y, point2.z);
-
-	//Right
-	rlVertex3f(point3.x, center.y, point1.z);
-	rlVertex3f(point3.x, center.y, point2.z);
-	rlVertex3f(point4.x, center.y, point2.z);
-	rlEnd();
-}
-
 /* Use DrawLine3D method*/
-void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
+void MyDrawQuadWire(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
 	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
 	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//
+	rlScalef(size.x, size.y, center.y);
 
 	//Left
 	DrawLine3D({ point3.x, center.y, point1.z }, { point3.x, center.y, point2.z }, color);
@@ -333,40 +329,6 @@ void MyDrawQuadWire(Vector3 center, Vector2 size, Color color) {
 
 	//The Intersec Line
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
-}
-
-/* Use rlVertex3f method*/
-void MyDrawQuadWire2(Vector3 center, Vector2 size, Color color) {
-	//Center - Hauteur / 2
-	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
-	//Center + Hauteur / 2
-	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
-	//Center - Largeur / 2
-	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
-	//Center + Largeur / 2
-	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
-
-	rlBegin(RL_LINES);
-	rlColor4ub(color.r, color.g, color.b, color.a);
-
-	//Left
-	rlColor4ub(color.r, color.g, color.b, color.a);
-	rlVertex3f(point3.x, center.y, point1.z);
-	rlVertex3f(point3.x, center.y, point2.z);
-	//Right
-	rlVertex3f(point4.x, center.y, point1.z);
-	rlVertex3f(point4.x, center.y, point2.z);
-	//Up
-	rlVertex3f(point3.x, center.y, point2.z);
-	rlVertex3f(point4.x, center.y, point2.z);
-	//Down
-	rlVertex3f(point3.x, center.y, point1.z);
-	rlVertex3f(point4.x, center.y, point1.z);
-
-	//The Intersec Line
-	rlVertex3f(point3.x, center.y, point1.z);
-	rlVertex3f(point4.x, center.y, point2.z);
-	rlEnd();
 }
 
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
@@ -425,9 +387,13 @@ int main(int argc, char* argv[])
 
 	/*	TEST INTERSECTIONS	*/
 
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
+
 	//TEST INTERSECTION SEGMENT PLANE
 	Segment segment = { { -4, 0, -4 } , { 4, 0, 4 } };
 	Plane plane = { {-1, 0, 0}, 2 };
+	Vector3RotateByQuaternion(plane.normal, qOrient);
+
 	Vector3 interSectPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
 	bool planeHaveIntersec = InterSegPlane(segment, plane, interSectPt, interSecNormal);
@@ -466,7 +432,8 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
 			//INTERSEC BETWEEN SEGMENT AND PLANE
-			/*MyDrawQuadWire(plane.normal, {plane.d, plane.d}, DARKPURPLE);
+			/*
+			MyDrawQuadWire(plane.normal, {plane.d, plane.d}, DARKPURPLE);
 			MyDrawQuad(plane.normal, { plane.d, plane.d }, BLUE);
 
 			if (planeHaveIntersec) {
