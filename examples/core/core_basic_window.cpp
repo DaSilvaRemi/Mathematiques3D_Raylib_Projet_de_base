@@ -145,8 +145,8 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 	}
 	else {
 		discrimin = sqrtf(discrimin);
-		t1 = (-b + discrimin) / 2 * a;
-		t2 = (-b - discrimin) / 2 * a;
+		t1 = (-b + discrimin) / (2 * a);
+		t2 = (-b - discrimin) / (2 * a);
 
 		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t1));
 		interNormal = Vector3Add(seg.pt2, Vector3Scale(AB, t1));
@@ -447,9 +447,7 @@ int main(int argc, char* argv[])
 			MyDrawSphereWiresEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, WHITE);
 
 
-			if (sphereHaveIntersec) {
-				DrawSphere(interSectPt, .2f, DARKBROWN);
-			}
+			DrawSphere(interSectPt, .2f, DARKBROWN);
 			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 		}
 		EndMode3D();
