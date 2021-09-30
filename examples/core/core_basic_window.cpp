@@ -126,16 +126,17 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 
 bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& interNormal) {
 	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
-	Vector3 OA = Vector3Subtract(seg.pt1, sphere.omega);
-	Vector3 A0 = Vector3Negate(OA);
+	Vector3 OmegaA = Vector3Subtract(seg.pt1, sphere.omega);
+	Vector3 AOmega = Vector3Negate(OmegaA);
 
-	float a = Vector3DotProduct(AB, OA);
+	float a = Vector3DotProduct(AB, OmegaA);
 	float b = Vector3DotProduct(AB, AB);
-	float c = Vector3DotProduct(A0, A0) - sphere.rayon;
+	float c = Vector3DotProduct(AOmega, AOmega) - powf(sphere.rayon, 2);
 
 	float discrimin = powf(b, 2) - 4 * a * c;
 	if (discrimin < 0) return false;
 
+	float t = 0.0f;
 	float t1 = 0.0f;
 	float t2 = 0.0f;
 
@@ -148,11 +149,13 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 		t1 = (-b + discrimin) / (2 * a);
 		t2 = (-b - discrimin) / (2 * a);
 
-		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t1));
-		interNormal = Vector3Add(seg.pt2, Vector3Scale(AB, t1));
+		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t1 < t2 ? t1 : t2));
+		interNormal = Vector3Add(sphere.omega, interPt);
+
+		t = t1 < t2 ? t1 : t2;
 	}
 
-	if ((t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1)) return true;
+	if (t >= 0 && t <= 1) return true;
 	else return false;
 }
 
@@ -390,7 +393,7 @@ int main(int argc, char* argv[])
 	Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
 
 	//TEST INTERSECTION SEGMENT PLANE
-	Segment segment = { { -4, 0, -4 } , { 4, 0, 4 } };
+	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
 	Plane plane = { {-1, 0, 0}, 2 };
 	Vector3RotateByQuaternion(plane.normal, qOrient);
 
@@ -443,11 +446,12 @@ int main(int argc, char* argv[])
 
 			// INTERSEC BETWEEN SEGMENT AND SPHERE
 			Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
-			//MyDrawSphereEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, BLUE);
+			MyDrawSphereEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, BLUE);
 			MyDrawSphereWiresEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, WHITE);
 
 
 			DrawSphere(interSectPt, .2f, DARKBROWN);
+			DrawSphere(interSecNormal, .2f, DARKPURPLE);
 			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 		}
 		EndMode3D();
