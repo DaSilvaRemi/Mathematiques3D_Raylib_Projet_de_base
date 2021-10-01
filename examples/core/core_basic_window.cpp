@@ -128,11 +128,12 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
 	Vector3 OmegaA = Vector3Subtract(seg.pt1, sphere.omega);
 
-	float a = Vector3DotProduct(AB, OmegaA);
-	float b = Vector3DotProduct(AB, AB);
+	
+	float a = Vector3DotProduct(AB, AB);
+	float b = Vector3DotProduct(AB, OmegaA);
 	float c = Vector3DotProduct(OmegaA, OmegaA) - powf(sphere.rayon, 2);
 
-	float discrimin = 4 * powf(b, 2) - 4  * a * c;
+	float discrimin = (4 * powf(b, 2)) - 4  * a * c;
 	if (discrimin < 0) return false;
 
 	float t = 0.0f;
@@ -290,18 +291,25 @@ void MyDrawQuad(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	//Center + Largeur / 2
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
+	rlBegin(RL_TRIANGLES);
+
+	// NOTE: Transformation is applied in inverse order (scale -> translate)
+	rlTranslatef(center.x, center.y, center.z);
+
 	//ROTATION
 	Vector3 vect;
 	float angle;
-	QuaternionToAxisAngle(q, &vect, &angle);
-	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//QuaternionToAxisAngle(q, &vect, &angle);
+	//rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
-	rlScalef(size.x, size.y, center.y);
+	//rlScalef(size.x, size.y, center.y);
 
 	//Left
 	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y,  point1.z }, { point4.x, center.y, point2.z }, color);
 	//Right
 	DrawTriangle3D({ point3.x, center.y,  point1.z }, { point3.x, center.y, point2.z }, { point4.x, center.y, point2.z }, color);
+
+	rlEnd();
 }
 
 /* Use DrawLine3D method*/
@@ -312,12 +320,12 @@ void MyDrawQuadWire(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	//ROTATION
-	Vector3 vect;
+	/*Vector3 vect;
 	float angle;
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
-	rlScalef(size.x, size.y, center.y);
+	rlScalef(size.x, size.y, center.z);*/
 
 	//Left
 	DrawLine3D({ point3.x, center.y, point1.z }, { point3.x, center.y, point2.z }, color);
@@ -331,6 +339,88 @@ void MyDrawQuadWire(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	//The Intersec Line
 	DrawLine3D({ point3.x, center.y, point1.z }, { point4.x, center.y, point2.z }, color);
 }
+
+/* Use rlVertex3f method*/
+void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color) {
+	//Center - Hauteur / 2
+	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
+	//Center + Hauteur / 2
+	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
+	//Center - Largeur / 2
+	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
+	//Center + Largeur / 2
+	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+	rlBegin(RL_TRIANGLES);
+	rlTranslatef(center.x, center.y, center.z);
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//
+	rlScalef(size.x, size.y, center.z);
+
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	//Left
+	rlVertex3f(point4.x, center.y, point1.z);
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point2.z);
+
+	//Right
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point3.x, center.y, point2.z);
+	rlVertex3f(point4.x, center.y, point2.z);
+	rlEnd();
+}
+
+/* Use rlVertex3f method*/
+void MyDrawQuadWire2(Quaternion q, Vector3 center, Vector2 size, Color color) {
+	//Center - Hauteur / 2
+	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
+	//Center + Hauteur / 2
+	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
+	//Center - Largeur / 2
+	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
+	//Center + Largeur / 2
+	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
+
+	rlBegin(RL_LINES);
+	rlTranslatef(center.x, center.y, center.z);
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//
+	rlScalef(size.x, size.y, center.y);
+
+
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	//Left
+	rlColor4ub(color.r, color.g, color.b, color.a);
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point3.x, center.y, point2.z);
+	//Right
+	rlVertex3f(point4.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point2.z);
+	//Up
+	rlVertex3f(point3.x, center.y, point2.z);
+	rlVertex3f(point4.x, center.y, point2.z);
+	//Down
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point1.z);
+
+	//The Intersec Line
+	rlVertex3f(point3.x, center.y, point1.z);
+	rlVertex3f(point4.x, center.y, point2.z);
+	rlEnd();
+}
+
 
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 {
@@ -433,24 +523,26 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
 			//INTERSEC BETWEEN SEGMENT AND PLANE
-			/*
-			MyDrawQuadWire(plane.normal, {plane.d, plane.d}, DARKPURPLE);
-			MyDrawQuad(plane.normal, { plane.d, plane.d }, BLUE);
+			Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, .2f * PI);
+			MyDrawQuadWire2(qOrient, plane.normal, {plane.d, plane.d}, WHITE);
+			MyDrawQuad2(qOrient, plane.normal, { plane.d, plane.d }, BLUE);
 
 			if (planeHaveIntersec) {
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 
 			// INTERSEC BETWEEN SEGMENT AND SPHERE
-			Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
+			/*Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
 			MyDrawSphereEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, BLUE);
 			MyDrawSphereWiresEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, WHITE);
 
+			if (sphereHaveIntersec) {
+				DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
+				DrawSphere(interSectPt, .2f, DARKBROWN);
+			}
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 
-			DrawSphere(interSectPt, .2f, DARKBROWN);
-			DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 		}
 		EndMode3D();
 
