@@ -131,9 +131,9 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 
 	float a = Vector3DotProduct(AB, OmegaA);
 	float b = Vector3DotProduct(AB, AB);
-	float c = Vector3DotProduct(AOmega, AOmega) - powf(sphere.rayon, 2);
+	float c = Vector3DotProduct(OmegaA, OmegaA) - powf(sphere.rayon, 2);
 
-	float discrimin = powf(b, 2) - 4 * a * c;
+	float discrimin = 4 * powf(b, 2) - 4  * a * c;
 	if (discrimin < 0) return false;
 
 	float t = 0.0f;
@@ -148,11 +148,11 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 		discrimin = sqrtf(discrimin);
 		t1 = (-b + discrimin) / (2 * a);
 		t2 = (-b - discrimin) / (2 * a);
-
-		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t1 < t2 ? t1 : t2));
-		interNormal = Vector3Add(sphere.omega, interPt);
-
 		t = t1 < t2 ? t1 : t2;
+
+		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
+	
+		interNormal = Vector3Normalize({ -AB.z, 0, AB.x });
 	}
 
 	if (t >= 0 && t <= 1) return true;
@@ -451,7 +451,7 @@ int main(int argc, char* argv[])
 
 
 			DrawSphere(interSectPt, .2f, DARKBROWN);
-			DrawSphere(interSecNormal, .2f, DARKPURPLE);
+			DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
 			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 		}
 		EndMode3D();
