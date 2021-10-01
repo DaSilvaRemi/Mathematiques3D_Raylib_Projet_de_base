@@ -127,7 +127,6 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& interNormal) {
 	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
 	Vector3 OmegaA = Vector3Subtract(seg.pt1, sphere.omega);
-	Vector3 AOmega = Vector3Negate(OmegaA);
 
 	float a = Vector3DotProduct(AB, OmegaA);
 	float b = Vector3DotProduct(AB, AB);
@@ -137,20 +136,19 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 	if (discrimin < 0) return false;
 
 	float t = 0.0f;
-	float t1 = 0.0f;
-	float t2 = 0.0f;
 
 	if (discrimin < EPSILON) {
-		t1 = -(b / 2 * a);
-		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t1));
+		t = -(b / 2 * a);
+		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
 	}
 	else {
 		discrimin = sqrtf(discrimin);
-		t1 = (-b + discrimin) / (2 * a);
-		t2 = (-b - discrimin) / (2 * a);
+		float t1 = (-b + discrimin) / (2 * a);
+		float t2 = (-b - discrimin) / (2 * a);
 		t = t1 < t2 ? t1 : t2;
 
-		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
+		//interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
+		interPt = Vector3Scale(seg.pt1, t);
 	
 		interNormal = Vector3Normalize({ -AB.z, 0, AB.x });
 	}
@@ -336,7 +334,7 @@ void MyDrawQuadWire(Quaternion q, Vector3 center, Vector2 size, Color color) {
 
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 {
-	static Spherical sphPos = { 10,PI / 4.f,PI / 4.f };
+	static Spherical sphPos = { 20,PI / 4.f,PI / 4.f };
 	static Spherical sphSpeed = { 10,.4f,.4f };
 	float rhoMin = 4;
 	float rhoMax = 40;
@@ -347,8 +345,8 @@ void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 	prevMousePos = mousePos;
 
 	Spherical sphDelta = { -GetMouseWheelMove() * sphSpeed.rho * deltaTime,
-	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.x * sphSpeed.theta * deltaTime : 0,
-	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.y * sphSpeed.phi * deltaTime : 0 };
+	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.x * sphSpeed.theta * deltaTime  * - 1 : 0,
+	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.y * sphSpeed.phi * deltaTime * -1 : 0 };
 
 	Spherical newSphPos = sphPos + sphDelta;
 	newSphPos = { Clamp(newSphPos.rho,rhoMin,rhoMax),
