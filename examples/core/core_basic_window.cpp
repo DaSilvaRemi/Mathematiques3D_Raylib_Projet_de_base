@@ -130,16 +130,16 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 
 	
 	float a = Vector3DotProduct(AB, AB);
-	float b = Vector3DotProduct(AB, OmegaA);
+	float b = 2 * Vector3DotProduct(AB, OmegaA);
 	float c = Vector3DotProduct(OmegaA, OmegaA) - powf(sphere.rayon, 2);
 
-	float discrimin = (4 * powf(b, 2)) - 4  * a * c;
+	float discrimin = b * b - 4  * a * c;
 	if (discrimin < 0) return false;
 
 	float t = 0.0f;
 
 	if (discrimin < EPSILON) {
-		t = -(b / 2 * a);
+		t = -(b / (2 * a));
 		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
 	}
 	else {
@@ -180,7 +180,7 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
 
-	rlScalef(radius, radius, radius);
+	//rlScalef(radius, radius, radius);
 
 
 	rlBegin(RL_TRIANGLES);
@@ -244,7 +244,7 @@ void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSe
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
 
-	rlScalef(radius, radius, radius);
+	//rlScalef(radius, radius, radius);
 
 	rlBegin(RL_LINES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
@@ -299,10 +299,10 @@ void MyDrawQuad(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	//ROTATION
 	Vector3 vect;
 	float angle;
-	//QuaternionToAxisAngle(q, &vect, &angle);
-	//rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
-	//rlScalef(size.x, size.y, center.y);
+	rlScalef(size.x, size.y, center.y);
 
 	//Left
 	DrawTriangle3D({ point4.x, center.y, point1.z }, { point3.x, center.y,  point1.z }, { point4.x, center.y, point2.z }, color);
@@ -352,7 +352,7 @@ void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	rlBegin(RL_TRIANGLES);
-	rlTranslatef(center.x, center.y, center.z);
+	//rlTranslatef(center.x, center.y, center.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -360,7 +360,7 @@ void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
-	rlScalef(size.x, size.y, center.z);
+	//rlScalef(size.x, size.y, center.z);
 
 	rlColor4ub(color.r, color.g, color.b, color.a);
 
@@ -388,7 +388,7 @@ void MyDrawQuadWire2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
 
 	rlBegin(RL_LINES);
-	rlTranslatef(center.x, center.y, center.z);
+	//rlTranslatef(center.x, center.y, center.y);
 
 	//ROTATION
 	Vector3 vect;
@@ -396,7 +396,7 @@ void MyDrawQuadWire2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
-	rlScalef(size.x, size.y, center.y);
+	//rlScalef(size.x, size.y, center.y);
 
 
 	rlColor4ub(color.r, color.g, color.b, color.a);
@@ -523,7 +523,7 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
 			//INTERSEC BETWEEN SEGMENT AND PLANE
-			Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, .2f * PI);
+			Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, .2f * PI);
 			MyDrawQuadWire2(qOrient, plane.normal, {plane.d, plane.d}, WHITE);
 			MyDrawQuad2(qOrient, plane.normal, { plane.d, plane.d }, BLUE);
 
