@@ -169,7 +169,7 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
 	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
-	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,radius,0 });
+	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,1,0 });
 
 	int numVertex = nSegmentsTheta * nSegmentsPhi * 6;
 	if (rlCheckBufferLimit(numVertex)) rlglDraw();
@@ -186,7 +186,7 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
 
-	//rlScalef(radius, radius, radius);
+	rlScalef(radius, radius, radius);
 
 
 	rlBegin(RL_TRIANGLES);
@@ -199,14 +199,14 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	for (int i = 0; i < nSegmentsPhi; i++)
 	{
 		float theta = 0;
-		Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ radius,theta,phi + deltaPhi });
+		Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ 1,theta,phi + deltaPhi });
 
 		for (int j = 0; j < nSegmentsTheta; j++)
 		{
 			Vector3 topLeft = vertexBufferTheta[j];
 			Vector3 bottomLeft = tmpBottomLeft;
 			Vector3 topRight = vertexBufferTheta[j + 1];
-			Vector3 bottomRight = SphericalToCartesian(Spherical{ radius,theta + deltaTheta,phi + deltaPhi });
+			Vector3 bottomRight = SphericalToCartesian(Spherical{ 1,theta + deltaTheta,phi + deltaPhi });
 
 
 			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
@@ -234,7 +234,7 @@ void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSe
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
 	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
-	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,radius,0 });
+	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,1,0 });
 
 	int numVertex = nSegmentsTheta * nSegmentsPhi * 4;
 	if (rlCheckBufferLimit(numVertex)) rlglDraw();
@@ -250,7 +250,7 @@ void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSe
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
 
-	//rlScalef(radius, radius, radius);
+	rlScalef(radius, radius, radius);
 
 	rlBegin(RL_LINES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
@@ -266,7 +266,7 @@ void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSe
 		for (int j = 0; j < nSegmentsTheta; j++)
 		{
 			Vector3 topLeft = vertexBufferTheta[j];
-			Vector3 bottomLeft = SphericalToCartesian(Spherical{ radius,theta,phi + deltaPhi });
+			Vector3 bottomLeft = SphericalToCartesian(Spherical{ 1,theta,phi + deltaPhi });
 			Vector3 topRight = vertexBufferTheta[j + 1];
 
 			rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
@@ -428,12 +428,11 @@ int main(int argc, char* argv[])
 
 	/*	TEST INTERSECTIONS	*/
 
-	Quaternion qOrient = QuaternionFromAxisAngle({ 1,0,0 }, PI * .5f);
+	Quaternion qOrient = QuaternionFromAxisAngle({ 0,0,1 }, PI * .2f);
 
 	//TEST INTERSECTION SEGMENT PLANE
 	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
-	Plane plane = { {-1, 0, 0}, 2 };
-	Vector3RotateByQuaternion(plane.normal, qOrient);
+	Plane plane = { Vector3RotateByQuaternion({ 0,1,0 }, qOrient), 2 };
 
 	Vector3 interSectPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
@@ -473,18 +472,16 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
 			//INTERSEC BETWEEN SEGMENT AND PLANE
-			Quaternion qOrient = QuaternionFromAxisAngle({0,0,1}, .2f * PI);
-			plane.normal = Vector3RotateByQuaternion({ 0,1,0 }, qOrient);
-			MyDrawQuadWire2(qOrient, Vector3Scale(plane.normal, plane.d), { 2, 2 }, WHITE);
+			/*MyDrawQuadWire2(qOrient, Vector3Scale(plane.normal, plane.d), {2, 2}, WHITE);
 			MyDrawQuad2(qOrient, Vector3Scale(plane.normal, plane.d), { 2, 2 }, BLUE);
 
 			if (planeHaveIntersec) {
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 
 			// INTERSEC BETWEEN SEGMENT AND SPHERE
-			/*Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
+			Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
 			MyDrawSphereEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, BLUE);
 			MyDrawSphereWiresEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, WHITE);
 
@@ -492,7 +489,7 @@ int main(int argc, char* argv[])
 				DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 
 		}
 		EndMode3D();
