@@ -81,7 +81,7 @@ struct Sphere {
 	float rayon;
 };
 
-struct cylindre {
+struct Cylinder {
 	Vector3 pt1;
 	Vector3 pt2;
 	float radius;
@@ -162,6 +162,20 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 
 	if (t >= 0 && t <= 1) return true;
 	else return false;
+}
+
+bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal){
+	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
+	Vector3 PQ = Vector3Subtract(cyl.pt2, cyl.pt1);
+	Vector3 PA = Vector3Subtract(seg.pt2, cyl.pt1);
+
+	Vector3 tmp = Vector3Scale(PQ, Vector3DotProduct(AB, PQ) / Vector3DotProduct(PQ, PQ));
+	Vector3 tmpAB = Vector3Add(tmp, AB);
+	Vector3 tmpPA = Vector3Subtract(PA, tmp);
+
+	float a = Vector3DotProduct(tmpAB, tmpAB);
+	//float b = Vector3Scale(Vector3CrossProduct(tmp, tmpPA), 2);
+	float c = Vector3DotProduct(tmpPA, tmpPA) - powf(cyl.radius, 2);
 }
 
 void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
@@ -371,6 +385,76 @@ void MyDrawQuadWire2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	rlPopMatrix();
 }
 
+void MyDrawCylinder(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color)
+{
+	
+	if (nSegmentsTheta < 3) return;
+
+	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
+	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,1,0 });
+
+	int numVertex = nSegmentsTheta * 6;
+	if (rlCheckBufferLimit(numVertex)) rlglDraw();
+
+	rlPushMatrix();
+
+	// NOTE: Transformation is applied in inverse order (scale -> translate)
+	rlTranslatef(cyl.pt1.x, cyl.pt1.y, cyl.pt1.z);
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	//
+
+	rlScalef(radius, Vector3Length(Vector3Subtract(cyl.pt2 , cyl.pt1)), radius); // norme
+
+
+	rlBegin(RL_TRIANGLES);
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	float deltaTheta = 2 * PI / nSegmentsTheta;
+
+	float theta = 0;
+	Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ 1,theta });
+
+	for (int j = 0; j < nSegmentsTheta; j++)
+	{
+		Vector3 topLeft = vertexBufferTheta[j];
+		Vector3 bottomLeft = tmpBottomLeft;
+		Vector3 topRight = vertexBufferTheta[j + 1];
+		Vector3 bottomRight = SphericalToCartesian(Spherical{ 1,theta});
+
+
+		rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+		rlVertex3f(topRight.x, topRight.y, topRight.z);
+		rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
+
+		rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+		rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.z);
+		rlVertex3f(topRight.x, topRight.y, topRight.z);
+
+		theta += deltaTheta;
+
+		vertexBufferTheta[j] = tmpBottomLeft;
+		tmpBottomLeft = bottomRight;
+	}
+	vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
+
+
+	rlEnd();
+	rlPopMatrix();
+}
+
+void MyDrawCylinderWires(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color) {}
+void MyDrawDisk(Quaternion q, Vector3 center, float radius, int nSegmentsTheta, Color color) {}
+void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color) {}
+void MyDrawCylinderWiresPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color){}
+void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color) {}
+void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color){}
+void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color){}
+void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color){}
 
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 {
@@ -481,7 +565,7 @@ int main(int argc, char* argv[])
 			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 
 			// INTERSEC BETWEEN SEGMENT AND SPHERE
-			Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
+			/*Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
 			MyDrawSphereEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, BLUE);
 			MyDrawSphereWiresEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, WHITE);
 
@@ -489,8 +573,9 @@ int main(int argc, char* argv[])
 				DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 
+			MyDrawCylindre(qOrient, {});
 		}
 		EndMode3D();
 
