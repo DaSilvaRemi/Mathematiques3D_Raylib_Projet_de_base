@@ -169,14 +169,122 @@ bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, V
 	Vector3 PQ = Vector3Subtract(cyl.pt2, cyl.pt1);
 	Vector3 PA = Vector3Subtract(seg.pt2, cyl.pt1);
 
-	Vector3 tmp = Vector3Scale(PQ, Vector3DotProduct(AB, PQ) / Vector3DotProduct(PQ, PQ));
+	Vector3 tmp = Vector3Negate( Vector3Scale(PQ, Vector3DotProduct(AB, PQ) / Vector3DotProduct(PQ, PQ) ) );
 	Vector3 tmpAB = Vector3Add(tmp, AB);
-	Vector3 tmpPA = Vector3Subtract(PA, tmp);
-
 	float a = Vector3DotProduct(tmpAB, tmpAB);
+
+	tmp = Vector3Scale(PQ, -(Vector3DotProduct(AB, PQ) / Vector3DotProduct(PQ, PQ)));
+	Vector3 tmpPA = Vector3Subtract(PA, Vector3Divide(Vector3Scale(PQ, Vector3DotProduct(PA, PQ)), Vector3Multiply(PQ, PQ)));
+	
 	//float b = Vector3Scale(Vector3CrossProduct(tmp, tmpPA), 2);
 	float c = Vector3DotProduct(tmpPA, tmpPA) - powf(cyl.radius, 2);
+
+	return false;
 }
+
+void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color) {
+	if (nSegmentsTheta < 3) nSegmentsTheta = 3;
+
+	int numVertex = nSegmentsTheta * 6;
+	if (rlCheckBufferLimit(numVertex)) rlglDraw();
+
+	rlPushMatrix();
+	rlTranslatef(cyl.pt1.x, cyl.pt1.y, cyl.pt1.z);
+
+	float height = Vector3Length(Vector3Subtract(cyl.pt2, cyl.pt1));
+	rlScalef(cyl.radius, height, cyl.radius); // norme
+
+	rlBegin(RL_TRIANGLES);
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	float deltaTheta = endTheta / nSegmentsTheta;
+
+	if (cyl.radius > 0)
+	{
+		// Draw Body -------------------------------------------------------------------------------------
+		for (float i = startTheta; i < endTheta; i += deltaTheta)
+		{
+			rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, 0, cosf(DEG2RAD * i) * cyl.radius); //Bottom Left
+			rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, 0, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius); //Bottom Right
+			rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, height, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius); //Top Right
+
+			rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, height, cosf(DEG2RAD * i) * cyl.radius); //Top Left
+			rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, 0, cosf(DEG2RAD * i) * cyl.radius); //Bottom Left
+			rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, height, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius); //Top Right
+		}
+
+		// Draw Cap --------------------------------------------------------------------------------------
+		for (float i = startTheta; i < endTheta; i += deltaTheta)
+		{
+			rlVertex3f(0, height, 0);
+			rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, height, cosf(DEG2RAD * i) * cyl.radius);
+			rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, height, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius);
+		}
+	}
+	else
+	{
+		// Draw Cone -------------------------------------------------------------------------------------
+		for (float i = startTheta; i < endTheta; i += deltaTheta)
+		{
+			rlVertex3f(0, height, 0);
+			rlVertex3f(sinf(DEG2RAD * i) * nSegmentsTheta, 0, cosf(DEG2RAD * i) * cyl.radius);
+			rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, 0, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius);
+		}
+	}
+
+	// Draw Base -----------------------------------------------------------------------------------------
+	for (float i = startTheta; i < endTheta; i += deltaTheta)
+	{
+		rlVertex3f(0, 0, 0);
+		rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, 0, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius);
+		rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, 0, cosf(DEG2RAD * i) * cyl.radius);
+	}
+	rlEnd();
+	rlPopMatrix();
+}
+
+void MyDrawCylinderWiresPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color) {
+	if (nSegmentsTheta < 3) nSegmentsTheta = 3;
+
+	int numVertex = nSegmentsTheta * 8;
+	if (rlCheckBufferLimit(numVertex)) rlglDraw();
+
+	rlPushMatrix();
+	rlTranslatef(cyl.pt1.x, cyl.pt1.y, cyl.pt1.z);
+
+	float height = Vector3Length(Vector3Subtract(cyl.pt2, cyl.pt1));
+	rlScalef(cyl.radius, height, cyl.radius); // norme
+
+	rlBegin(RL_LINES);
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	float deltaTheta = endTheta / nSegmentsTheta;
+
+	for (float i = startTheta; i < endTheta; i += deltaTheta)
+	{
+		rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, 0, cosf(DEG2RAD * i) * cyl.radius);
+		rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, 0, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius);
+
+		rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, 0, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius);
+		rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, height, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius);
+
+		rlVertex3f(sinf(DEG2RAD * (i + deltaTheta)) * cyl.radius, height, cosf(DEG2RAD * (i + deltaTheta)) * cyl.radius);
+		rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, height, cosf(DEG2RAD * i) * cyl.radius);
+
+		rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, height, cosf(DEG2RAD * i) * cyl.radius);
+		rlVertex3f(sinf(DEG2RAD * i) * cyl.radius, 0, cosf(DEG2RAD * i) * cyl.radius);
+	}
+	rlEnd();
+	rlPopMatrix();
+}
+
+void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color) {}
+
+void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color) {}
+
+void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color) {}
+
+void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color) {}
 
 void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
 {
@@ -198,7 +306,6 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	float angle;
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
-	//
 
 	rlScalef(radius, radius, radius);
 
@@ -221,7 +328,6 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 			Vector3 bottomLeft = tmpBottomLeft;
 			Vector3 topRight = vertexBufferTheta[j + 1];
 			Vector3 bottomRight = SphericalToCartesian(Spherical{ 1,theta + deltaTheta,phi + deltaPhi });
-
 
 			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
 			rlVertex3f(topRight.x, topRight.y, topRight.z);
@@ -385,9 +491,102 @@ void MyDrawQuadWire2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	rlPopMatrix();
 }
 
+/*void MyDrawCylinder(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color)
+{	
+	if (nSegmentsTheta < 3)  nSegmentsTheta = 3;
+
+	int numVertex = nSegmentsTheta * 6;
+	if (rlCheckBufferLimit(numVertex)) rlglDraw();
+
+	rlPushMatrix();
+
+	// NOTE: Transformation is applied in inverse order (scale -> translate)
+	rlTranslatef(cyl.pt1.x, cyl.pt1.y, cyl.pt1.z);
+
+	//ROTATION
+	//Vector3 vect;
+	//float angle;
+	//QuaternionToAxisAngle(q, &vect, &angle);
+	//rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
+	float height = Vector3Length(Vector3Subtract(cyl.pt2, cyl.pt1));
+	rlScalef(cyl.radius, height, cyl.radius); // norme
+
+
+	rlBegin(RL_TRIANGLES);
+	rlColor4ub(color.r, color.g, color.b, color.a);
+
+	float deltaTheta = 2 * PI / nSegmentsTheta;
+
+	float theta = 0;
+	Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ cyl.pt1.x + cyl.radius, theta,  cyl.pt1.z + cyl.radius });
+
+	if (cyl.radius > 0) {
+		for (int j = 0; j < nSegmentsTheta; j++)
+		{
+			//std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0, (float) j, 0 });
+
+			Vector3 topLeft = SphericalToCartesian(Spherical{ cyl.pt2.x + cyl.radius, height,  cyl.pt2.z + cyl.radius });
+			Vector3 bottomLeft = tmpBottomLeft;
+			Vector3 topRight = SphericalToCartesian(Spherical{ cyl.pt1.x + cyl.radius, height,  cyl.pt1.z + cyl.radius });
+			Vector3 bottomRight = SphericalToCartesian(Spherical{ cyl.pt1.x + cyl.radius, theta + deltaTheta,  cyl.pt1.z + cyl.radius });
+
+
+			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+			rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.y);
+			rlVertex3f(topRight.x, topRight.y, topRight.z);
+
+			rlVertex3f(topLeft.x, height, topLeft.z);
+			rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.y);
+			rlVertex3f(topRight.x, height, topRight.z);
+
+			theta += deltaTheta;
+		}
+	}
+	else {
+		theta = 0;
+		for (int j = 0; j < nSegmentsTheta; j++)
+		{
+			Vector3 topLeft = SphericalToCartesian(Spherical{ cyl.pt2.x + cyl.radius, height,  cyl.pt2.z + cyl.radius });
+			Vector3 topRight = SphericalToCartesian(Spherical{ cyl.pt2.x + cyl.radius, height,  cyl.pt2.z + cyl.radius });
+
+			rlVertex3f(0, height, 0);
+			rlVertex3f(topLeft.x, 0, topLeft.z);
+			rlVertex3f(topRight.x, 0, topRight.z);
+
+			theta += deltaTheta;
+		}
+	}
+	theta = 0;
+	// Draw Base
+	for (int j = 0; j < nSegmentsTheta; j ++)
+	{
+		Vector3 bottomLeft = tmpBottomLeft;
+		Vector3 bottomRight = SphericalToCartesian(Spherical{ cyl.pt1.x * cyl.radius, theta + deltaTheta,  cyl.pt1.z * cyl.radius });
+
+		rlVertex3f(0, 0, 0);
+		rlVertex3f(bottomRight.x, 0, bottomRight.y);
+		rlVertex3f(bottomLeft.x, 0, bottomLeft.z);
+
+		theta += deltaTheta;
+	}
+
+	rlEnd();
+	rlPopMatrix();
+}*/
+
+//Vector3 position, float radiusTop, float radiusBottom, float height, int sides, Color color
 void MyDrawCylinder(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color)
 {
-	
+	MyDrawCylinderPortion(q, cyl, 0.0f, 360.0f, nSegmentsTheta, drawCaps, color);
+}
+
+void MyDrawCylinderWires(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color) {
+	MyDrawCylinderWiresPortion(q, cyl, 0.0f, 360.0f, nSegmentsTheta, drawCaps, color);
+}
+
+void MyDrawDisk(Quaternion q, Vector3 center, float radius, int nSegmentsTheta, Color color) {
+
 	if (nSegmentsTheta < 3) return;
 
 	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
@@ -399,62 +598,57 @@ void MyDrawCylinder(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCap
 	rlPushMatrix();
 
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
-	rlTranslatef(cyl.pt1.x, cyl.pt1.y, cyl.pt1.z);
+	rlTranslatef(center.x, center.y, center.z);
 
 	//ROTATION
-	Vector3 vect;
+	/*Vector3 vect;
 	float angle;
 	QuaternionToAxisAngle(q, &vect, &angle);
-	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);*/
 	//
 
-	rlScalef(radius, Vector3Length(Vector3Subtract(cyl.pt2 , cyl.pt1)), radius); // norme
+	rlScalef(radius, radius, radius); // norme
 
 
-	rlBegin(RL_TRIANGLES);
+	rlBegin(RL_LINES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
 
 	float deltaTheta = 2 * PI / nSegmentsTheta;
 
 	float theta = 0;
-	Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ 1,theta });
+	Vector3 tmpBottomLeft = SphericalToCartesian(Spherical{ 1, theta,  radius });
 
 	for (int j = 0; j < nSegmentsTheta; j++)
 	{
 		Vector3 topLeft = vertexBufferTheta[j];
 		Vector3 bottomLeft = tmpBottomLeft;
 		Vector3 topRight = vertexBufferTheta[j + 1];
-		Vector3 bottomRight = SphericalToCartesian(Spherical{ 1,theta});
+		Vector3 bottomRight = SphericalToCartesian(Spherical{ 1, 0,  2 * PI });
 
 
 		rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
-		rlVertex3f(topRight.x, topRight.y, topRight.z);
+		rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.y);
 		rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
 
-		rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
+		rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.y);
 		rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.z);
 		rlVertex3f(topRight.x, topRight.y, topRight.z);
+
+		//rlVertex3f(topRight.x, topRight.y, topRight.z);
+		//rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
 
 		theta += deltaTheta;
 
 		vertexBufferTheta[j] = tmpBottomLeft;
 		tmpBottomLeft = bottomRight;
+		vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
 	}
-	vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
-
 
 	rlEnd();
 	rlPopMatrix();
 }
 
-void MyDrawCylinderWires(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color) {}
-void MyDrawDisk(Quaternion q, Vector3 center, float radius, int nSegmentsTheta, Color color) {}
-void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color) {}
-void MyDrawCylinderWiresPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color){}
-void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color) {}
-void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color){}
-void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color){}
-void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color){}
+
 
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 {
@@ -526,6 +720,9 @@ int main(int argc, char* argv[])
 	Sphere sphere = { {0, 0, 0}, 2 };
 	bool sphereHaveIntersec = InterSegSphere(segment, sphere, interSectPt, interSecNormal);
 
+	//TEST INTERSECTION SEGMENT CYLYNDRE
+	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2};
+
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
@@ -575,7 +772,8 @@ int main(int argc, char* argv[])
 			}
 			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 
-			MyDrawCylindre(qOrient, {});
+			MyDrawCylinder(qOrient, cylinder, 25, false, BLUE);
+			MyDrawCylinderWires(qOrient, cylinder, 25, false, WHITE);
 		}
 		EndMode3D();
 
