@@ -282,12 +282,7 @@ void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTh
 
 void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color) {}
 
-void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color) {}
-
-void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color) {}
-
-void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
-{
+void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color) {
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
 	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
@@ -299,7 +294,7 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	rlPushMatrix();
 
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
-	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
+	rlTranslatef(sph.omega.x, sph.omega.y, sph.omega.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -307,7 +302,7 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(radius, radius, radius);
+	rlScalef(sph.rayon, sph.rayon, sph.rayon);
 
 
 	rlBegin(RL_TRIANGLES);
@@ -347,10 +342,10 @@ void MyDrawSphereEx2(Quaternion q, Vector3 centerPos, float radius, int nSegment
 	}
 	rlEnd();
 	rlPopMatrix();
+
 }
 
-void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSegmentsTheta, int nSegmentsPhi, Color color)
-{
+void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color) {
 	if (nSegmentsTheta < 3 || nSegmentsPhi < 2) return;
 
 	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
@@ -361,7 +356,7 @@ void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSe
 
 	rlPushMatrix();
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
-	rlTranslatef(centerPos.x, centerPos.y, centerPos.z);
+	rlTranslatef(sph.omega.x, sph.omega.y, sph.omega.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -370,18 +365,18 @@ void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSe
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 	//
 
-	rlScalef(radius, radius, radius);
+	rlScalef(sph.rayon, sph.rayon, sph.rayon);
 
 	rlBegin(RL_LINES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
 
-	float deltaPhi = PI / nSegmentsPhi;
-	float deltaTheta = 2 * PI / nSegmentsTheta;
+	float deltaPhi = endPhi / nSegmentsPhi;
+	float deltaTheta = endTheta / nSegmentsTheta;
 
-	float phi = 0;
+	float phi = startPhi;
 	for (int i = 0; i < nSegmentsPhi; i++)
 	{
-		float theta = 0;
+		float theta = startTheta;
 
 		for (int j = 0; j < nSegmentsTheta; j++)
 		{
@@ -404,6 +399,16 @@ void MyDrawSphereWiresEx2(Quaternion q, Vector3 centerPos, float radius, int nSe
 	}
 	rlEnd();
 	rlPopMatrix();
+}
+
+void MyDrawSphereEx2(Quaternion q, Sphere sph, int nSegmentsTheta, int nSegmentsPhi, Color color)
+{
+	MyDrawSpherePortion(q, sph, 0, 2 * PI, 0, PI, nSegmentsTheta, nSegmentsPhi, color);
+}
+
+void MyDrawSphereWiresEx2(Quaternion q, Sphere sph, int nSegmentsTheta, int nSegmentsPhi, Color color)
+{
+	MyDrawSphereWiresPortion(q, sph, 0, 2 * PI, 0, PI, nSegmentsTheta, nSegmentsPhi, color);
 }
 
 /* Use rlVertex3f method*/
@@ -762,18 +767,18 @@ int main(int argc, char* argv[])
 			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 
 			// INTERSEC BETWEEN SEGMENT AND SPHERE
-			/*Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
-			MyDrawSphereEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, BLUE);
-			MyDrawSphereWiresEx2(qOrient, sphere.omega, sphere.rayon, 40, 20, WHITE);
+			Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
+			MyDrawSphereEx2(qOrient, sphere, 40, 20, BLUE);
+			MyDrawSphereWiresEx2(qOrient, sphere, 40, 20, WHITE);
 
 			if (sphereHaveIntersec) {
 				DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
 				DrawSphere(interSectPt, .2f, DARKBROWN);
 			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
+			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 
-			MyDrawCylinder(qOrient, cylinder, 25, false, BLUE);
-			MyDrawCylinderWires(qOrient, cylinder, 25, false, WHITE);
+			/*MyDrawCylinder(qOrient, cylinder, 25, false, BLUE);
+			MyDrawCylinderWires(qOrient, cylinder, 25, false, WHITE);*/
 		}
 		EndMode3D();
 
