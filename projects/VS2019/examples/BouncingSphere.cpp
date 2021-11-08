@@ -26,8 +26,8 @@
 #include <float.h>
 #include <vector>
 #include <iostream>
-#include "tools.h"
-#include "draw.h"
+#include "Tools.h"
+#include "Test.h"
 
 #if defined(PLATFORM_DESKTOP)
 #define GLSL_VERSION            330
@@ -92,28 +92,9 @@ int main(int argc, char* argv[])
 	SetCameraMode(camera, CAMERA_CUSTOM);  // Set an orbital camera mode
 
 	//TEST CONVERSION CARTESIAN->CYLINDRICAL
-	Vector3 pos = { 1,1,1 };
+	/*Vector3 pos = {1,1,1};
 	Cylindrical cyl = CartesianToCylindrical(pos);
-	cyl = cyl + cyl;
-
-	/*	TEST INTERSECTIONS	*/
-
-	Quaternion qOrient = QuaternionFromAxisAngle({ 0,0, 0 }, PI * .2f);
-
-	//TEST INTERSECTION SEGMENT PLANE
-	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
-	Plane plane = { Vector3RotateByQuaternion({ 0,1,0 }, qOrient), 2 };
-
-	Vector3 interSectPt = { 0, 0, 0 };
-	Vector3 interSecNormal = { 0, 0, 0 };
-	bool planeHaveIntersec = InterSegPlane(segment, plane, interSectPt, interSecNormal);
-
-	//TEST INTERSECTION SEGMENT PLANE
-	Sphere sphere = { {0, 0, 0}, 2 };
-	bool sphereHaveIntersec = InterSegSphere(segment, sphere, interSectPt, interSecNormal);
-
-	//TEST INTERSECTION SEGMENT CYLYNDRE
-	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2};
+	cyl = cyl + cyl;*/
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -144,28 +125,7 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
-			//INTERSEC BETWEEN SEGMENT AND PLANE
-			MyDrawQuadWire2(qOrient, Vector3Scale(plane.normal, plane.d), {2, 2}, WHITE);
-			MyDrawQuad2(qOrient, Vector3Scale(plane.normal, plane.d), { 2, 2 }, BLUE);
-
-			if (planeHaveIntersec) {
-				DrawSphere(interSectPt, .2f, DARKBROWN);
-			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
-
-			// INTERSEC BETWEEN SEGMENT AND SPHERE
-			Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
-			MyDrawSphereEx2(qOrient, sphere, 40, 20, BLUE);
-			MyDrawSphereWiresEx2(qOrient, sphere, 40, 20, WHITE);
-
-			if (sphereHaveIntersec) {
-				DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
-				DrawSphere(interSectPt, .2f, DARKBROWN);
-			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
-
-			MyDrawCylinder(qOrient, cylinder, 25, true, BLUE);
-			MyDrawCylinderWires(qOrient, cylinder, 25, true, WHITE);
+			TestIntersecSegmentCylinder(time);
 		}
 		EndMode3D();
 

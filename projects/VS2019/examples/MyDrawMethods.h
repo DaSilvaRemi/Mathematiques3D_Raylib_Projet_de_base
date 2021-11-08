@@ -5,7 +5,10 @@
 #include <float.h>
 #include <vector>
 #include <iostream>
-#include "tools.h"
+#include "Tools.h"
+#include "Struct.h"
+
+void MyDrawSegment(Quaternion q, Segment seg, Color color);
 
 void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
 

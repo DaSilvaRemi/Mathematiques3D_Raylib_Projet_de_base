@@ -2,7 +2,7 @@
 
 /**
 *
-* 
+*
 */
 Cylindrical CartesianToCylindrical(Vector3 cart)
 {
@@ -21,7 +21,7 @@ Cylindrical CartesianToCylindrical(Vector3 cart)
 
 /**
 *
-* 
+*
 */
 Vector3 CylindricalToCartesian(Cylindrical cyl)
 {
@@ -30,7 +30,7 @@ Vector3 CylindricalToCartesian(Cylindrical cyl)
 
 /**
 *
-* 
+*
 */
 Vector3 SphericalToCartesian(Spherical sph)
 {
@@ -39,9 +39,28 @@ Vector3 SphericalToCartesian(Spherical sph)
 	sph.rho * sinf(sph.phi) * cosf(sph.theta) };
 }
 
+Vector3 GlobalToLocalPos(Vector3 posGlobal, Referential localRef) {
+	Vector3 globalOrigin = { 0,0,0 };
+	Vector3 globalVect = Vector3Subtract(Vector3Subtract(posGlobal, globalOrigin), Vector3Subtract(localRef.origin, globalOrigin));
+	return GlobalToLocalVect(globalVect, localRef);
+}
+
+Vector3 GlobalToLocalVect(Vector3 vectGlobal, Referential localRef) {
+	return { Vector3DotProduct(vectGlobal, localRef.i), Vector3DotProduct(vectGlobal, localRef.j) , Vector3DotProduct(vectGlobal, localRef.k) };
+}
+
+Vector3 LocalToGlobalPos(Vector3 localPos, Referential localRef) {
+	Vector3 globalOrigin = { 0,0,0 };
+	return Vector3Add(Vector3Subtract(localRef.origin, globalOrigin), LocalToGlobalVect(localPos, localRef));
+}
+
+Vector3 LocalToGlobalVect(Vector3 localVect, Referential localRef) {
+	return Vector3Add(Vector3Add(Vector3Scale(localRef.i, localVect.x), Vector3Scale(localRef.j, localVect.y)), Vector3Scale(localRef.k, localVect.z));
+}
+
 /**
 *
-* 
+*
 */
 bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNormal) {
 	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
@@ -59,20 +78,32 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 	return true;
 }
 
+bool InterSegQuad(Segment seg, Quad quad, Vector3& interPt, Vector3& interNormal) {
+	bool isIntersec = InterSegPlane(seg, Plane(quad.referential.j, quad.referential.origin, { 0,0,0 }), interPt, interNormal);
+
+	return isIntersec && (fabsf(interPt.x) <= quad.extension.x && fabsf(interPt.z) <= quad.extension.z);
+}
+
+bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal) {
+	bool isIntersec = InterSegPlane(seg, Plane(disk.referential.i, disk.referential.origin, { 0,0,0 }), interPt, interNormal);
+
+	return isIntersec && (fabsf(interPt.x) <= disk.radius && fabsf(interPt.z) <= disk.radius);
+}
+
 /**
 *
-* 
+*
 */
 bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& interNormal) {
 	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
 	Vector3 OmegaA = Vector3Subtract(seg.pt1, sphere.omega);
 
-	
+
 	float a = Vector3DotProduct(AB, AB);
 	float b = 2 * Vector3DotProduct(AB, OmegaA);
 	float c = Vector3DotProduct(OmegaA, OmegaA) - powf(sphere.rayon, 2);
 
-	float discrimin = b * b - 4  * a * c;
+	float discrimin = b * b - 4 * a * c;
 	if (discrimin < 0) return false;
 
 	float t = 0.0f;
@@ -89,7 +120,7 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 
 		//interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
 		interPt = Vector3Scale(seg.pt1, t);
-	
+
 		interNormal = Vector3Normalize({ -AB.z, 0, AB.x });
 	}
 
@@ -99,39 +130,68 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 
 /**
 *
-* 
+*
 */
-/*bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal) {
-	Vector3 AB = Vector3Subtract(seg.pt2, seg.pt1);
-	Vector3 PQ = Vector3Subtract(cyl.pt2, cyl.pt1);
-	Vector3 PA = Vector3Subtract(seg.pt1, cyl.pt1);
+bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal) {
 
-	Vector3 tmp = Vector3Negate( Vector3Scale(PQ, Vector3DotProduct(AB, PQ) / Vector3DotProduct(PQ, PQ)));
-	Vector3 tmpAB = Vector3Add(tmp, AB);
-	
-	tmp = Vector3Scale(PQ, Vector3DotProduct(Vector3Negate(AB), PQ) / Vector3DotProduct(PQ, PQ));
-	Vector3 tmpPA = Vector3Subtract(PA, Vector3Divide(Vector3Scale(PQ, Vector3DotProduct(PA, PQ)), Vector3Multiply(PQ, PQ)));
-	
-	float a = Vector3DotProduct(tmpAB, tmpAB);
-	//float b = Vector3Scale(Vector3CrossProduct(tmp, tmpPA), 2);
-	float c = Vector3DotProduct(tmpPA, tmpPA) - powf(cyl.radius, 2);
+	Vector3 ptA = seg.pt1;
+	Vector3 ptB = seg.pt2;
+	Vector3 ptP = cyl.pt1;
+	Vector3 ptQ = cyl.pt2;
+	float r = cyl.radius;
 
-	//float discrimin = powf(b, 2) - 4 * a * c;
+	Vector3 AB = Vector3Subtract(ptB, ptA);
+	Vector3 PQ = Vector3Subtract(ptQ, ptP);
+	Vector3 PA = Vector3Subtract(ptA, ptP);
 
+	float ABdotPQ = Vector3DotProduct(AB, PQ);
+	float PAdotPQ = Vector3DotProduct(PA, PQ);
+	float ABdotPA = Vector3DotProduct(AB, PA);
+
+	float ABcarre = Vector3DotProduct(AB, AB);
+	float PQcarre = Vector3DotProduct(PQ, PQ);
+	float PAcarre = Vector3DotProduct(PA, PA);
+
+	float PAdotPQcarre = powf(PAdotPQ, 2);
+
+	float ABPQsurPQcarre = ABdotPQ / PQcarre;
+	float PAPQsurPQcarre = PAdotPQ / PQcarre;
+	float PAPQcarreeSurPQcaree = PAdotPQcarre / PQcarre;
+
+	// Soit At² + Bt + c = 0
+	// Pour a :
+	float a = ABcarre - 2 * powf(ABPQsurPQcarre, 2) + powf(ABPQsurPQcarre, 2) * PQcarre;
+
+	// Pour b
+	float b = 2 * (ABdotPA - ABPQsurPQcarre * PAdotPQ - PAPQsurPQcarre * ABdotPQ + ABPQsurPQcarre * PAPQsurPQcarre * PQcarre);
+
+	// Pour c
+	float c = PAcarre - 2 * PAPQcarreeSurPQcaree + powf(PAPQsurPQcarre, 2) * PQcarre - powf(r, 2);
+
+	float discriminant = powf(b, 2) - 4 * a * c;
 	float t = 0;
-	if (discrimin < EPSILON) {
+	if (discriminant < EPSILON) {
 		t = -b / (2 * a);
-		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
+		interPt = Vector3Add(ptA, Vector3Scale(AB, t));
 	}
+
 	else {
-		float t1 = (-b + sqrtf(discrimin)) / (2 * a);
-		float t2 = (-b - sqrtf(discrimin)) / (2 * a);
+		float racineDiscriminant = sqrtf(discriminant);
+		float t1 = (-b - racineDiscriminant) / (2 * a);
+		float t2 = (-b + racineDiscriminant) / (2 * a);
 		t = t1 < t2 ? t1 : t2;
 
-		interPt = Vector3Scale(seg.pt1, t);
-		interNormal = Vector3Normalize({ -AB.z, 0, AB.x });
+		interPt = Vector3Scale(ptA, t);
+		interNormal = Vector3Normalize({ -AB.z , 0 , AB.x });
 	}
-
 	if (t >= 0 && t <= 1) return true;
-	else return false;
-}*/
+	return false;
+}
+
+bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal) {
+	bool isCylinderIntersec = InterSegmentInfiniteCylinder(seg, cyl, interPt, interNormal);
+	bool isDiskIntersec = InterSegDisk(seg, {cyl.pt1, cyl.radius}, interPt, interNormal);
+	bool isDiskIntersec2 = InterSegDisk(seg, { cyl.pt2, cyl.radius }, interPt, interNormal);
+	
+	return isCylinderIntersec || isDiskIntersec || isDiskIntersec2;
+}

@@ -324,14 +324,16 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\examples\core\core_basic_window.cpp" />
     <ClCompile Include="BouncingSphere.cpp" />
-    <ClCompile Include="draw.cpp" />
+    <ClCompile Include="Test.cpp" />
+    <ClCompile Include="MyDrawMethods.cpp" />
     <ClCompile Include="Struct.cpp" />
-    <ClCompile Include="tools.cpp" />
+    <ClCompile Include="Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="draw.h" />
+    <ClInclude Include="Test.h" />
+    <ClInclude Include="MyDrawMethods.h" />
     <ClInclude Include="Struct.h" />
-    <ClInclude Include="tools.h" />
+    <ClInclude Include="Tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

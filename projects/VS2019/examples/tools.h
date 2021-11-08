@@ -15,6 +15,14 @@ Vector3 CylindricalToCartesian(Cylindrical cyl);
 
 Vector3 SphericalToCartesian(Spherical sph);
 
+Vector3 GlobalToLocalPos(Vector3 posGlobal, Referential localRef);
+
+Vector3 GlobalToLocalVect(Vector3 vectGlobal, Referential localRef);
+
+Vector3 LocalToGlobalPos(Vector3 localPos, Referential localRef);
+
+Vector3 LocalToGlobalVect(Vector3 localVect, Referential localRef);
+
 bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNormal);
 
 bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& interNormal);

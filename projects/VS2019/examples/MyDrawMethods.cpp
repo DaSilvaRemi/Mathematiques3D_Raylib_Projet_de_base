@@ -1,4 +1,23 @@
-#include "draw.h"
+#include "MyDrawMethods.h"
+
+void MyDrawSegment(Quaternion q, Segment seg, Color color) {
+	rlPushMatrix();
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
+	rlBegin(RL_LINES);
+	
+	rlColor4ub(color.r, color.g, color.b, color.a);
+	rlVertex3f(seg.pt1.x, seg.pt1.y, seg.pt1.z);
+	rlVertex3f(seg.pt2.x, seg.pt2.y, seg.pt2.z);
+	
+	rlEnd();
+	rlPopMatrix();
+}
 
 void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color) {
 	if (nSegmentsTheta < 3) return;
@@ -115,9 +134,10 @@ void MyDrawCylinderWiresPortion(Quaternion q, Cylinder cyl, float startTheta, fl
 	{
 		Quaternion qX = QuaternionFromAxisAngle({1, 0, 0}, PI);
 		Quaternion qY = QuaternionFromAxisAngle({0, 1, 0}, startTheta);
-		MyDrawCylinderWiresPortion(QuaternionMultiply(qX, qY), {0, 0, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
-		MyDrawCylinderWiresPortion(QuaternionIdentity(), {0, 1, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
+		MyDrawDiskWiresPortion(QuaternionMultiply(qX, qY), {0, 0, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
+		MyDrawDiskWiresPortion(QuaternionIdentity(), {0, 1, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
 	}
+
 	rlEnd();
 	rlPopMatrix();
 }
@@ -272,6 +292,7 @@ void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	rlPushMatrix();
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
 	rlTranslatef(center.x, center.y, center.z);
+	
 	//ROTATION
 	Vector3 vect;
 	float angle;
@@ -384,7 +405,6 @@ void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTh
 	float theta = startTheta;
 	Vector3 tmpBottomLeft = CylindricalToCartesian(Cylindrical{1, theta, 0});
 	
-	// Draw Base -----------------------------------------------------------------------------------------
 	for (int i = 0; i < nSegmentsTheta; i++)
 	{
 		Vector3 bottomLeft = tmpBottomLeft;
@@ -423,16 +443,15 @@ void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float st
 	float theta = startTheta;
 	Vector3 tmpBottomLeft = CylindricalToCartesian(Cylindrical{1, theta, 0});
 	
-	// Draw Base -----------------------------------------------------------------------------------------
 	for (int i = 0; i < nSegmentsTheta; i++)
 	{
-		float nextTheta = theta + deltaTheta;
 		Vector3 bottomLeft = tmpBottomLeft;
-		Vector3 bottomRight = CylindricalToCartesian({1, nextTheta, 0});
+		Vector3 bottomRight = CylindricalToCartesian({1,  theta + deltaTheta, 0});
 		
 		rlVertex3f(0, 0, 0);
 		rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
 		rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.z);
+		rlVertex3f(bottomLeft.x, bottomLeft.y, bottomLeft.z);
 
 		theta += deltaTheta;
 		tmpBottomLeft = bottomRight;
