@@ -43,3 +43,7 @@ void MyDrawDiskWires(Quaternion q, Vector3 center, float radius, int nSegmentsTh
 void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
 void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+
+void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color);
+
+void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color);

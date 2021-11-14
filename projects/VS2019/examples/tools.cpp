@@ -79,13 +79,13 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 }
 
 bool InterSegQuad(Segment seg, Quad quad, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegPlane(seg, Plane(quad.referential.j, quad.referential.origin, { 0,0,0 }), interPt, interNormal);
+	bool isIntersec = InterSegPlane(seg, Plane(quad.referential.j, LocalToGlobalPos(quad.referential.origin, quad.referential), { 0,0,0 }), interPt, interNormal);
 
 	return isIntersec && (fabsf(interPt.x) <= quad.extension.x && fabsf(interPt.z) <= quad.extension.z);
 }
 
 bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegPlane(seg, Plane(disk.referential.i, disk.referential.origin, { 0,0,0 }), interPt, interNormal);
+	bool isIntersec = InterSegPlane(seg, Plane(disk.referential.i, LocalToGlobalPos(disk.referential.origin, disk.referential), { 0,0,0 }), interPt, interNormal);
 
 	return isIntersec && (fabsf(interPt.x) <= disk.radius && fabsf(interPt.z) <= disk.radius);
 }

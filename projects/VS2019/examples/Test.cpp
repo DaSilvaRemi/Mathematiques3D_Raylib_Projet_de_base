@@ -28,9 +28,19 @@ void TestDisplaySphere(Quaternion q, Sphere sphere, int nSegmentTheta, int nSegm
 	MyDrawSphereWiresEx2(q, sphere, nSegmentTheta, nSegmentPhi, secondaryColor);
 }
 
+void TestDisplayQuad() {
+	Quaternion qOrient = QuaternionFromAxisAngle({ 0,0, 0 }, PI * .2f);
+	Quad quad = { Referential({0, 0, 0}), {4, 1, 4} };
+	TestDisplayQuad(qOrient, quad);
+}
+
+void TestDisplayQuad(Quaternion q, Quad quad) {
+	TestDisplayQuad(q, quad, BLUE, BLUE);
+}
+
 void TestDisplayQuad(Quaternion q, Quad quad, Color primaryColor, Color secondaryColor) {
-	MyDrawQuad2(q, quad.referential.origin, { quad.extension.x, quad.extension.z }, secondaryColor);
-	MyDrawQuadWire2(q, quad.referential.origin, { quad.extension.x, quad.extension.z }, primaryColor);
+	MyDrawQuad2(q, quad.referential.origin, { quad.extension.x, quad.extension.z }, primaryColor);
+	MyDrawQuadWire2(q, quad.referential.origin, { quad.extension.x, quad.extension.z }, secondaryColor);
 }
 
 void TestDisplayPlane() {
@@ -79,6 +89,22 @@ void TestDisplayDisk(Quaternion q, Disk disk, int nSegmensTheta, Color primaryCo
 	MyDrawDiskWires(q, disk.referential.origin, disk.radius, nSegmensTheta, secondaryColor);
 }
 
+void TestDisplayBox() {
+	Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .2f);
+	Vector3 center = { 0,1,0 };
+	Vector3 size = { 2, 2, 2 };
+	TestDisplayBox(q, center, size);
+}
+
+void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size) {
+	TestDisplayBox(q, center, size, BLUE, WHITE);
+}
+
+void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
+	MyDrawBox(q, center, size, primaryColor);
+	MyDrawBoxWires(q, center, size, secondaryColor);
+}
+
 //TEST INTERSECTION SEGMENT PLANE
 void TestIntersecSegmentPlane(float time) {
 	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * .2f * time);
@@ -93,6 +119,7 @@ void TestIntersecSegmentPlane(float time) {
 	TestDisplayPlane(qOrient, plane);
 
 	if (planeHaveIntersec) {
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
 		DrawSphere(interSectPt, .2f, DARKBROWN);
 	}	
 }
@@ -112,12 +139,51 @@ void TestIntersecSegmentSphere(float time) {
 	TestDisplaySphere(qOrient, sphere);
 
 	if (sphereHaveIntersec) {
-		DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
 		DrawSphere(interSectPt, .2f, DARKBROWN);
 	}
 }
 
-//TEST INTERSECTION SEGMENT CYLINDER
+//TEST INTERSECTION SEGMENT QUAD
+void TestIntersecInterSegmentQuad(float time) {
+
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,1 }, PI * .5f * time);
+	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
+	Quad quad = { Referential({0, 0, 0}), {4, 1, 4} };
+
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool quadHaveIntersec = InterSegQuad(segment, quad, interSectPt, interSecNormal);
+
+	TestDisplaySegment(segment, PURPLE);
+	TestDisplayQuad(qOrient, quad);
+
+	if (quadHaveIntersec) {
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSectPt, .2f, DARKBROWN);
+	}
+}
+
+//TEST INTERSECTION SEGMENT DISK
+void TestIntersecInterSegmentDisk(float time) {
+
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .5f * time);
+	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
+	Disk disk = { Referential({0, 0, 0}), 5 };
+
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool diskHaveIntersec = InterSegDisk(segment, disk, interSectPt, interSecNormal);
+
+	TestDisplaySegment(segment, PURPLE);
+	TestDisplayDisk(qOrient, disk);
+
+	if (diskHaveIntersec) {
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSectPt, .2f, DARKBROWN);
+	}
+	}
+
 void TestIntersecSegmentCylinder(float time) {
 
 	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .5f * time);
@@ -132,8 +198,7 @@ void TestIntersecSegmentCylinder(float time) {
 	TestDisplayCylinder(qOrient, cylinder);
 
 	if (sphereHaveIntersec) {
-		MyDrawSegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
 		DrawSphere(interSectPt, .2f, DARKBROWN);
 	}
 }
@@ -144,12 +209,16 @@ void TestAllDisplay() {
 	TestDisplayPlane();
 	TestDisplayCylinder();
 	TestDisplayDisk();
+	TestDisplayQuad();
+	TestDisplayBox();
 }
 
 void TestAllIntersec() {
 	TestIntersecSegmentPlane();
 	TestIntersecSegmentSphere();
 	TestIntersecSegmentCylinder();
+	TestIntersecInterSegmentDisk();
+	TestIntersecInterSegmentQuad();
 }
 
 void TestAll() {

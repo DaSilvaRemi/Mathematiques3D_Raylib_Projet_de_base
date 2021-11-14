@@ -464,3 +464,68 @@ void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float st
 	rlEnd();
 	rlPopMatrix();
 }
+
+void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
+	rlPushMatrix();
+	rlTranslatef(center.x, center.y, center.z);
+
+	Quaternion qUp = QuaternionIdentity();
+	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
+
+	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
+	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
+	Quaternion qDown = QuaternionMultiply(qX, qY);
+
+	Quad quadUp = { Referential({0, 1, 0}), size };
+	Quad quadLeft = { Referential({0, 1, 0}), size };
+	Quad quadRight = { Referential({0, 1, 0}), size };
+	Quad quadFront = { Referential({0, 1, 0}), size };
+	Quad quadBack = { Referential({0, 1, 0}), size };
+	Quad quadDown = { Referential({0, 0, 0}), size };
+
+	Color primaryColor = BLUE;
+	Color secondaryColor = WHITE;
+
+	MyDrawQuad2(qUp, quadUp.referential.origin, {quadUp.extension.x, quadUp.extension.z}, color);
+	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
+	MyDrawQuad2(qRight, quadRight.referential.origin, {quadRight.extension.x, quadRight.extension.z}, color);
+	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
+	MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
+	MyDrawQuad2(qDown, quadDown.referential.origin, {quadDown.extension.x, quadDown.extension.z}, color);
+
+	rlPopMatrix();
+}
+
+void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color) {
+	rlPushMatrix();
+	rlTranslatef(center.x, center.y, center.z);
+
+	Quaternion qUp = QuaternionIdentity();
+	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
+
+	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
+	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
+	Quaternion qDown = QuaternionMultiply(qX, qY);
+
+	Quad quadUp = { Referential({0, 1, 0}), size };
+	Quad quadLeft = { Referential({0, 1, 0}), size };
+	Quad quadRight = { Referential({0, 1, 0}), size };
+	Quad quadFront = { Referential({0, 1, 0}), size };
+	Quad quadBack = { Referential({0, 1, 0}), size };
+	Quad quadDown = { Referential({0, 0, 0}), size };
+
+	MyDrawQuadWire2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
+	MyDrawQuadWire2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
+	MyDrawQuadWire2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
+	MyDrawQuadWire2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
+	MyDrawQuadWire2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
+	MyDrawQuadWire2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+
+	rlPopMatrix();
+}

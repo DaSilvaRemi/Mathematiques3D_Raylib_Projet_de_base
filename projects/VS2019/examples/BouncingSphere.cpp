@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
-			TestIntersecSegmentCylinder(time);
+			TestDisplayBox();
 		}
 		EndMode3D();
 
