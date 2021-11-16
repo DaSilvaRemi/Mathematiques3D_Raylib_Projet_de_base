@@ -91,3 +91,12 @@ struct Disk {
 	Referential referential;
 	float radius;
 };
+
+struct Capsule {
+	Sphere sphere;
+	Cylinder cylinder;
+};
+
+struct RoundexBox{
+	Quad quad;
+};

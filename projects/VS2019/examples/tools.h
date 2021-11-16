@@ -32,3 +32,5 @@ bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal
 bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& interNormal);
 
 bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal);
+
+bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal);

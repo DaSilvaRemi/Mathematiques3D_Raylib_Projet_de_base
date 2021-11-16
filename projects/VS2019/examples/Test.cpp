@@ -184,10 +184,52 @@ void TestIntersecInterSegmentDisk(float time) {
 	}
 	}
 
-void TestIntersecSegmentCylinder(float time) {
+void TestIntersecSegmentInfiniteCylinder(float time) {
+
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .2f * time);
+	//Quaternion qOrient = QuaternionIdentity();
+	Segment segment = { { -4, 3, -5 } , { 4, 0, 5 } };
+	Cylinder cylinder = { {0, 0, 0}, {0, 3, 0}, 2};
+
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool cylinderHaveIntersec = InterSegmentInfiniteCylinder(segment, { {0, 0, 0}, Vector3RotateByQuaternion({0, 30, 0}, qOrient), 2 }, interSectPt, interSecNormal);
+
+	DrawLine3D(segment.pt1, segment.pt2, RED);
+	//TestDisplaySegment(qOrient, segment, PURPLE);
+	TestDisplayCylinder(qOrient, cylinder);
+
+	if (cylinderHaveIntersec) {
+		//TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
+		//DrawLine3D(segment.pt1, segment.pt2, RED);
+		DrawSphere(interSectPt, .2f, DARKBROWN);
+	}
+}
+
+void TestIntersecParalleleSegmentFiniteCylinder(float time) {
+
+	Quaternion qOrient = QuaternionFromAxisAngle({ 0, 0,0 }, PI * .5f * time);
+	Segment segment = { { -8, 5, 0 } , { 8, 5, 0} };
+	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
+
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool cylinderHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+
+	TestDisplaySegment(qOrient, segment, RED);
+	//DrawLine3D(segment.pt1, segment.pt2, RED);
+	TestDisplayCylinder(qOrient, cylinder);
+
+	if (cylinderHaveIntersec) {
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSectPt, .2f, DARKBROWN);
+	}
+}
+
+void TestIntersecSegmentInfiniteCylinderNoDisk(float time) {
 
 	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .5f * time);
-	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
+	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
 	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
 
 	Vector3 interSectPt = { 0, 0, 0 };
@@ -203,6 +245,71 @@ void TestIntersecSegmentCylinder(float time) {
 	}
 }
 
+void TestIntersecSegmentFiniteCylinderDisk(float time) {
+
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .5f * time);
+	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
+	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
+
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+
+	TestDisplaySegment(segment, PURPLE);
+	TestDisplayCylinder(qOrient, cylinder);
+
+	if (sphereHaveIntersec) {
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSectPt, .2f, DARKBROWN);
+	}
+}
+
+void TestIntersecSegmentDiskNoInfiniteCylinder(float time) {
+
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .5f * time);
+	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
+	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
+
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+
+	TestDisplaySegment(segment, PURPLE);
+	TestDisplayCylinder(qOrient, cylinder);
+
+	if (sphereHaveIntersec) {
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSectPt, .2f, DARKBROWN);
+	}
+}
+
+void TestIntersecSegmentFiniteCylinderNoDisk(float time) {
+
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .5f * time);
+	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
+	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
+
+	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecNormal = { 0, 0, 0 };
+	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+
+	TestDisplaySegment(segment, PURPLE);
+	TestDisplayCylinder(qOrient, cylinder);
+
+	if (sphereHaveIntersec) {
+		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSectPt, .2f, DARKBROWN);
+	}
+}
+
+void TestIntersecSegmentFiniteCylinder(float time) {
+	TestIntersecSegmentFiniteCylinderNoDisk(time);
+	TestIntersecSegmentDiskNoInfiniteCylinder(time);
+	TestIntersecSegmentFiniteCylinderDisk(time);
+	TestIntersecSegmentInfiniteCylinderNoDisk(time);
+	TestIntersecParalleleSegmentFiniteCylinder(time);
+}
+
 void TestAllDisplay() {
 	TestDisplaySegment();
 	TestDisplaySphere();
@@ -216,9 +323,11 @@ void TestAllDisplay() {
 void TestAllIntersec() {
 	TestIntersecSegmentPlane();
 	TestIntersecSegmentSphere();
-	TestIntersecSegmentCylinder();
+	TestIntersecSegmentInfiniteCylinder();
+	TestIntersecSegmentFiniteCylinder();
 	TestIntersecInterSegmentDisk();
 	TestIntersecInterSegmentQuad();
+	TestIntersecSegmentFiniteCylinder();
 }
 
 void TestAll() {

@@ -465,6 +465,14 @@ void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float st
 	rlPopMatrix();
 }
 
+void MyDrawCapsule(Quaternion q, Vector3 center, Color color) {
+	rlPushMatrix();
+	rlTranslatef(center.x, center.y, center.z);
+
+	rlPopMatrix();
+}
+
+
 void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	rlPushMatrix();
 	rlTranslatef(center.x, center.y, center.z);
@@ -485,9 +493,6 @@ void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	Quad quadFront = { Referential({0, 1, 0}), size };
 	Quad quadBack = { Referential({0, 1, 0}), size };
 	Quad quadDown = { Referential({0, 0, 0}), size };
-
-	Color primaryColor = BLUE;
-	Color secondaryColor = WHITE;
 
 	MyDrawQuad2(qUp, quadUp.referential.origin, {quadUp.extension.x, quadUp.extension.z}, color);
 	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);

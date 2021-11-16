@@ -47,7 +47,14 @@ void TestIntersecSegmentPlane(float time = 1);
 void TestIntersecSegmentSphere(float time = 1);
 void TestIntersecInterSegmentQuad(float time = 1);
 void TestIntersecInterSegmentDisk(float time = 1);
-void TestIntersecSegmentCylinder(float time = 1);
+void TestIntersecSegmentInfiniteCylinder(float time = 1);
+
+void TestIntersecParalleleSegmentFiniteCylinder(float time = 1);
+void TestIntersecSegmentInfiniteCylinderNoDisk(float time = 1);
+void TestIntersecSegmentFiniteCylinderDisk(float time = 1);
+void TestIntersecSegmentDiskNoInfiniteCylinder(float time = 1);
+void TestIntersecSegmentFiniteCylinderNoDisk(float time = 1);
+void TestIntersecSegmentFiniteCylinder(float time = 1);
 
 void TestAllDisplay();
 void TestAllIntersec();
