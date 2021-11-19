@@ -89,20 +89,32 @@ void TestDisplayDisk(Quaternion q, Disk disk, int nSegmensTheta, Color primaryCo
 	MyDrawDiskWires(q, disk.referential.origin, disk.radius, nSegmensTheta, secondaryColor);
 }
 
-void TestDisplayBox() {
+void TestDisplayRoundBox() {
 	Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .2f);
 	Vector3 center = { 0,1,0 };
 	Vector3 size = { 2, 2, 2 };
-	TestDisplayBox(q, center, size);
+	TestDisplayRoundBox(q, center, size);
 }
 
-void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size) {
-	TestDisplayBox(q, center, size, BLUE, WHITE);
+void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size) {
+	TestDisplayRoundBox(q, center, size, BLUE, WHITE);
 }
 
-void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
-	MyDrawBox(q, center, size, primaryColor);
-	MyDrawBoxWires(q, center, size, secondaryColor);
+void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
+	MyDrawRoundBox(q, center, size, primaryColor);
+	MyDrawRoundBoxWires(q, center, size, secondaryColor);
+}
+
+void TestDisplayCaps() {
+	Quaternion q = QuaternionIdentity();
+	Referential referential = Referential({ 0,1,0 });
+	Capsule capsule = { referential, 3 };
+	TestDisplayCaps(q, capsule, BLUE, WHITE);
+}
+
+void TestDisplayCaps(Quaternion q, Capsule capsule, Color primaryColor, Color secondaryColor) {
+	MyDrawCapsule(q, capsule, primaryColor);
+	MyDrawCapsuleWires(q, capsule, secondaryColor);
 }
 
 //TEST INTERSECTION SEGMENT PLANE
@@ -317,7 +329,8 @@ void TestAllDisplay() {
 	TestDisplayCylinder();
 	TestDisplayDisk();
 	TestDisplayQuad();
-	TestDisplayBox();
+	TestDisplayCaps();
+	TestDisplayRoundBox();
 }
 
 void TestAllIntersec() {

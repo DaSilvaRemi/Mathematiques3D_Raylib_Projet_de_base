@@ -44,6 +44,10 @@ void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTh
 
 void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
-void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color);
+void MyDrawCapsule(Quaternion q, Capsule capsule, Color color);
 
-void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color);
+void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color);
+
+void MyDrawRoundBox(Quaternion q, Vector3 center, Vector3 size, Color color);
+
+void MyDrawRoundBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color);

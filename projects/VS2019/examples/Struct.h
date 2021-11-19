@@ -93,8 +93,8 @@ struct Disk {
 };
 
 struct Capsule {
-	Sphere sphere;
-	Cylinder cylinder;
+	Referential referential;
+	float radius;
 };
 
 struct RoundexBox{
