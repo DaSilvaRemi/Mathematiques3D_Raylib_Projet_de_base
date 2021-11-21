@@ -183,6 +183,21 @@ bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, V
 
 		interPt = Vector3Add(ptA, Vector3Scale(AB, t));
 		//interNormal = Vector3Normalize({ -AB.z , 0 , AB.x }); //A modif
+
+		/*
+		P(xp, yp)
+		Q(xq, yq)
+		projection(xproj, yproj)
+		interPt(xinter, yinter)
+		Vector3DotProduct(PQ, )
+		*/
+		/*
+		
+		P->Q scalaire projection->interPT = 0
+		if()
+
+		*/
+
 	}
 	if (t >= 0 && t <= 1) return true;
 	return false;

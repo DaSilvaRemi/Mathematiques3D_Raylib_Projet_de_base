@@ -102,7 +102,7 @@ void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size) {
 
 void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
 	MyDrawRoundBox(q, center, size, primaryColor);
-	MyDrawRoundBoxWires(q, center, size, secondaryColor);
+	//MyDrawRoundBoxWires(q, center, size, secondaryColor);
 }
 
 void TestDisplayCaps() {

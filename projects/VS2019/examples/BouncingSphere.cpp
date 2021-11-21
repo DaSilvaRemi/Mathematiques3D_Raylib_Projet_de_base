@@ -125,8 +125,8 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 
-			Quaternion q = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * .1f * time);
-			Vector3 center = { 0,0,0 };
+			Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .1f);
+			Vector3 center = { 0,1,0 };
 			Vector3 size = { 2, 2, 2 };
 			TestDisplayRoundBox(q, center, size);
 		}
