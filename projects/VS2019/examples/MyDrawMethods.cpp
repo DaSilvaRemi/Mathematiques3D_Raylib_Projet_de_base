@@ -148,7 +148,11 @@ void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTh
 	float deltaPhi = (endPhi - startPhi) / nSegmentsPhi;
 	float deltaTheta = (endTheta - startTheta) / nSegmentsTheta;
 
-	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
+	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta);
+	for (size_t i = 0; i < nSegmentsTheta + 1; i++)
+	{
+		vertexBufferTheta.push_back(SphericalToCartesian({ 1, Lerp(startTheta, endTheta, (float)i / nSegmentsTheta), startPhi }));
+	}
 	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,1,0 });
 
 	int numVertex = nSegmentsTheta * nSegmentsPhi * 6;
