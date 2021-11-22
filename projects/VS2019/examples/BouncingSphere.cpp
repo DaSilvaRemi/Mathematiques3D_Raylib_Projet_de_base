@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 			
-			TestIntersecParalleleSegmentFiniteCylinder();
+			MyDrawSpherePortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, color);
 		}
 		EndMode3D();
 
