@@ -125,11 +125,14 @@ int main(int argc, char* argv[])
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
 			
-			Vector3 up = { 0, 4, 0 };
+			/*Vector3 up = {0, 4, 0};
 			Vector3 down = { 0, 0, 0 };
 			Sphere sphereUp = { up, 1 };
 			Quaternion qUp = QuaternionFromAxisAngle({ 0, 0, 1 }, 0.5 * PI);
 			MyDrawSpherePortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);
+			MyDrawSphereWiresPortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);*/
+
+			TestDisplayRoundBox();
 		}
 		EndMode3D();
 

@@ -148,12 +148,9 @@ void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTh
 	float deltaPhi = (endPhi - startPhi) / nSegmentsPhi;
 	float deltaTheta = (endTheta - startTheta) / nSegmentsTheta;
 
-	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta);
-	for (size_t i = 0; i < nSegmentsTheta + 1; i++)
-	{
-		vertexBufferTheta.push_back(SphericalToCartesian({ 1, Lerp(startTheta, endTheta, (float)i / nSegmentsTheta), startPhi }));
-	}
-	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,1,0 });
+	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
+	for (int i = 0; i < nSegmentsTheta + 1; i++)
+		vertexBufferTheta[i] = SphericalToCartesian({ 1,Lerp(startTheta,endTheta,i / (float)nSegmentsTheta),startPhi });
 
 	int numVertex = nSegmentsTheta * nSegmentsPhi * 6;
 	if (rlCheckBufferLimit(numVertex)) rlglDraw();
@@ -168,9 +165,9 @@ void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTh
 	float angle;
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
-	
+
 	rlScalef(sph.rayon, sph.rayon, sph.rayon);
-	
+
 	rlBegin(RL_TRIANGLES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
 
@@ -182,6 +179,7 @@ void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTh
 
 		for (int j = 0; j < nSegmentsTheta; j++)
 		{
+
 			Vector3 topLeft = vertexBufferTheta[j];
 			Vector3 bottomLeft = tmpBottomLeft;
 			Vector3 topRight = vertexBufferTheta[j + 1];
@@ -200,18 +198,12 @@ void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTh
 			vertexBufferTheta[j] = tmpBottomLeft;
 			tmpBottomLeft = bottomRight;
 		}
-		Vector3 topLeft = SphericalToCartesian(Spherical{ 1, endTheta, phi});;
-		Vector3 topRight = vertexBufferTheta[nSegmentsTheta];
-		Vector3 bottomRight = SphericalToCartesian(Spherical{ 1, endTheta, phi + deltaPhi});
 
-		rlVertex3f(topRight.x, topRight.y, topRight.z);
-		rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
-		rlVertex3f(bottomRight.x, bottomRight.y, bottomRight.z);
-		
-		vertexBufferTheta[vertexBufferTheta.size() - 1] = vertexBufferTheta[0];
+		vertexBufferTheta[vertexBufferTheta.size() - 1] = SphericalToCartesian(Spherical{ 1, theta + deltaTheta, phi + deltaPhi });
+
 		phi += deltaPhi;
 	}
-	
+
 	rlEnd();
 	rlPopMatrix();
 
@@ -224,6 +216,8 @@ void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float 
 	float deltaTheta = (endTheta - startTheta) / nSegmentsTheta;
 	
 	std::vector<Vector3> vertexBufferTheta(nSegmentsTheta + 1);
+	for (size_t i = 0; i < nSegmentsTheta + 1; i++)
+		vertexBufferTheta[i] = SphericalToCartesian({ 1,Lerp(startTheta,endTheta,i / (float)nSegmentsTheta),startPhi });
 	std::fill(vertexBufferTheta.begin(), vertexBufferTheta.end(), Vector3{ 0,1,0 });
 
 	int numVertex = nSegmentsTheta * nSegmentsPhi * 4;
@@ -252,9 +246,12 @@ void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float 
 
 		for (int j = 0; j < nSegmentsTheta; j++)
 		{
-			Vector3 topLeft = vertexBufferTheta[j];
+			Vector3 topLeft = SphericalToCartesian(Spherical{ 1, theta , phi });// vertexBufferTheta[j];
+			Vector3 bottomLeft = SphericalToCartesian(Spherical{ 1, theta , phi + deltaPhi });//tmpBottomLeft;
+			Vector3 topRight = SphericalToCartesian(Spherical{ 1, theta + deltaTheta, phi });//vertexBufferTheta[j + 1];
+			/*Vector3 topLeft = vertexBufferTheta[j];
 			Vector3 bottomLeft = SphericalToCartesian(Spherical{ 1, theta, phi + deltaPhi });
-			Vector3 topRight = vertexBufferTheta[j + 1];
+			Vector3 topRight = vertexBufferTheta[j + 1];*/
 
 			rlVertex3f(topLeft.x, topLeft.y, topLeft.z);
 			rlVertex3f(topRight.x, topRight.y, topRight.z);
@@ -266,7 +263,8 @@ void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float 
 
 			vertexBufferTheta[j] = bottomLeft;
 		}
-		Vector3 topRight = vertexBufferTheta[nSegmentsTheta];
+		Vector3 topRight = SphericalToCartesian(Spherical{ 1, theta + deltaTheta, phi });//vertexBufferTheta[j + 1];
+		//Vector3 topRight = vertexBufferTheta[nSegmentsTheta];
 		Vector3 bottomRight = SphericalToCartesian(Spherical{ 1, endTheta, phi + deltaPhi});
 
 		rlVertex3f(topRight.x, topRight.y, topRight.z);
@@ -314,7 +312,7 @@ void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 	float angle;
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
-	rlScalef(size.x, size.y, center.y);
+	//rlScalef(size.x, size.y, center.y);
 
 	rlBegin(RL_TRIANGLES);
 	//
@@ -568,80 +566,80 @@ void MyDrawRoundBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
 	Quaternion qDown = QuaternionMultiply(qX, qY);
 
-	Referential referentialQuadUp = Referential({ -0.6f, 1.25f, 0.47f });
-	Referential referentialQuadFront = Referential({ -0.3f, 0.4f, 0.25f });
-	Referential referentialQuadBack = Referential({ -0.3f, 1.0f, 0.25f });
-	Referential referentialQuadLeft = Referential({ -0.65f, 0.60f, 1.25f });
-	Referential referentialQuadRight = Referential({ -0.3f, 0.45f, 0.25f });
-	
-	Referential referentialQuadDown = Referential({ -0.25f, -0.75f, 0.75 });
+	Referential referentialQuadUp = Referential({ -0.5f, 1.5f, 0.47f });
+	Referential referentialQuadFront = Referential({ 0.1f, 0.7f, 0.5f });
+	Referential referentialQuadBack = Referential({ -1.3f, 0.75f, 0.4f });
+	Referential referentialQuadLeft = Referential({ -0.55f, 0.60f, 1.25f });
+	Referential referentialQuadRight = Referential({ -0.6f, 0.7f, -0.4f });
+	Referential referentialQuadDown = Referential({ -0.6f, 0, 0.5 });
+
 	referentialQuadUp.RotateByQuaternion(qUp);
 	referentialQuadFront.RotateByQuaternion(qFront);
 	referentialQuadBack.RotateByQuaternion(qBack);
 	referentialQuadLeft.RotateByQuaternion(qLeft);
 	referentialQuadDown.RotateByQuaternion(qDown);
 
-	Quad quadUp = { referentialQuadUp, {1, 1, 0.8f} };
-	Quad quadFront = { referentialQuadFront, {1, 1, 0.8f} };
-	Quad quadBack = { referentialQuadBack, {1, 1, 0.8f} };
-	Quad quadLeft = { referentialQuadLeft, {1, 3.5f, 1} };
-	Quad quadRight = { referentialQuadRight, {1, 1, 0.8f} };
-	Quad quadDown = { referentialQuadDown, {1, 1, 0.8f} };
+	Quad quadUp = { referentialQuadUp, {1, 1, 1.2f} };
+	Quad quadFront = { referentialQuadFront, {1, 1, 1} };
+	Quad quadBack = { referentialQuadBack, {1, 1, 1} };
+	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
+	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
+	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
 
-	MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z}, RED);
+	//MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z}, RED);
 	//MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, RED);
 	//MyDrawQuad2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z}, RED);
-	//MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, RED);
+	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, RED);
 	//MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, RED);
 	//MyDrawQuad2(qDown, quadDown.referential.origin, {quadDown.extension.x, quadDown.extension.z}, RED);
 
 	Referential referentiaCapsUp = Referential({ 0, 1.25f, 0 });
 	Referential referentialCapsDown = Referential({ 0, 0, 0 });
-	Referential referentialCapsRight = Referential({ 0, 0.19f, -0.10f });
-	Referential referentialCapsLeft = Referential({ 0, 0.19f, 0.5f });
+	Referential referentialCapsRight = Referential({ 0, 0.19f, -0.25f });
+	Referential referentialCapsLeft = Referential({ 0, 0.19f, 1.2f });
 
 	Capsule capsuleUp = { referentiaCapsUp, 0.25f };
 	Capsule capsuleDown = { referentialCapsDown, 0.25f };
 	Capsule capsuleRight = { referentialCapsRight, 0.25f };
 	Capsule capsuleLeft = { referentialCapsLeft, 0.25f };
 
-	//MyDrawCapsule(qLeft, capsuleUp, color);
-	//MyDrawCapsule(qUp, capsuleRight, color);
-	//MyDrawCapsule(qUp, capsuleLeft, color);
-	//MyDrawCapsule(qLeft, capsuleDown, color);
+	MyDrawCapsule(qLeft, capsuleUp, color);
+	MyDrawCapsule(qUp, capsuleRight, color);
+	MyDrawCapsule(qUp, capsuleLeft, color);
+	MyDrawCapsule(qLeft, capsuleDown, color);
 
-	Referential referentiaCapsUpBack = Referential({ -1.25, 1.25f, 0 });
-	Referential referentialCapsDownBack = Referential({ -1.25, 0, 0 });
-	Referential referentialCapsLeftBack = Referential({ -1.25, 0.15f, -0.05f });
-	Referential referentialCapsRightBack = Referential({ -1.25, 0.15f, 1.15f });
+	Referential referentiaCapsUpBack = Referential({ -1.15, 1.25f, 0 });
+	Referential referentialCapsDownBack = Referential({ -1.15, 0, 0 });
+	Referential referentialCapsLeftBack = Referential({ -1.15, 0.15f, -0.25f });
+	Referential referentialCapsRightBack = Referential({ -1.15, 0.15f, 1.2f });
 
 	Capsule capsuleUpBack = { referentiaCapsUpBack, 0.25f };
 	Capsule capsuleDownBack = { referentialCapsDownBack, 0.25f };
 	Capsule capsuleLeftBack = { referentialCapsLeftBack, 0.25f };
 	Capsule capsuleRightBack = { referentialCapsRightBack, 0.25f };
 
-	//MyDrawCapsule(qLeft, capsuleUpBack, color);
-	//MyDrawCapsule(qLeft, capsuleDownBack, color);
-	//MyDrawCapsule(qUp, capsuleLeftBack, color);
-	//MyDrawCapsule(qUp, capsuleRightBack, color);
+	MyDrawCapsule(qLeft, capsuleUpBack, color);
+	MyDrawCapsule(qLeft, capsuleDownBack, color);
+	MyDrawCapsule(qUp, capsuleLeftBack, color);
+	MyDrawCapsule(qUp, capsuleRightBack, color);
 
-	Referential referentiaCapsUpLeft = Referential({ -1.25f, 1.25f, -0.05f });
-	Referential referentialCapsDownLeft = Referential({ -1.25f, 0, -0.05f });
+	Referential referentiaCapsUpLeft = Referential({ -1.05f, 1.25f, -0.25f });
+	Referential referentialCapsDownLeft = Referential({ -1.05f, 0, -0.25f });
 
 	Capsule capsuleUpRight = { referentiaCapsUpLeft, 0.25f };
 	Capsule capsuleDownRight = { referentialCapsDownLeft, 0.25f };
 
-	//MyDrawCapsule(qFront, capsuleUpRight, color);
-	//MyDrawCapsule(qFront, capsuleDownRight, color);
+	MyDrawCapsule(qFront, capsuleUpRight, color);
+	MyDrawCapsule(qFront, capsuleDownRight, color);
 
-	Referential referentiaCapsUpRight = Referential({ -1.25f, 1.25f, 1.15f });
-	Referential referentialCapsDownRight = Referential({ -1.25f, 0, 1.15f });
+	Referential referentiaCapsUpRight = Referential({ -1.05f, 1.25f, 1.20f });
+	Referential referentialCapsDownRight = Referential({ -1.05f, 0, 1.20f });
 
 	Capsule capsuleUpLeft = { referentiaCapsUpRight, 0.25f };
 	Capsule capsuleDownLeft = { referentialCapsDownRight, 0.25f };
 
-	//MyDrawCapsule(qFront, capsuleUpLeft, color);
-	//MyDrawCapsule(qFront, capsuleDownLeft, color);
+	MyDrawCapsule(qFront, capsuleUpLeft, color);
+	MyDrawCapsule(qFront, capsuleDownLeft, color);
 
 	rlPopMatrix();
 }
