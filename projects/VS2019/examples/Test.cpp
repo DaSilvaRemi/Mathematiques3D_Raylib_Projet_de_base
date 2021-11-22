@@ -69,7 +69,7 @@ void TestDisplayCylinder(Quaternion q, Cylinder cylinder) {
 }
 
 void TestDisplayCylinder(Quaternion q, Cylinder cylinder, int nSegmensTheta, bool drawCaps, Color primaryColor, Color secondaryColor) {
-	MyDrawCylinder(q, cylinder, nSegmensTheta, drawCaps, primaryColor);
+	//MyDrawCylinder(q, cylinder, nSegmensTheta, drawCaps, primaryColor);
 	MyDrawCylinderWires(q, cylinder, nSegmensTheta, drawCaps, secondaryColor);
 }
 
@@ -123,16 +123,16 @@ void TestIntersecSegmentPlane(float time) {
 	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
 	Plane plane = { Vector3RotateByQuaternion({ 0,1,0 }, qOrient), 2.0f };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool planeHaveIntersec = InterSegPlane(segment, plane, interSectPt, interSecNormal);
+	bool planeHaveIntersec = InterSegPlane(segment, plane, interSecPt, interSecNormal);
 
 	TestDisplaySegment(qOrient, segment, PURPLE);
 	TestDisplayPlane(qOrient, plane);
 
 	if (planeHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		TestDisplaySegment(qOrient, { interSecPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}	
 }
 
@@ -143,16 +143,16 @@ void TestIntersecSegmentSphere(float time) {
 	Sphere sphere = { {0, 0, 0}, 2 };
 	
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool sphereHaveIntersec = InterSegSphere(segment, sphere, interSectPt, interSecNormal);
+	bool sphereHaveIntersec = InterSegSphere(segment, sphere, interSecPt, interSecNormal);
 
 	TestDisplaySegment(qOrient, segment, PURPLE);
 	TestDisplaySphere(qOrient, sphere);
 
 	if (sphereHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		TestDisplaySegment(qOrient, { interSecPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 
@@ -163,16 +163,16 @@ void TestIntersecInterSegmentQuad(float time) {
 	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
 	Quad quad = { Referential({0, 0, 0}), {4, 1, 4} };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool quadHaveIntersec = InterSegQuad(segment, quad, interSectPt, interSecNormal);
+	bool quadHaveIntersec = InterSegQuad(segment, quad, interSecPt, interSecNormal);
 
 	TestDisplaySegment(segment, PURPLE);
 	TestDisplayQuad(qOrient, quad);
 
 	if (quadHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		TestDisplaySegment(qOrient, { interSecPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 
@@ -183,58 +183,58 @@ void TestIntersecInterSegmentDisk(float time) {
 	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
 	Disk disk = { Referential({0, 0, 0}), 5 };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool diskHaveIntersec = InterSegDisk(segment, disk, interSectPt, interSecNormal);
+	bool diskHaveIntersec = InterSegDisk(segment, disk, interSecPt, interSecNormal);
 
 	TestDisplaySegment(segment, PURPLE);
 	TestDisplayDisk(qOrient, disk);
 
 	if (diskHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		TestDisplaySegment(qOrient, { interSecPt, interSecNormal }, DARKPURPLE);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 	}
 
 void TestIntersecSegmentInfiniteCylinder(float time) {
 
-	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0,0 }, PI * .2f * time);
+	Quaternion qOrient = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * .2f * time);
 	//Quaternion qOrient = QuaternionIdentity();
 	Segment segment = { { -4, 3, -5 } , { 4, 0, 5 } };
 	Cylinder cylinder = { {0, 0, 0}, {0, 3, 0}, 2};
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool cylinderHaveIntersec = InterSegmentInfiniteCylinder(segment, { {0, 0, 0}, Vector3RotateByQuaternion({0, 30, 0}, qOrient), 2 }, interSectPt, interSecNormal);
+	bool cylinderHaveIntersec = InterSegmentInfiniteCylinder(segment, { {0, 0, 0}, Vector3RotateByQuaternion({0, 30, 0}, qOrient), 2 }, interSecPt, interSecNormal);
 
 	DrawLine3D(segment.pt1, segment.pt2, RED);
-	//TestDisplaySegment(qOrient, segment, PURPLE);
+	TestDisplaySegment(qOrient, segment, PURPLE);
 	TestDisplayCylinder(qOrient, cylinder);
 
 	if (cylinderHaveIntersec) {
-		//TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		//DrawLine3D(segment.pt1, segment.pt2, RED);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		//TestDisplaySegment(qOrient, { Vector3Subtract(interSecNormal, interSecPt), interSecPt }, DARKPURPLE);
+		DrawLine3D(interSecPt, Vector3Add(interSecPt, interSecNormal), RED);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 
 void TestIntersecParalleleSegmentFiniteCylinder(float time) {
 
-	Quaternion qOrient = QuaternionFromAxisAngle({ 0, 0,0 }, PI * .5f * time);
+	Quaternion qOrient = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .5f * time);
 	Segment segment = { { -8, 5, 0 } , { 8, 5, 0} };
 	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool cylinderHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+	bool cylinderHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSecPt, interSecNormal);
 
 	TestDisplaySegment(qOrient, segment, RED);
 	//DrawLine3D(segment.pt1, segment.pt2, RED);
 	TestDisplayCylinder(qOrient, cylinder);
 
 	if (cylinderHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		DrawLine3D(interSecPt, Vector3Add(interSecPt, interSecNormal), RED);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 
@@ -244,16 +244,16 @@ void TestIntersecSegmentInfiniteCylinderNoDisk(float time) {
 	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
 	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSecPt, interSecNormal);
 
 	TestDisplaySegment(segment, PURPLE);
 	TestDisplayCylinder(qOrient, cylinder);
 
 	if (sphereHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		DrawLine3D(interSecPt, Vector3Add(interSecPt, interSecNormal), RED);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 
@@ -263,16 +263,16 @@ void TestIntersecSegmentFiniteCylinderDisk(float time) {
 	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
 	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSecPt, interSecNormal);
 
 	TestDisplaySegment(segment, PURPLE);
 	TestDisplayCylinder(qOrient, cylinder);
 
 	if (sphereHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		DrawLine3D(interSecPt, Vector3Add(interSecPt, interSecNormal), RED);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 
@@ -282,16 +282,16 @@ void TestIntersecSegmentDiskNoInfiniteCylinder(float time) {
 	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
 	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSecPt, interSecNormal);
 
 	TestDisplaySegment(segment, PURPLE);
 	TestDisplayCylinder(qOrient, cylinder);
 
 	if (sphereHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		DrawLine3D(interSecPt, Vector3Add(interSecPt, interSecNormal), RED);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 
@@ -301,16 +301,16 @@ void TestIntersecSegmentFiniteCylinderNoDisk(float time) {
 	Segment segment = { { -4, 0, -5 } , { -4, 0, 5 } };
 	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2 };
 
-	Vector3 interSectPt = { 0, 0, 0 };
+	Vector3 interSecPt = { 0, 0, 0 };
 	Vector3 interSecNormal = { 0, 0, 0 };
-	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSectPt, interSecNormal);
+	bool sphereHaveIntersec = InterSegmentInfiniteCylinder(segment, cylinder, interSecPt, interSecNormal);
 
 	TestDisplaySegment(segment, PURPLE);
 	TestDisplayCylinder(qOrient, cylinder);
 
 	if (sphereHaveIntersec) {
-		TestDisplaySegment(qOrient, { interSectPt, interSecNormal }, DARKPURPLE);
-		DrawSphere(interSectPt, .2f, DARKBROWN);
+		DrawLine3D(interSecPt, Vector3Add(interSecPt, interSecNormal), RED);
+		DrawSphere(interSecPt, .2f, DARKBROWN);
 	}
 }
 

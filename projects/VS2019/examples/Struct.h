@@ -37,9 +37,15 @@ struct Referential {
 
 	Referential(Vector3 pt) {
 		origin = pt;
-		i = { pt.x + 1, pt.y, pt.z };
-		j = { pt.x, pt.y + 1, pt.z };
-		k = { pt.x, pt.y, pt.z + 1 };
+		i = { 1, 0, 0 };
+		j = { 0, 1, 0 };
+		k = { 0, 0, 1 };
+	};
+
+	void RotateByQuaternion(Quaternion q) {
+		i = Vector3RotateByQuaternion(i, q);
+		j = Vector3RotateByQuaternion(j, q);
+		k = Vector3RotateByQuaternion(k, q);
 	}
 };
 

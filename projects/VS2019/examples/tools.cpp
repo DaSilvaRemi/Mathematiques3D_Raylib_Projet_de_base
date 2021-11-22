@@ -158,49 +158,45 @@ bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, V
 	float PAPQsurPQcarre = PAdotPQ / PQcarre;
 	float PAPQcarreeSurPQcaree = PAdotPQcarre / PQcarre;
 
-	// Soit At² + Bt + c = 0
-	// Pour a :
-	float a = ABcarre - 2 * ABPQcarre/ PQcarre + powf(ABPQsurPQcarre, 2) * PQcarre;
-
-	// Pour b
+	// Soit atÂ² + bt + c = 0
+	float a = ABcarre - 2 * ABPQcarre / PQcarre + powf(ABPQsurPQcarre, 2) * PQcarre;
 	float b = 2 * (ABdotPA - ABPQsurPQcarre * PAdotPQ - PAPQsurPQcarre * ABdotPQ + ABPQsurPQcarre * PAPQsurPQcarre * PQcarre);
-
-	// Pour c
 	float c = PAcarre - 2 * PAPQcarreeSurPQcaree + powf(PAPQsurPQcarre, 2) * PQcarre - powf(r, 2);
 
+	// Discriminant
 	float discriminant = powf(b, 2) - 4 * a * c;
+
+	// test sur discriminant
+	if (discriminant < 0) return false;
+
+	// calculs racines
 	float t = 0;
-	if (discriminant < EPSILON) {
-		t = -b / (2 * a);
-		interPt = Vector3Add(ptA, Vector3Scale(AB, t));
-	}
+	float racineDiscriminant = sqrtf(discriminant);
+	float t1 = (-b - racineDiscriminant) / (2 * a);
+	float t2 = (-b + racineDiscriminant) / (2 * a);
+	t = t1 < t2 ? t1 : t2;
 
-	else {
-		float racineDiscriminant = sqrtf(discriminant);
-		float t1 = (-b - racineDiscriminant) / (2 * a);
-		float t2 = (-b + racineDiscriminant) / (2 * a);
-		t = t1 < t2 ? t1 : t2;
+	// test sur t
+	if (t < 0 || t > 1) return false;
 
-		interPt = Vector3Add(ptA, Vector3Scale(AB, t));
-		//interNormal = Vector3Normalize({ -AB.z , 0 , AB.x }); //A modif
+	// interPt
+	interPt = Vector3Add(ptA, Vector3Scale(AB, t));
 
-		/*
-		P(xp, yp)
-		Q(xq, yq)
-		projection(xproj, yproj)
-		interPt(xinter, yinter)
-		Vector3DotProduct(PQ, )
-		*/
-		/*
-		
-		P->Q scalaire projection->interPT = 0
-		if()
+	// Valeurs initiales
+	Vector3 OInter = interPt;//Vector3Subtract(interPt, {0,0,0});
+	Vector3 OP = ptP;//Vector3Subtract(ptP, {0,0,0});
+	Vector3 PInter = Vector3Subtract(interPt, ptP);
+	float PQdotPInter = Vector3DotProduct(PQ, PInter);
 
-		*/
+	// ON = OP + (PQdotPInter / PQcarre) * PQ
+	float PQdotPInterSurPQCarre = PQdotPInter / PQcarre;
+	Vector3 ON = Vector3Add(OP, Vector3Scale(PQ, PQdotPInterSurPQCarre));
+	Vector3 NI = Vector3Subtract(OInter, ON);
 
-	}
-	if (t >= 0 && t <= 1) return true;
-	return false;
+	// set interNormal
+	interNormal = Vector3Normalize(NI);
+
+	return true;
 }
 
 bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal) {
