@@ -69,7 +69,7 @@ void TestDisplayCylinder(Quaternion q, Cylinder cylinder) {
 }
 
 void TestDisplayCylinder(Quaternion q, Cylinder cylinder, int nSegmensTheta, bool drawCaps, Color primaryColor, Color secondaryColor) {
-	//MyDrawCylinder(q, cylinder, nSegmensTheta, drawCaps, primaryColor);
+	MyDrawCylinder(q, cylinder, nSegmensTheta, drawCaps, primaryColor);
 	MyDrawCylinderWires(q, cylinder, nSegmensTheta, drawCaps, secondaryColor);
 }
 
@@ -91,8 +91,8 @@ void TestDisplayDisk(Quaternion q, Disk disk, int nSegmensTheta, Color primaryCo
 
 void TestDisplayRoundBox() {
 	Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .2f);
-	Vector3 center = { 0,1,0 };
-	Vector3 size = { 2, 2, 2 };
+	Vector3 center = { 0, 1, 0 };
+	Vector3 size = { 5, 5, 5 };
 	TestDisplayRoundBox(q, center, size);
 }
 
@@ -102,7 +102,7 @@ void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size) {
 
 void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
 	MyDrawRoundBox(q, center, size, primaryColor);
-	//MyDrawRoundBoxWires(q, center, size, secondaryColor);
+	MyDrawRoundBoxWires(q, center, size, secondaryColor);
 }
 
 void TestDisplayCaps() {
