@@ -51,3 +51,7 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color);
 void MyDrawRoundBox(Quaternion q, Vector3 center, Vector3 size, Color color);
 
 void MyDrawRoundBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color);
+
+void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color);
+
+void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color);

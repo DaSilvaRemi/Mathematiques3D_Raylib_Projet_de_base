@@ -120,8 +120,8 @@ void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size, Color prima
 
 void TestDisplayBox() {
 	Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .2f);
-	Vector3 center = { 0, 1, 0 };
-	Vector3 size = { 5, 5, 5 };
+	Vector3 center = { 0, 5, 0 };
+	Vector3 size = { 1, 1, 1 };
 	TestDisplayBox(q, center, size);
 }
 
@@ -130,8 +130,8 @@ void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size) {
 }
 
 void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
-	MyDrawRoundBox(q, center, size, primaryColor);
-	MyDrawRoundBoxWires(q, center, size, secondaryColor);
+	MyDrawBox(q, center, size, primaryColor);
+	MyDrawBoxWires(q, center, size, secondaryColor);
 }
 
 //TEST INTERSECTION SEGMENT PLANE

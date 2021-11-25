@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 			MyDrawSpherePortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);
 			MyDrawSphereWiresPortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);*/
 
-			TestDisplayRoundBox();
+			TestDisplayBox();
 		}
 		EndMode3D();
 
