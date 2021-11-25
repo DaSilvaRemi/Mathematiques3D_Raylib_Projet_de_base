@@ -746,5 +746,107 @@ void MyDrawRoundBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color
 }
 
 void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
+	rlPushMatrix();
+	rlTranslatef(center.x, center.y, center.z);
 
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
+	rlScalef(size.x, size.y, size.z);
+
+	Quaternion qUp = QuaternionIdentity();
+	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
+	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+	//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
+
+	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
+	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
+	Quaternion qDown = QuaternionMultiply(qX, qY);
+
+	Referential referentialQuadUp = Referential({ -0.6f, 1.4f, 0.47f });
+	Referential referentialQuadFront = Referential({ 0.1f, 0.7f, 0.45f });
+	Referential referentialQuadBack = Referential({ -1.3f, 0.7f, 0.5f });
+	Referential referentialQuadLeft = Referential({ -0.55f, 0.65f, 1.41f });
+	Referential referentialQuadRight = Referential({ -0.6f, 0.65f, -0.45f });
+	Referential referentialQuadDown = Referential({ -0.6f, -0.1f, 0.48f });
+
+	referentialQuadUp.RotateByQuaternion(qUp);
+	referentialQuadFront.RotateByQuaternion(qFront);
+	referentialQuadBack.RotateByQuaternion(qBack);
+	referentialQuadLeft.RotateByQuaternion(qLeft);
+	referentialQuadDown.RotateByQuaternion(qDown);
+
+	Quad quadUp = { referentialQuadUp, {1, 1, 1.2f} };
+	Quad quadFront = { referentialQuadFront, {1, 1, 1.2f} };
+	Quad quadBack = { referentialQuadBack, {1, 1, 1.2f} };
+	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
+	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
+	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
+
+	MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
+	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
+	MyDrawQuad2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
+	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
+	MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
+	MyDrawQuad2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+
+	rlPopMatrix();
+}
+
+void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color) {
+	rlPushMatrix();
+	rlTranslatef(center.x, center.y, center.z);
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
+	rlScalef(size.x, size.y, size.z);
+
+	Quaternion qUp = QuaternionIdentity();
+	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
+	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+	//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
+
+	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
+	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
+	Quaternion qDown = QuaternionMultiply(qX, qY);
+
+	Referential referentialQuadUp = Referential({ -0.6f, 1.4f, 0.47f });
+	Referential referentialQuadFront = Referential({ 0.1f, 0.7f, 0.45f });
+	Referential referentialQuadBack = Referential({ -1.3f, 0.7f, 0.5f });
+	Referential referentialQuadLeft = Referential({ -0.55f, 0.65f, 1.41f });
+	Referential referentialQuadRight = Referential({ -0.6f, 0.65f, -0.45f });
+	Referential referentialQuadDown = Referential({ -0.6f, -0.1f, 0.48f });
+
+	referentialQuadUp.RotateByQuaternion(qUp);
+	referentialQuadFront.RotateByQuaternion(qFront);
+	referentialQuadBack.RotateByQuaternion(qBack);
+	referentialQuadLeft.RotateByQuaternion(qLeft);
+	referentialQuadDown.RotateByQuaternion(qDown);
+
+	Quad quadUp = { referentialQuadUp, {1, 1, 1.2f} };
+	Quad quadFront = { referentialQuadFront, {1, 1, 1.2f} };
+	Quad quadBack = { referentialQuadBack, {1, 1, 1.2f} };
+	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
+	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
+	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
+
+	MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
+	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
+	MyDrawQuad2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
+	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
+	MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
+	MyDrawQuad2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+
+	rlPopMatrix();
 }

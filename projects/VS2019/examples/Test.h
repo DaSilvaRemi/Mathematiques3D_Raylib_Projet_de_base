@@ -37,12 +37,16 @@ void TestDisplayDisk();
 void TestDisplayDisk(Quaternion q, Disk disk);
 void TestDisplayDisk(Quaternion q, Disk disk, int nSegmensTheta, Color primaryColor, Color secondaryColor);
 
+void TestDisplayCaps();
+void TestDisplayCaps(Quaternion q, Capsule capsule, Color primaryColor, Color secondaryColor);
+
+void TestDisplayBox();
+void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size);
+void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor);
+
 void TestDisplayRoundBox();
 void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size);
 void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor);
-
-void TestDisplayCaps();
-void TestDisplayCaps(Quaternion q, Capsule capsule, Color primaryColor, Color secondaryColor);
 
 //Test Intersection
 
