@@ -237,3 +237,7 @@ bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vec
 	
 	return false;
 }
+
+bool IntersecRoundedBox(Segment seg, ) {
+
+}
