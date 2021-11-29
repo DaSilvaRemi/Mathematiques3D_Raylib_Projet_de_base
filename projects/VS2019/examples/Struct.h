@@ -35,12 +35,19 @@ struct Referential {
 	Vector3 j;
 	Vector3 k;
 
+	Referential() {
+		origin = { 0, 0, 0 };
+		i = { 1, 0, 0 };
+		j = { 0, 1, 0 };
+		k = { 0, 0, 1 };
+	}
+
 	Referential(Vector3 pt) {
 		origin = pt;
 		i = { 1, 0, 0 };
 		j = { 0, 1, 0 };
 		k = { 0, 0, 1 };
-	};
+	}
 
 	void RotateByQuaternion(Quaternion q) {
 		i = Vector3RotateByQuaternion(i, q);
@@ -88,9 +95,19 @@ struct Sphere {
 };
 
 struct Cylinder {
+	Referential ref;
 	Vector3 pt1;
 	Vector3 pt2;
 	float radius;
+	float height;
+
+	Cylinder(Referential ref, float radius, float height) {
+		this->ref = ref;
+		this->radius = radius;
+		this->height = height;
+		this->pt1 = ref.origin;
+		this->pt2 = Vector3Add(this->pt1, Vector3Scale(ref.j, height));
+	}
 };
 
 struct Disk {
@@ -104,5 +121,38 @@ struct Capsule {
 };
 
 struct RoundexBox{
-	Quad quad;
+	std::vector<Quad> quads;
+
+	RoundexBox() {
+		Quaternion qUp = QuaternionIdentity();
+		Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+		Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+		Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
+		Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+		//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
+
+		Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
+		Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
+		Quaternion qDown = QuaternionMultiply(qX, qY);
+
+		Referential referentialQuadUp = Referential({ -0.5f, 0.75f, 0 }); // ok
+		Referential referentialQuadFront = Referential({ 0.25f, 0, 0 }); // ok
+		Referential referentialQuadBack = Referential({ -1.25f, 0, 0 }); // ok
+		Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.75f });
+		Referential referentialQuadRight = Referential({ -0.5f, 0, -0.75f }); // ok
+		Referential referentialQuadDown = Referential({ -0.5f, -0.75f, 0 });
+
+		referentialQuadUp.RotateByQuaternion(qUp);
+		referentialQuadFront.RotateByQuaternion(qFront);
+		referentialQuadBack.RotateByQuaternion(qBack);
+		referentialQuadLeft.RotateByQuaternion(qLeft);
+		referentialQuadDown.RotateByQuaternion(qDown);
+
+		quads.push_back({ referentialQuadUp, {1, 1, 1} });
+		quads.push_back({ referentialQuadFront, {1, 1, 1} });
+		quads.push_back({ referentialQuadBack, {1, 1, 1} });
+		quads.push_back({ referentialQuadLeft, {1, 1, 1} });
+		quads.push_back({ referentialQuadRight, {1, 1, 1} });
+		quads.push_back({ referentialQuadDown, {1, 1, 1} });
+	}
 };

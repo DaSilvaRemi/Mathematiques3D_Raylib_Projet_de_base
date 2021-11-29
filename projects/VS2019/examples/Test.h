@@ -57,7 +57,6 @@ void TestIntersecInterSegmentDisk(float time = 1);
 void TestIntersecSegmentInfiniteCylinder(float time = 1);
 
 void TestIntersecParalleleSegmentFiniteCylinder(float time = 1);
-void TestIntersecSegmentInfiniteCylinderNoDisk(float time = 1);
 void TestIntersecSegmentFiniteCylinderDisk(float time = 1);
 void TestIntersecSegmentDiskNoInfiniteCylinder(float time = 1);
 void TestIntersecSegmentFiniteCylinderNoDisk(float time = 1);
