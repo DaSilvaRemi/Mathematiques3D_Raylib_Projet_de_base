@@ -49,6 +49,13 @@ struct Referential {
 		k = { 0, 0, 1 };
 	}
 
+	Referential(Vector3 pt, Quaternion q) {
+		origin = pt;
+		i = { 1, 0, 0 };
+		j = { 0, 1, 0 };
+		k = { 0, 0, 1 };
+	}
+
 	void RotateByQuaternion(Quaternion q) {
 		i = Vector3RotateByQuaternion(i, q);
 		j = Vector3RotateByQuaternion(j, q);
@@ -120,39 +127,8 @@ struct Capsule {
 	float radius;
 };
 
-struct RoundexBox{
-	std::vector<Quad> quads;
-
-	RoundexBox() {
-		Quaternion qUp = QuaternionIdentity();
-		Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
-		Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
-		Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
-		Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
-		//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
-
-		Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
-		Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
-		Quaternion qDown = QuaternionMultiply(qX, qY);
-
-		Referential referentialQuadUp = Referential({ -0.5f, 0.75f, 0 }); // ok
-		Referential referentialQuadFront = Referential({ 0.25f, 0, 0 }); // ok
-		Referential referentialQuadBack = Referential({ -1.25f, 0, 0 }); // ok
-		Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.75f });
-		Referential referentialQuadRight = Referential({ -0.5f, 0, -0.75f }); // ok
-		Referential referentialQuadDown = Referential({ -0.5f, -0.75f, 0 });
-
-		referentialQuadUp.RotateByQuaternion(qUp);
-		referentialQuadFront.RotateByQuaternion(qFront);
-		referentialQuadBack.RotateByQuaternion(qBack);
-		referentialQuadLeft.RotateByQuaternion(qLeft);
-		referentialQuadDown.RotateByQuaternion(qDown);
-
-		quads.push_back({ referentialQuadUp, {1, 1, 1} });
-		quads.push_back({ referentialQuadFront, {1, 1, 1} });
-		quads.push_back({ referentialQuadBack, {1, 1, 1} });
-		quads.push_back({ referentialQuadLeft, {1, 1, 1} });
-		quads.push_back({ referentialQuadRight, {1, 1, 1} });
-		quads.push_back({ referentialQuadDown, {1, 1, 1} });
-	}
+struct RoundedBox{
+	Referential ref;
+	Vector3 extension;
+	float radius;
 };

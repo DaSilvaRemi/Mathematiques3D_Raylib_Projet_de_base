@@ -549,7 +549,7 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color) {
 	rlPopMatrix();
 }
 
-void MyDrawRoundBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
+/*void MyDrawRoundBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	rlPushMatrix();
 	rlTranslatef(center.x, center.y, center.z);
 
@@ -648,11 +648,11 @@ void MyDrawRoundBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	MyDrawCapsule(qFront, capsuleDownLeft, DARKBLUE);
 
 	rlPopMatrix();
-}
+}*/
 
-void MyDrawRoundBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color) {
+void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	rlPushMatrix();
-	rlTranslatef(center.x, center.y, center.z);
+	rlTranslatef(roundexBox.ref.origin.x, roundexBox.ref.origin.y, roundexBox.ref.origin.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -660,7 +660,108 @@ void MyDrawRoundBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(size.x, size.y, size.z);
+	rlScalef(roundexBox.extension.x, roundexBox.extension.y, roundexBox.extension.z);
+
+	Quaternion qUp = QuaternionIdentity();
+	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
+	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+	//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
+
+	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
+	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
+	Quaternion qDown = QuaternionMultiply(qX, qY);
+
+	Referential referentialQuadUp = Referential({ -0.5f, 0.75f, 0 }); // ok
+	Referential referentialQuadFront = Referential({ 0.25f, 0, 0 }); // ok
+	Referential referentialQuadBack = Referential({ -1.25f, 0, 0 }); // ok
+	Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.75f });
+	Referential referentialQuadRight = Referential({ -0.5f, 0, -0.75f }); // ok
+	Referential referentialQuadDown = Referential({ -0.5f, -0.75f, 0 });
+
+	referentialQuadUp.RotateByQuaternion(qUp);
+	referentialQuadFront.RotateByQuaternion(qFront);
+	referentialQuadBack.RotateByQuaternion(qBack);
+	referentialQuadLeft.RotateByQuaternion(qLeft);
+	referentialQuadDown.RotateByQuaternion(qDown);
+
+	Quad quadUp = { referentialQuadUp, {1, 1, 1} };
+	Quad quadFront = { referentialQuadFront, {1, 1, 1} };
+	Quad quadBack = { referentialQuadBack, {1, 1, 1} };
+	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
+	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
+	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
+
+	MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
+	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
+	MyDrawQuad2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
+	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
+	MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
+	MyDrawQuad2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+
+	Referential referentiaCapsUp = Referential({ 0, 0.5f, -0.5f });
+	Referential referentialCapsDown = Referential({ 0, -0.5f, -0.5f });
+	Referential referentialCapsRight = Referential({ 0, -0.5f, -0.5f });
+	Referential referentialCapsLeft = Referential({ 0, -0.5f, 0.5f });
+
+	Capsule capsuleUp = { referentiaCapsUp, 0.25f };
+	Capsule capsuleDown = { referentialCapsDown, 0.25f };
+	Capsule capsuleRight = { referentialCapsRight, 0.25f };
+	Capsule capsuleLeft = { referentialCapsLeft, 0.25f };
+
+	MyDrawCapsule(qLeft, capsuleUp, DARKBLUE);
+	MyDrawCapsule(qUp, capsuleRight, DARKBLUE);
+	MyDrawCapsule(qUp, capsuleLeft, DARKBLUE);
+	MyDrawCapsule(qLeft, capsuleDown, DARKBLUE);
+
+	Referential referentiaCapsUpBack = Referential({ -1, 0.5f, -0.5f });
+	Referential referentialCapsDownBack = Referential({ -1, -0.5f, -0.5f });
+	Referential referentialCapsLeftBack = Referential({ -1, -0.5f, -0.5f });
+	Referential referentialCapsRightBack = Referential({ -1, -0.5f, 0.5f });
+
+	Capsule capsuleUpBack = { referentiaCapsUpBack, 0.25f };
+	Capsule capsuleDownBack = { referentialCapsDownBack, 0.25f };
+	Capsule capsuleLeftBack = { referentialCapsLeftBack, 0.25f };
+	Capsule capsuleRightBack = { referentialCapsRightBack, 0.25f };
+
+	MyDrawCapsule(qLeft, capsuleUpBack, DARKBLUE);
+	MyDrawCapsule(qLeft, capsuleDownBack, DARKBLUE);
+	MyDrawCapsule(qUp, capsuleLeftBack, DARKBLUE);
+	MyDrawCapsule(qUp, capsuleRightBack, DARKBLUE);
+
+	Referential referentiaCapsUpLeft = Referential({ -1, 0.5f, -0.5f });
+	Referential referentialCapsDownLeft = Referential({ -1, -0.5f, -0.5f });
+
+	Capsule capsuleUpRight = { referentiaCapsUpLeft, 0.25f };
+	Capsule capsuleDownRight = { referentialCapsDownLeft, 0.25f };
+
+	MyDrawCapsule(qFront, capsuleUpRight, DARKBLUE);
+	MyDrawCapsule(qFront, capsuleDownRight, DARKBLUE);
+
+	Referential referentiaCapsUpRight = Referential({ -1, 0.5f, 0.5f });
+	Referential referentialCapsDownRight = Referential({ -1, -0.5f, 0.5f });
+
+	Capsule capsuleUpLeft = { referentiaCapsUpRight, 0.25f };
+	Capsule capsuleDownLeft = { referentialCapsDownRight, 0.25f };
+
+	MyDrawCapsule(qFront, capsuleUpLeft, DARKBLUE);
+	MyDrawCapsule(qFront, capsuleDownLeft, DARKBLUE);
+
+	rlPopMatrix();
+}
+
+void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
+	rlPushMatrix();
+	rlTranslatef(roundexBox.ref.origin.x, roundexBox.ref.origin.y, roundexBox.ref.origin.z);
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
+	rlScalef(roundexBox.extension.x, roundexBox.extension.y, roundexBox.extension.z);
 
 	Quaternion qUp = QuaternionIdentity();
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);

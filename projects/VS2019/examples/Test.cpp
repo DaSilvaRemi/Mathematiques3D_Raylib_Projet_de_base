@@ -110,13 +110,13 @@ void TestDisplayRoundBox() {
 	TestDisplayRoundBox(q, center, size);
 }
 
-void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size) {
-	TestDisplayRoundBox(q, center, size, BLUE, WHITE);
+void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox, Vector3 size) {
+	TestDisplayRoundBox(q, roundedBox, BLUE, WHITE);
 }
 
-void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
-	MyDrawRoundBox(q, center, size, primaryColor);
-	//MyDrawRoundBoxWires(q, center, size, secondaryColor);
+void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox, Color primaryColor, Color secondaryColor) {
+	MyDrawRoundBox(q, roundedBox, primaryColor);
+	MyDrawRoundBoxWires(q, roundedBox, secondaryColor);
 }
 
 

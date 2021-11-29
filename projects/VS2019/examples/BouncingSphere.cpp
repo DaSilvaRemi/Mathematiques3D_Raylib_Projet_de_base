@@ -54,7 +54,7 @@ void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 	Vector2 mouseVect = Vector2Subtract(mousePos, prevMousePos);
 	prevMousePos = mousePos;
 
-	Spherical sphDelta = { -GetMouseWheelMove() * sphSpeed.rho * deltaTime,
+	Spherical sphDelta = { -GetMouseWheelMove() * sphSpeed.rho * deltaTime * 10,
 	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.x * sphSpeed.theta * deltaTime  * - 1 : 0,
 	IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ? mouseVect.y * sphSpeed.phi * deltaTime * -1 : 0 };
 
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 			MyDrawSpherePortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);
 			MyDrawSphereWiresPortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);*/
 
-			TestIntersecParalleleSegmentFiniteCylinder();
+			TestDisplayCylinder();
 		}
 		EndMode3D();
 
