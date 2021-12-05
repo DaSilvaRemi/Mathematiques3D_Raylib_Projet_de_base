@@ -39,4 +39,6 @@ bool InterSegmentCapsule(Segment seg, Capsule cyl, Vector3& interPt, Vector3& in
 
 bool IntersecRoundedBox(Segment seg, RoundedBox roundedBox, Vector3& interPt, Vector3& interNormal);
 
+bool IntersecBox(Segment seg, Box roundedBox, Vector3& interPt, Vector3& interNormal);
+
 float random_float(float a, float b);

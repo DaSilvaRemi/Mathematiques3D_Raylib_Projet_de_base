@@ -120,6 +120,9 @@ int main(int argc, char* argv[])
 		quaternions.push_back(qRandom);
 	}
 
+	Vector3 omega = { 0, 4, 0 };
+	Vector3 vitesse = { 0, -1, 0 };
+
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
@@ -142,14 +145,17 @@ int main(int argc, char* argv[])
 		BeginMode3D(camera);
 		{
 
-			Quaternion q = QuaternionFromAxisAngle({0, 0, 0}, PI * .2f);
+			Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
+			Quaternion q = QuaternionIdentity();
 
-			Vector3 up = {0, 4, 0};
-			Vector3 down = { 0, 0, 0 };
-			Sphere sphere = { up, 1 };
+			Sphere sphere = { omega, 1 };
 			
-			MyDrawSphereEx2(q, sphere, 25, 25, BLUE);
-			MyDrawSphereWiresEx2(q, sphere, 25, 25, WHITE);
+			MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
+			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, WHITE);
+
+
+			Segment seg = { omega, Vector3Add(omega, vitesse) };
+			MyDrawSegment(q, seg, RED);
 
 			Quad quad = { Referential({0, 0, 0}), {50, 1, 50} };
 			MyDrawQuad2(q, quad, DARKGREEN);
@@ -178,12 +184,58 @@ int main(int argc, char* argv[])
 			MyDrawBoxWires(qFront, boxFront, WHITE);
 
 
+			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
+
+			seg = { nextOmega, Vector3Add(nextOmega, vitesse) };
+
 			for (int i = 0; i < roundedBoxes.size(); i++) {
 				MyDrawRoundBox(quaternions.at(i), roundedBoxes.at(i), GREEN);
 				MyDrawRoundBoxWires(quaternions.at(i), roundedBoxes.at(i), WHITE);
+
+				Vector3 interPt;
+				Vector3 interNormal;
+				bool isIntersec = IntersecRoundedBox(seg, roundedBoxes.at(i), interPt, interNormal);
+				
+				if (isIntersec) {
+					vitesse = Vector3Reflect(vitesse, interNormal);
+				}
 			}
 
-			
+			Vector3 interPt;
+			Vector3 interNormal;
+			bool isIntersec = InterSegQuad(seg, quad, interPt, interNormal);
+
+			if (isIntersec) {
+				vitesse = Vector3Reflect(vitesse, interNormal);
+			}
+
+			isIntersec = IntersecBox(seg, boxBack, interPt, interNormal);
+
+			if (isIntersec) {
+				vitesse = Vector3Reflect(vitesse, interNormal);
+			}
+
+			isIntersec = IntersecBox(seg, boxLeft, interPt, interNormal);
+
+			if (isIntersec) {
+				vitesse = Vector3Reflect(vitesse, interNormal);
+			}
+
+			isIntersec = IntersecBox(seg, boxRight, interPt, interNormal);
+
+			if (isIntersec) {
+				vitesse = Vector3Reflect(vitesse, interNormal);
+			}
+
+			isIntersec = IntersecBox(seg, boxFront, interPt, interNormal);
+
+			if (isIntersec) {
+				vitesse = Vector3Reflect(vitesse, interNormal);
+			}
+
+			nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
+			omega = nextOmega;
+
 			/*RoundedBox roundedBox = {Referential({0, 0, 0}), {2, 2, 2}, 0.25f};
 			Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
 			MyDrawRoundBox(q, roundedBox, BLUE);
