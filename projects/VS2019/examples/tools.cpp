@@ -542,6 +542,12 @@ bool IntersecBox(Segment seg, Box roundedBox, Vector3& interPt, Vector3& interNo
 	Referential referentialQuadRight = Referential({ -0.5f, 0, -0.5f });
 	Referential referentialQuadDown = Referential({ -0.5f, -0.5f, 0 });
 
+	referentialQuadUp = Vector3Add(referentialQuadUp.origin, roundedBox.ref.origin);
+	referentialQuadFront = Vector3Add(referentialQuadFront.origin, roundedBox.ref.origin);
+	referentialQuadBack = Vector3Add(referentialQuadBack.origin, roundedBox.ref.origin);
+	referentialQuadLeft = Vector3Add(referentialQuadLeft.origin, roundedBox.ref.origin);
+	referentialQuadDown = Vector3Add(referentialQuadDown.origin, roundedBox.ref.origin);
+
 	referentialQuadUp.RotateByQuaternion(qUp);
 	referentialQuadFront.RotateByQuaternion(qFront);
 	referentialQuadBack.RotateByQuaternion(qBack);
