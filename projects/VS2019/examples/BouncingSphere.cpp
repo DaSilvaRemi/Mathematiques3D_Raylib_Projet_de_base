@@ -233,6 +233,8 @@ int main(int argc, char* argv[])
 				vitesse = Vector3Reflect(vitesse, interNormal);
 			}
 
+			vitesse.y -= 1 * deltaTime;
+
 			nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			omega = nextOmega;
 
