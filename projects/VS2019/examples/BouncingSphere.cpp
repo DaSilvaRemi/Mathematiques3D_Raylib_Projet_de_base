@@ -96,6 +96,30 @@ int main(int argc, char* argv[])
 	Cylindrical cyl = CartesianToCylindrical(pos);
 	cyl = cyl + cyl;*/
 
+	time_t t = 0;
+	time(&t);
+	srand(t);
+
+	std::vector<RoundedBox> roundedBoxes;
+	std::vector<Quaternion> quaternions;
+
+	for (int i = 0; i < 5; i++) {
+		Vector3 randomVect = { i + 10, random_float(1, 3), i + 10 };
+		float randomAngle = random_float(0.1f, 0.5f);
+		Quaternion qRandom = QuaternionFromAxisAngle(randomVect, PI * randomAngle);
+
+		randomVect = { random_float(-20, 20) , 3 , random_float(-20, 20) };
+		Referential randomRef = Referential(randomVect);
+		randomRef.RotateByQuaternion(qRandom);
+
+
+		float randomSize = random_float(1, 3);
+		RoundedBox randomRoundedBox = { randomRef, {randomSize, randomSize, randomSize}, 0.25f };
+
+		roundedBoxes.push_back(randomRoundedBox);
+		quaternions.push_back(qRandom);
+	}
+
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
@@ -117,6 +141,63 @@ int main(int argc, char* argv[])
 
 		BeginMode3D(camera);
 		{
+
+			Quaternion q = QuaternionFromAxisAngle({0, 0, 0}, PI * .2f);
+
+			Vector3 up = {0, 4, 0};
+			Vector3 down = { 0, 0, 0 };
+			Sphere sphere = { up, 1 };
+			
+			MyDrawSphereEx2(q, sphere, 25, 25, BLUE);
+			MyDrawSphereWiresEx2(q, sphere, 25, 25, WHITE);
+
+			Quad quad = { Referential({0, 0, 0}), {50, 1, 50} };
+			MyDrawQuad2(q, quad, DARKGREEN);
+			MyDrawQuadWire2(q, quad, WHITE);
+
+			Vector3 size = { 50, 15, 1.5f };
+			Box boxBack = { Referential({ 25, 7, 25}), size };
+			Box boxLeft = { Referential({ 25, 7, -25 }), size };
+			Box boxRight = { Referential({ -25, 7, -25 }), size };
+			Box boxFront = { Referential({ 25, 7, -25 }), size };		
+
+			Quaternion qFront = QuaternionIdentity();
+			Quaternion qLeft = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * 0.5f);
+			Quaternion qRight = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * -0.5f);
+
+			MyDrawBox(qFront, boxBack, GRAY);
+			MyDrawBoxWires(qFront, boxBack, WHITE);
+
+			MyDrawBox(qLeft, boxLeft, GRAY);
+			MyDrawBoxWires(qLeft, boxLeft, WHITE);
+
+			MyDrawBox(qLeft, boxRight, GRAY);
+			MyDrawBoxWires(qLeft, boxRight, WHITE);
+
+			MyDrawBox(qFront, boxFront, GRAY);
+			MyDrawBoxWires(qFront, boxFront, WHITE);
+
+
+			for (int i = 0; i < roundedBoxes.size(); i++) {
+				MyDrawRoundBox(quaternions.at(i), roundedBoxes.at(i), GREEN);
+				MyDrawRoundBoxWires(quaternions.at(i), roundedBoxes.at(i), WHITE);
+			}
+
+			
+			/*RoundedBox roundedBox = {Referential({0, 0, 0}), {2, 2, 2}, 0.25f};
+			Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
+			MyDrawRoundBox(q, roundedBox, BLUE);
+			MyDrawRoundBoxWires(q, roundedBox, WHITE);
+			MyDrawSegment(q, segment, RED);
+
+			Vector3 interPt;
+			Vector3 interNormal;
+			bool isIntersecRoundBox = IntersecRoundedBox(segment, roundedBox, interPt, interNormal);
+
+			if (isIntersecRoundBox) {
+				DrawLine3D(interPt, interNormal, BLUE);
+				DrawSphere(interPt, .2f, DARKBROWN);
+			}*/
 			//
 			//3D REFERENTIAL
 			DrawGrid(20, 1.0f);        // Draw a grid
@@ -124,15 +205,8 @@ int main(int argc, char* argv[])
 			DrawSphere({ 10,0,0 }, .2f, RED);
 			DrawSphere({ 0,10,0 }, .2f, GREEN);
 			DrawSphere({ 0,0,10 }, .2f, BLUE);
-			
-			/*Vector3 up = {0, 4, 0};
-			Vector3 down = { 0, 0, 0 };
-			Sphere sphereUp = { up, 1 };
-			Quaternion qUp = QuaternionFromAxisAngle({ 0, 0, 1 }, 0.5 * PI);
-			MyDrawSpherePortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);
-			MyDrawSphereWiresPortion(qUp, sphereUp, 0, PI, 0, PI, 30, 30, BLUE);*/
 
-			TestDisplayCylinder();
+			//TestDisplayCylinder();
 		}
 		EndMode3D();
 

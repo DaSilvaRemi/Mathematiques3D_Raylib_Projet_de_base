@@ -24,9 +24,9 @@ void MyDrawSphereEx2(Quaternion q, Sphere sph, int nSegmentsTheta, int nSegments
 
 void MyDrawSphereWiresEx2(Quaternion q, Sphere sph, int nSegmentsTheta, int nSegmentsPhi, Color color);
 
-void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color);
+void MyDrawQuad2(Quaternion q, Quad quad, Color color);
 
-void MyDrawQuadWire2(Quaternion q, Vector3 center, Vector2 size, Color color);
+void MyDrawQuadWire2(Quaternion q, Quad quad, Color color);
 
 void MyDrawCylinder(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color);
 
@@ -52,6 +52,6 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color);
 
 void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color);
 
-void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color);
+void MyDrawBox(Quaternion q, Box box, Color color);
 
-void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color);
+void MyDrawBoxWires(Quaternion q, Box box, Color color);

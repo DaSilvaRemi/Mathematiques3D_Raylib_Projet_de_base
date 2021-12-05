@@ -34,3 +34,9 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal);
 
 bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal);
+
+bool InterSegmentCapsule(Segment seg, Capsule cyl, Vector3& interPt, Vector3& interNormal);
+
+bool IntersecRoundedBox(Segment seg, RoundedBox roundedBox, Vector3& interPt, Vector3& interNormal);
+
+float random_float(float a, float b);

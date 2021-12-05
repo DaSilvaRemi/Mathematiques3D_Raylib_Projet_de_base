@@ -288,24 +288,15 @@ void MyDrawSphereWiresEx2(Quaternion q, Sphere sph, int nSegmentsTheta, int nSeg
 }
 
 /* Use rlVertex3f method*/
-void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color) {
-	float zNeg = -size.y / 2;
-	float z = size.y / 2;
-	float xNeg = -size.x / 2;
-	float x = size.x / 2;
-
-	//Center - Hauteur / 2
-	/*Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
-	//Center + Hauteur / 2
-	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
-	//Center - Largeur / 2
-	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
-	//Center + Largeur / 2
-	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x*/
+void MyDrawQuad2(Quaternion q, Quad quad, Color color) {
+	float zNeg = -quad.extension.z / 2;
+	float z = quad.extension.z / 2;
+	float xNeg = -quad.extension.x / 2;
+	float x = quad.extension.x / 2;
 
 	rlPushMatrix();
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
-	rlTranslatef(center.x, center.y, center.z);
+	rlTranslatef(quad.referential.origin.x, quad.referential.origin.y, quad.referential.origin.z);
 	
 	//ROTATION
 	Vector3 vect;
@@ -333,23 +324,15 @@ void MyDrawQuad2(Quaternion q, Vector3 center, Vector2 size, Color color) {
 }
 
 /* Use rlVertex3f method*/
-void MyDrawQuadWire2(Quaternion q, Vector3 center, Vector2 size, Color color) {
-	//Center - Hauteur / 2
-	Vector3 point1 = Vector3SubtractValue(center, size.y / 2); // -z
-	//Center + Hauteur / 2
-	Vector3 point2 = Vector3AddValue(center, size.y / 2); //+z
-	//Center - Largeur / 2
-	Vector3 point3 = Vector3SubtractValue(center, size.x / 2); //-x
-	//Center + Largeur / 2
-	Vector3 point4 = Vector3AddValue(center, size.x / 2); //+x
-	float zNeg = -size.y / 2;
-	float z = size.y / 2;
-	float xNeg = -size.x / 2;
-	float x = size.x / 2;
+void MyDrawQuadWire2(Quaternion q, Quad quad, Color color) {
+	float zNeg = -quad.extension.z / 2;
+	float z = quad.extension.z / 2;
+	float xNeg = -quad.extension.x / 2;
+	float x = quad.extension.x / 2;
 
 	rlPushMatrix();
 	// NOTE: Transformation is applied in inverse order (scale -> translate)
-	rlTranslatef(center.x, center.y, center.z);
+	rlTranslatef(quad.referential.origin.x, quad.referential.origin.y, quad.referential.origin.z);
 	//ROTATION
 	Vector3 vect;
 	float angle;
@@ -549,107 +532,6 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color) {
 	rlPopMatrix();
 }
 
-/*void MyDrawRoundBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
-	rlPushMatrix();
-	rlTranslatef(center.x, center.y, center.z);
-
-	//ROTATION
-	Vector3 vect;
-	float angle;
-	QuaternionToAxisAngle(q, &vect, &angle);
-	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
-
-	rlScalef(size.x, size.y, size.z);
-
-	Quaternion qUp = QuaternionIdentity();
-	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
-	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
-	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
-	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
-	//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
-
-	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
-	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
-	Quaternion qDown = QuaternionMultiply(qX, qY);
-
-	Referential referentialQuadUp = Referential({ -0.5f, 0.75f, 0 }); // ok
-	Referential referentialQuadFront = Referential({ 0.25f, 0, 0 }); // ok
-	Referential referentialQuadBack = Referential({ -1.25f, 0, 0 }); // ok
-	Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.75f });
-	Referential referentialQuadRight = Referential({ -0.5f, 0, -0.75f }); // ok
-	Referential referentialQuadDown = Referential({ -0.5f, -0.75f, 0 });
-
-	referentialQuadUp.RotateByQuaternion(qUp);
-	referentialQuadFront.RotateByQuaternion(qFront);
-	referentialQuadBack.RotateByQuaternion(qBack);
-	referentialQuadLeft.RotateByQuaternion(qLeft);
-	referentialQuadDown.RotateByQuaternion(qDown);
-
-	Quad quadUp = { referentialQuadUp, {1, 1, 1} };
-	Quad quadFront = { referentialQuadFront, {1, 1, 1} };
-	Quad quadBack = { referentialQuadBack, {1, 1, 1} };
-	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
-	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
-	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
-
-	MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z}, color);
-	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
-	MyDrawQuad2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z}, color);
-	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
-	MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
-	MyDrawQuad2(qDown, quadDown.referential.origin, {quadDown.extension.x, quadDown.extension.z}, color);
-
-	Referential referentiaCapsUp = Referential({ 0, 0.5f, -0.5f });
-	Referential referentialCapsDown = Referential({ 0, -0.5f, -0.5f });
-	Referential referentialCapsRight = Referential({ 0, -0.5f, -0.5f });
-	Referential referentialCapsLeft = Referential({ 0, -0.5f, 0.5f });
-
-	Capsule capsuleUp = { referentiaCapsUp, 0.25f };
-	Capsule capsuleDown = { referentialCapsDown, 0.25f };
-	Capsule capsuleRight = { referentialCapsRight, 0.25f };
-	Capsule capsuleLeft = { referentialCapsLeft, 0.25f };
-
-	MyDrawCapsule(qLeft, capsuleUp, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleRight, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleLeft, DARKBLUE);
-	MyDrawCapsule(qLeft, capsuleDown, DARKBLUE);
-
-	Referential referentiaCapsUpBack = Referential({ -1, 0.5f, -0.5f });
-	Referential referentialCapsDownBack = Referential({ -1, -0.5f, -0.5f });
-	Referential referentialCapsLeftBack = Referential({ -1, -0.5f, -0.5f });
-	Referential referentialCapsRightBack = Referential({ -1, -0.5f, 0.5f });
-
-	Capsule capsuleUpBack = { referentiaCapsUpBack, 0.25f };
-	Capsule capsuleDownBack = { referentialCapsDownBack, 0.25f };
-	Capsule capsuleLeftBack = { referentialCapsLeftBack, 0.25f };
-	Capsule capsuleRightBack = { referentialCapsRightBack, 0.25f };
-
-	MyDrawCapsule(qLeft, capsuleUpBack, DARKBLUE);
-	MyDrawCapsule(qLeft, capsuleDownBack, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleLeftBack, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleRightBack, DARKBLUE);
-
-	Referential referentiaCapsUpLeft = Referential({ -1, 0.5f, -0.5f });
-	Referential referentialCapsDownLeft = Referential({ -1, -0.5f, -0.5f });
-
-	Capsule capsuleUpRight = { referentiaCapsUpLeft, 0.25f };
-	Capsule capsuleDownRight = { referentialCapsDownLeft, 0.25f };
-
-	MyDrawCapsule(qFront, capsuleUpRight, DARKBLUE);
-	MyDrawCapsule(qFront, capsuleDownRight, DARKBLUE);
-
-	Referential referentiaCapsUpRight = Referential({ -1, 0.5f, 0.5f });
-	Referential referentialCapsDownRight = Referential({ -1, -0.5f, 0.5f });
-
-	Capsule capsuleUpLeft = { referentiaCapsUpRight, 0.25f };
-	Capsule capsuleDownLeft = { referentialCapsDownRight, 0.25f };
-
-	MyDrawCapsule(qFront, capsuleUpLeft, DARKBLUE);
-	MyDrawCapsule(qFront, capsuleDownLeft, DARKBLUE);
-
-	rlPopMatrix();
-}*/
-
 void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	rlPushMatrix();
 	rlTranslatef(roundexBox.ref.origin.x, roundexBox.ref.origin.y, roundexBox.ref.origin.z);
@@ -693,60 +575,60 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
 	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
 
-	MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
-	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
-	MyDrawQuad2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
-	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
-	MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
-	MyDrawQuad2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+	MyDrawQuad2(qUp, quadUp, color);
+	MyDrawQuad2(qLeft, quadLeft, color);
+	MyDrawQuad2(qRight, quadRight, color);
+	MyDrawQuad2(qFront, quadFront, color);
+	MyDrawQuad2(qBack, quadBack, color);
+	MyDrawQuad2(qDown, quadDown, color);
 
 	Referential referentiaCapsUp = Referential({ 0, 0.5f, -0.5f });
 	Referential referentialCapsDown = Referential({ 0, -0.5f, -0.5f });
 	Referential referentialCapsRight = Referential({ 0, -0.5f, -0.5f });
 	Referential referentialCapsLeft = Referential({ 0, -0.5f, 0.5f });
 
-	Capsule capsuleUp = { referentiaCapsUp, 0.25f };
-	Capsule capsuleDown = { referentialCapsDown, 0.25f };
-	Capsule capsuleRight = { referentialCapsRight, 0.25f };
-	Capsule capsuleLeft = { referentialCapsLeft, 0.25f };
+	Capsule capsuleUp = { referentiaCapsUp, roundexBox.radius};
+	Capsule capsuleDown = { referentialCapsDown, roundexBox.radius };
+	Capsule capsuleRight = { referentialCapsRight, roundexBox.radius };
+	Capsule capsuleLeft = { referentialCapsLeft, roundexBox.radius };
 
-	MyDrawCapsule(qLeft, capsuleUp, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleRight, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleLeft, DARKBLUE);
-	MyDrawCapsule(qLeft, capsuleDown, DARKBLUE);
+	MyDrawCapsule(qLeft, capsuleUp, color);
+	MyDrawCapsule(qUp, capsuleRight, color);
+	MyDrawCapsule(qUp, capsuleLeft, color);
+	MyDrawCapsule(qLeft, capsuleDown, color);
 
 	Referential referentiaCapsUpBack = Referential({ -1, 0.5f, -0.5f });
 	Referential referentialCapsDownBack = Referential({ -1, -0.5f, -0.5f });
 	Referential referentialCapsLeftBack = Referential({ -1, -0.5f, -0.5f });
 	Referential referentialCapsRightBack = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpBack = { referentiaCapsUpBack, 0.25f };
-	Capsule capsuleDownBack = { referentialCapsDownBack, 0.25f };
-	Capsule capsuleLeftBack = { referentialCapsLeftBack, 0.25f };
-	Capsule capsuleRightBack = { referentialCapsRightBack, 0.25f };
+	Capsule capsuleUpBack = { referentiaCapsUpBack, roundexBox.radius };
+	Capsule capsuleDownBack = { referentialCapsDownBack, roundexBox.radius };
+	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundexBox.radius };
+	Capsule capsuleRightBack = { referentialCapsRightBack, roundexBox.radius };
 
-	MyDrawCapsule(qLeft, capsuleUpBack, DARKBLUE);
-	MyDrawCapsule(qLeft, capsuleDownBack, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleLeftBack, DARKBLUE);
-	MyDrawCapsule(qUp, capsuleRightBack, DARKBLUE);
+	MyDrawCapsule(qLeft, capsuleUpBack, color);
+	MyDrawCapsule(qLeft, capsuleDownBack, color);
+	MyDrawCapsule(qUp, capsuleLeftBack, color);
+	MyDrawCapsule(qUp, capsuleRightBack, color);
 
 	Referential referentiaCapsUpLeft = Referential({ -1, 0.5f, -0.5f });
 	Referential referentialCapsDownLeft = Referential({ -1, -0.5f, -0.5f });
 
-	Capsule capsuleUpRight = { referentiaCapsUpLeft, 0.25f };
-	Capsule capsuleDownRight = { referentialCapsDownLeft, 0.25f };
+	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundexBox.radius };
+	Capsule capsuleDownRight = { referentialCapsDownLeft, roundexBox.radius };
 
-	MyDrawCapsule(qFront, capsuleUpRight, DARKBLUE);
-	MyDrawCapsule(qFront, capsuleDownRight, DARKBLUE);
+	MyDrawCapsule(qFront, capsuleUpRight, color);
+	MyDrawCapsule(qFront, capsuleDownRight, color);
 
 	Referential referentiaCapsUpRight = Referential({ -1, 0.5f, 0.5f });
 	Referential referentialCapsDownRight = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpLeft = { referentiaCapsUpRight, 0.25f };
-	Capsule capsuleDownLeft = { referentialCapsDownRight, 0.25f };
+	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundexBox.radius };
+	Capsule capsuleDownLeft = { referentialCapsDownRight, roundexBox.radius };
 
-	MyDrawCapsule(qFront, capsuleUpLeft, DARKBLUE);
-	MyDrawCapsule(qFront, capsuleDownLeft, DARKBLUE);
+	MyDrawCapsule(qFront, capsuleUpLeft, color);
+	MyDrawCapsule(qFront, capsuleDownLeft, color);
 
 	rlPopMatrix();
 }
@@ -774,12 +656,12 @@ void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
 	Quaternion qDown = QuaternionMultiply(qX, qY);
 
-	Referential referentialQuadUp = Referential({ -0.6f, 1.4f, 0.47f });
-	Referential referentialQuadFront = Referential({ 0.1f, 0.7f, 0.45f });
-	Referential referentialQuadBack = Referential({ -1.3f, 0.7f, 0.5f });
-	Referential referentialQuadLeft = Referential({ -0.55f, 0.65f, 1.41f });
-	Referential referentialQuadRight = Referential({ -0.6f, 0.65f, -0.45f });
-	Referential referentialQuadDown = Referential({ -0.6f, -0.1f, 0.48f });
+	Referential referentialQuadUp = Referential({ -0.5f, 0.75f, 0 }); // ok
+	Referential referentialQuadFront = Referential({ 0.25f, 0, 0 }); // ok
+	Referential referentialQuadBack = Referential({ -1.25f, 0, 0 }); // ok
+	Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.75f });
+	Referential referentialQuadRight = Referential({ -0.5f, 0, -0.75f }); // ok
+	Referential referentialQuadDown = Referential({ -0.5f, -0.75f, 0 });
 
 	referentialQuadUp.RotateByQuaternion(qUp);
 	referentialQuadFront.RotateByQuaternion(qFront);
@@ -787,64 +669,64 @@ void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
 	referentialQuadLeft.RotateByQuaternion(qLeft);
 	referentialQuadDown.RotateByQuaternion(qDown);
 
-	Quad quadUp = { referentialQuadUp, {1, 1, 1.2f} };
-	Quad quadFront = { referentialQuadFront, {1, 1, 1.2f} };
-	Quad quadBack = { referentialQuadBack, {1, 1, 1.2f} };
+	Quad quadUp = { referentialQuadUp, {1, 1, 1} };
+	Quad quadFront = { referentialQuadFront, {1, 1, 1} };
+	Quad quadBack = { referentialQuadBack, {1, 1, 1} };
 	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
 	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
 	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
 
-	MyDrawQuadWire2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
-	MyDrawQuadWire2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
-	MyDrawQuadWire2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
-	MyDrawQuadWire2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
-	MyDrawQuadWire2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
-	MyDrawQuadWire2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+	MyDrawQuadWire2(qUp, quadUp, color);
+	MyDrawQuadWire2(qLeft, quadLeft, color);
+	MyDrawQuadWire2(qRight, quadRight, color);
+	MyDrawQuadWire2(qFront, quadFront, color);
+	MyDrawQuadWire2(qBack, quadBack, color);
+	MyDrawQuadWire2(qDown, quadDown, color);
 
-	Referential referentiaCapsUp = Referential({ 0, 1.25f, 0 });
-	Referential referentialCapsDown = Referential({ 0, 0, 0 });
-	Referential referentialCapsRight = Referential({ 0, 0.19f, -0.25f });
-	Referential referentialCapsLeft = Referential({ 0, 0.19f, 1.2f });
+	Referential referentiaCapsUp = Referential({ 0, 0.5f, -0.5f });
+	Referential referentialCapsDown = Referential({ 0, -0.5f, -0.5f });
+	Referential referentialCapsRight = Referential({ 0, -0.5f, -0.5f });
+	Referential referentialCapsLeft = Referential({ 0, -0.5f, 0.5f });
 
-	Capsule capsuleUp = { referentiaCapsUp, 0.25f };
-	Capsule capsuleDown = { referentialCapsDown, 0.25f };
-	Capsule capsuleRight = { referentialCapsRight, 0.25f };
-	Capsule capsuleLeft = { referentialCapsLeft, 0.25f };
+	Capsule capsuleUp = { referentiaCapsUp, roundexBox.radius };
+	Capsule capsuleDown = { referentialCapsDown, roundexBox.radius };
+	Capsule capsuleRight = { referentialCapsRight, roundexBox.radius };
+	Capsule capsuleLeft = { referentialCapsLeft, roundexBox.radius };
 
 	MyDrawCapsuleWires(qLeft, capsuleUp, color);
 	MyDrawCapsuleWires(qUp, capsuleRight, color);
 	MyDrawCapsuleWires(qUp, capsuleLeft, color);
 	MyDrawCapsuleWires(qLeft, capsuleDown, color);
 
-	Referential referentiaCapsUpBack = Referential({ -1.15, 1.25f, 0 });
-	Referential referentialCapsDownBack = Referential({ -1.15, 0, 0 });
-	Referential referentialCapsLeftBack = Referential({ -1.15, 0.15f, -0.25f });
-	Referential referentialCapsRightBack = Referential({ -1.15, 0.15f, 1.2f });
+	Referential referentiaCapsUpBack = Referential({ -1, 0.5f, -0.5f });
+	Referential referentialCapsDownBack = Referential({ -1, -0.5f, -0.5f });
+	Referential referentialCapsLeftBack = Referential({ -1, -0.5f, -0.5f });
+	Referential referentialCapsRightBack = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpBack = { referentiaCapsUpBack, 0.25f };
-	Capsule capsuleDownBack = { referentialCapsDownBack, 0.25f };
-	Capsule capsuleLeftBack = { referentialCapsLeftBack, 0.25f };
-	Capsule capsuleRightBack = { referentialCapsRightBack, 0.25f };
+	Capsule capsuleUpBack = { referentiaCapsUpBack, roundexBox.radius };
+	Capsule capsuleDownBack = { referentialCapsDownBack, roundexBox.radius };
+	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundexBox.radius };
+	Capsule capsuleRightBack = { referentialCapsRightBack, roundexBox.radius };
 
 	MyDrawCapsuleWires(qLeft, capsuleUpBack, color);
 	MyDrawCapsuleWires(qLeft, capsuleDownBack, color);
 	MyDrawCapsuleWires(qUp, capsuleLeftBack, color);
 	MyDrawCapsuleWires(qUp, capsuleRightBack, color);
 
-	Referential referentiaCapsUpLeft = Referential({ -1.05f, 1.25f, -0.25f });
-	Referential referentialCapsDownLeft = Referential({ -1.05f, 0, -0.25f });
+	Referential referentiaCapsUpLeft = Referential({ -1, 0.5f, -0.5f });
+	Referential referentialCapsDownLeft = Referential({ -1, -0.5f, -0.5f });
 
-	Capsule capsuleUpRight = { referentiaCapsUpLeft, 0.25f };
-	Capsule capsuleDownRight = { referentialCapsDownLeft, 0.25f };
+	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundexBox.radius };
+	Capsule capsuleDownRight = { referentialCapsDownLeft, roundexBox.radius };
 
 	MyDrawCapsuleWires(qFront, capsuleUpRight, color);
 	MyDrawCapsuleWires(qFront, capsuleDownRight, color);
 
-	Referential referentiaCapsUpRight = Referential({ -1.05f, 1.25f, 1.20f });
-	Referential referentialCapsDownRight = Referential({ -1.05f, 0, 1.20f });
+	Referential referentiaCapsUpRight = Referential({ -1, 0.5f, 0.5f });
+	Referential referentialCapsDownRight = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpLeft = { referentiaCapsUpRight, 0.25f };
-	Capsule capsuleDownLeft = { referentialCapsDownRight, 0.25f };
+	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundexBox.radius };
+	Capsule capsuleDownLeft = { referentialCapsDownRight, roundexBox.radius };
 
 	MyDrawCapsuleWires(qFront, capsuleUpLeft, color);
 	MyDrawCapsuleWires(qFront, capsuleDownLeft, color);
@@ -852,9 +734,9 @@ void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
 	rlPopMatrix();
 }
 
-void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
+void MyDrawBox(Quaternion q, Box box, Color color) {
 	rlPushMatrix();
-	rlTranslatef(center.x, center.y, center.z);
+	rlTranslatef(box.ref.origin.x, box.ref.origin.y, box.ref.origin.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -862,7 +744,7 @@ void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(size.x, size.y, size.z);
+	rlScalef(box.extension.x, box.extension.y, box.extension.z);
 
 	Quaternion qUp = QuaternionIdentity();
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
@@ -895,19 +777,19 @@ void MyDrawBox(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
 	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
 
-	MyDrawQuad2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
-	MyDrawQuad2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
-	MyDrawQuad2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
-	MyDrawQuad2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
-	MyDrawQuad2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
-	MyDrawQuad2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+	MyDrawQuad2(qUp, quadUp, color);
+	MyDrawQuad2(qLeft, quadLeft, color);
+	MyDrawQuad2(qRight, quadRight, color);
+	MyDrawQuad2(qFront, quadFront, color);
+	MyDrawQuad2(qBack, quadBack, color);
+	MyDrawQuad2(qDown, quadDown, color);
 
 	rlPopMatrix();
 }
 
-void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color) {
+void MyDrawBoxWires(Quaternion q, Box box, Color color) {
 	rlPushMatrix();
-	rlTranslatef(center.x, center.y, center.z);
+	rlTranslatef(box.ref.origin.x, box.ref.origin.y, box.ref.origin.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -915,7 +797,7 @@ void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(size.x, size.y, size.z);
+	rlScalef(box.extension.x, box.extension.y, box.extension.z);
 
 	Quaternion qUp = QuaternionIdentity();
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
@@ -948,12 +830,12 @@ void MyDrawBoxWires(Quaternion q, Vector3 center, Vector3 size, Color color) {
 	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
 	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
 
-	MyDrawQuadWire2(qUp, quadUp.referential.origin, { quadUp.extension.x, quadUp.extension.z }, color);
-	MyDrawQuadWire2(qLeft, quadLeft.referential.origin, { quadLeft.extension.x, quadLeft.extension.z }, color);
-	MyDrawQuadWire2(qRight, quadRight.referential.origin, { quadRight.extension.x, quadRight.extension.z }, color);
-	MyDrawQuadWire2(qFront, quadFront.referential.origin, { quadFront.extension.x, quadFront.extension.z }, color);
-	MyDrawQuadWire2(qBack, quadBack.referential.origin, { quadBack.extension.x, quadBack.extension.z }, color);
-	MyDrawQuadWire2(qDown, quadDown.referential.origin, { quadDown.extension.x, quadDown.extension.z }, color);
+	MyDrawQuadWire2(qUp, quadUp, color);
+	MyDrawQuadWire2(qLeft, quadLeft, color);
+	MyDrawQuadWire2(qRight, quadRight, color);
+	MyDrawQuadWire2(qFront, quadFront, color);
+	MyDrawQuadWire2(qBack, quadBack, color);
+	MyDrawQuadWire2(qDown, quadDown, color);
 
 	rlPopMatrix();
 }

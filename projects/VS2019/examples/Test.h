@@ -41,12 +41,12 @@ void TestDisplayCaps();
 void TestDisplayCaps(Quaternion q, Capsule capsule, Color primaryColor, Color secondaryColor);
 
 void TestDisplayBox();
-void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size);
-void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor);
+void TestDisplayBox(Quaternion q, Box box);
+void TestDisplayBox(Quaternion q, Box box, Color primaryColor, Color secondaryColor);
 
 void TestDisplayRoundBox();
-void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size);
-void TestDisplayRoundBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor);
+void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox);
+void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox, Color primaryColor, Color secondaryColor);
 
 //Test Intersection
 

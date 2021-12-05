@@ -39,8 +39,8 @@ void TestDisplayQuad(Quaternion q, Quad quad) {
 }
 
 void TestDisplayQuad(Quaternion q, Quad quad, Color primaryColor, Color secondaryColor) {
-	MyDrawQuad2(q, quad.referential.origin, { quad.extension.x, quad.extension.z }, primaryColor);
-	MyDrawQuadWire2(q, quad.referential.origin, { quad.extension.x, quad.extension.z }, secondaryColor);
+	MyDrawQuad2(q, quad, primaryColor);
+	MyDrawQuadWire2(q, quad, secondaryColor);
 }
 
 void TestDisplayPlane() {
@@ -54,8 +54,8 @@ void TestDisplayPlane(Quaternion q, Plane plane) {
 }
 
 void TestDisplayPlane(Quaternion q, Plane plane, Vector2 size, Color primaryColor, Color secondaryColor) {
-	MyDrawQuad2(q, Vector3Scale(plane.normal, plane.d), size, primaryColor);
-	MyDrawQuadWire2(q, Vector3Scale(plane.normal, plane.d), size, secondaryColor);
+	MyDrawQuad2(q, { Referential(Vector3Scale(plane.normal, plane.d)), { size.x, size.y, 1 } }, primaryColor);
+	MyDrawQuadWire2(q, { Referential(Vector3Scale(plane.normal, plane.d)), { size.x, size.y, 1 } }, secondaryColor);
 }
 
 void TestDisplayCylinder() {
@@ -105,12 +105,11 @@ void TestDisplayCaps(Quaternion q, Capsule capsule, Color primaryColor, Color se
 
 void TestDisplayRoundBox() {
 	Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .2f);
-	Vector3 center = { 0, 1, 0 };
-	Vector3 size = { 5, 5, 5 };
-	TestDisplayRoundBox(q, center, size);
+	RoundedBox roundedBox = { Referential({ 0, 0, 0 }), {2, 2, 2}, 0.25f };
+	TestDisplayRoundBox(q, roundedBox);
 }
 
-void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox, Vector3 size) {
+void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox) {
 	TestDisplayRoundBox(q, roundedBox, BLUE, WHITE);
 }
 
@@ -122,18 +121,17 @@ void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox, Color primaryColor
 
 void TestDisplayBox() {
 	Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .2f);
-	Vector3 center = { 0, 5, 0 };
-	Vector3 size = { 2, 2, 2 };
-	TestDisplayBox(q, center, size);
+	Box box = { Referential({ 0, 5, 0 }), { 2, 2, 2 } };
+	TestDisplayBox(q, box);
 }
 
-void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size) {
-	TestDisplayBox(q, center, size, BLUE, WHITE);
+void TestDisplayBox(Quaternion q, Box box) {
+	TestDisplayBox(q, box, BLUE, WHITE);
 }
 
-void TestDisplayBox(Quaternion q, Vector3 center, Vector3 size, Color primaryColor, Color secondaryColor) {
-	MyDrawBox(q, center, size, primaryColor);
-	MyDrawBoxWires(q, center, size, secondaryColor);
+void TestDisplayBox(Quaternion q, Box box, Color primaryColor, Color secondaryColor) {
+	MyDrawBox(q, box, primaryColor);
+	MyDrawBoxWires(q, box, secondaryColor);
 }
 
 //TEST INTERSECTION SEGMENT PLANE

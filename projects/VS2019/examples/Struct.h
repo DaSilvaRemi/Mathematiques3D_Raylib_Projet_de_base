@@ -132,3 +132,8 @@ struct RoundedBox{
 	Vector3 extension;
 	float radius;
 };
+
+struct Box {
+	Referential ref;
+	Vector3 extension;
+};
