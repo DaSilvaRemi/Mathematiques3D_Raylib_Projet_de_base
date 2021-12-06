@@ -34,6 +34,7 @@ struct Referential {
 	Vector3 i;
 	Vector3 j;
 	Vector3 k;
+	Quaternion q;
 
 	Referential() {
 		origin = { 0, 0, 0 };
@@ -77,12 +78,9 @@ struct Plane {
 	Vector3 normal;
 	float d;
 
-	Plane(Vector3 _normal, Vector3 O, Vector3 H) {
-		Plane(_normal, Vector3Subtract(H, O));
-	}
-
-	Plane(Vector3 _normal, Vector3 OH) {
-		Plane(_normal, Vector3DotProduct(OH, normal));
+	Plane(Vector3 _normal, Vector3 pt) {
+		normal = _normal;
+		d = Vector3DotProduct(_normal, pt);
 	}
 
 	Plane(Vector3 _normal, float _d) {
