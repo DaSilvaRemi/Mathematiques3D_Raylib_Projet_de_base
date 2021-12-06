@@ -305,12 +305,12 @@ bool IntersecRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt, Ve
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
 	Quaternion qDown = QuaternionMultiply(qX, qY);
 
-	Referential referentialQuadUp = Referential({ -0.5f, 0.75f, 0 }); // ok
-	Referential referentialQuadFront = Referential({ 0.25f, 0, 0 }); // ok
-	Referential referentialQuadBack = Referential({ -1.25f, 0, 0 }); // ok
-	Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.75f });
-	Referential referentialQuadRight = Referential({ -0.5f, 0, -0.75f }); // ok
-	Referential referentialQuadDown = Referential({ -0.5f, -0.75f, 0 });
+	Referential referentialQuadUp = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, 0.75f, 0 })); // ok
+	Referential referentialQuadFront = Referential(Vector3Add(roundedBox.ref.origin, { 0.25f, 0, 0 })); // ok
+	Referential referentialQuadBack = Referential(Vector3Add(roundedBox.ref.origin, { -1.25f, 0, 0 })); // ok
+	Referential referentialQuadLeft = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, 0, 0.75f }));
+	Referential referentialQuadRight = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, 0, -0.75f })); // ok
+	Referential referentialQuadDown = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, -0.75f, 0 }));
 
 	referentialQuadUp.RotateByQuaternion(qUp);
 	referentialQuadFront.RotateByQuaternion(qFront);
@@ -318,12 +318,12 @@ bool IntersecRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt, Ve
 	referentialQuadLeft.RotateByQuaternion(qLeft);
 	referentialQuadDown.RotateByQuaternion(qDown);
 
-	Quad quadUp = { referentialQuadUp, {1, 1, 1} };
-	Quad quadFront = { referentialQuadFront, {1, 1, 1} };
-	Quad quadBack = { referentialQuadBack, {1, 1, 1} };
-	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
-	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
-	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
+	Quad quadUp = { referentialQuadUp, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadFront = { referentialQuadFront, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadBack = { referentialQuadBack, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadLeft = { referentialQuadLeft, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadRight = { referentialQuadRight, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadDown = { referentialQuadDown, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
 
 	Vector3 tmpInterPt;
 	Vector3 tmpInterNormal;

@@ -144,32 +144,34 @@ int main(int argc, char* argv[])
 
 		BeginMode3D(camera);
 		{
-			Vector3 size = { 5, 5, 5 };
-			RoundedBox boxBack = {Referential({-4, 0, 0}), size,  0.25f };
-			RoundedBox boxFront = { Referential({ 4, 0, 0 }), size, 0.25f };
-			Quaternion qFront = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * 0.5f);
-			Quaternion qBack = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * -0.5f);
-			boxFront.ref.RotateByQuaternion(qFront);
-			boxBack.ref.RotateByQuaternion(qBack);
-			boxFront.ref.q = qFront;
-			boxBack.ref.q = qBack;
+			TestDisplayRoundBox();
+
+			//Vector3 size = {5, 5, 5};
+			//RoundedBox boxBack = {Referential({-4, 0, 0}), size,  0.25f };
+			//RoundedBox boxFront = { Referential({ 4, 0, 0 }), size, 0.25f };
+			//Quaternion qFront = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * 0.5f);
+			//Quaternion qBack = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * -0.5f);
+			//boxFront.ref.RotateByQuaternion(qFront);
+			//boxBack.ref.RotateByQuaternion(qBack);
+			//boxFront.ref.q = qFront;
+			//boxBack.ref.q = qBack;
 
 			//MyDrawRoundBox(qFront, boxBack, BLUE);
 			//MyDrawRoundBoxWires(qFront, boxBack, WHITE);
 
 			//MyDrawRoundBox(qFront, boxFront, BLUE);
-			MyDrawRoundBoxWires(qFront, boxFront, WHITE);
+			//MyDrawRoundBoxWires(qFront, boxFront, WHITE);
 
-			Vector3 nextOmega = { 3.05f, 1, 0 };// Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
+			//Vector3 nextOmega = {3.05f, 1, 0};// Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 
-			Quaternion qTime = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * .2f * time);
+			/*Quaternion qTime = QuaternionFromAxisAngle({0, 0, 1}, PI * .2f * time);
 
 			Sphere sphere = { omega, 1 };
 
 			//MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
-			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, RED);
+			//MyDrawSphereWiresEx2(qTime, sphere, 25, 25, RED);
 
-			Segment seg = {  omega, nextOmega };
+			Segment seg = { {0, 1, 3}, {6, 1, 3} };
 			MyDrawSegment(QuaternionIdentity(), seg, DARKPURPLE);
 
 			Vector3 interPt;
@@ -190,7 +192,7 @@ int main(int argc, char* argv[])
 				Vector3Reflect(vitesse, interNormal);
 				DrawLine3D(interPt, interNormal, BLUE);
 				DrawSphere(interPt, .2f, DARKBROWN);
-			}
+			}*/
 
 			//nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			//omega = nextOmega;

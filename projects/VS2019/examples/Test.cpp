@@ -105,7 +105,7 @@ void TestDisplayCaps(Quaternion q, Capsule capsule, Color primaryColor, Color se
 
 void TestDisplayRoundBox() {
 	Quaternion q = QuaternionFromAxisAngle({ 0, 0, 0 }, PI * .2f);
-	RoundedBox roundedBox = { Referential({ 0, 0, 0 }), {2, 2, 2}, 0.25f };
+	RoundedBox roundedBox = { Referential({ 0, 0, 0 }), {5, 5, 5}, 1 };
 	TestDisplayRoundBox(q, roundedBox);
 }
 
@@ -115,7 +115,7 @@ void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox) {
 
 void TestDisplayRoundBox(Quaternion q, RoundedBox roundedBox, Color primaryColor, Color secondaryColor) {
 	MyDrawRoundBox(q, roundedBox, primaryColor);
-	MyDrawRoundBoxWires(q, roundedBox, secondaryColor);
+	//MyDrawRoundBoxWires(q, roundedBox, secondaryColor);
 }
 
 

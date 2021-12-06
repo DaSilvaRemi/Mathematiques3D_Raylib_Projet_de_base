@@ -532,7 +532,7 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color) {
 	rlPopMatrix();
 }
 
-void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
+/*void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	rlPushMatrix();
 	rlTranslatef(roundexBox.ref.origin.x, roundexBox.ref.origin.y, roundexBox.ref.origin.z);
 
@@ -629,6 +629,112 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 
 	MyDrawCapsule(qFront, capsuleUpLeft, color);
 	MyDrawCapsule(qFront, capsuleDownLeft, color);
+
+	rlPopMatrix();
+}*/
+
+void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
+	rlPushMatrix();
+	//rlTranslatef(roundexBox.ref.origin.x, roundexBox.ref.origin.y, roundexBox.ref.origin.z);
+
+	//ROTATION
+	Vector3 vect;
+	float angle;
+	QuaternionToAxisAngle(q, &vect, &angle);
+	//rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
+
+	//rlScalef(roundexBox.extension.x, roundexBox.extension.y, roundexBox.extension.z);
+
+	Quaternion qUp = QuaternionIdentity();
+	Quaternion qLeft = QuaternionFromAxisAngle(roundexBox.ref.i, PI * 0.5f);
+	Quaternion qRight = QuaternionFromAxisAngle(roundexBox.ref.i, PI * -0.5f);
+	Quaternion qFront = QuaternionFromAxisAngle(roundexBox.ref.k, PI * -0.5f);
+	Quaternion qBack = QuaternionFromAxisAngle(roundexBox.ref.k, PI * 0.5f);
+	//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
+
+	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
+	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
+	Quaternion qDown = QuaternionMultiply(qX, qY);
+
+	Referential referentialQuadUp = Referential(Vector3Add(roundexBox.ref.origin, Vector3Scale(roundexBox.ref.j, roundexBox.extension.y)));
+	Referential referentialQuadFront = Referential(Vector3Add(roundexBox.ref.origin, Vector3Scale(roundexBox.ref.i, roundexBox.extension.x)));
+	Referential referentialQuadBack = Referential(Vector3Add(roundexBox.ref.origin, Vector3Scale(Vector3Negate(roundexBox.ref.i), roundexBox.extension.x)));
+	Referential referentialQuadLeft = Referential(Vector3Add(roundexBox.ref.origin, Vector3Scale(roundexBox.ref.k, roundexBox.extension.z)));
+	Referential referentialQuadRight = Referential(Vector3Add(roundexBox.ref.origin, Vector3Scale(Vector3Negate(roundexBox.ref.k), roundexBox.extension.z)));
+	Referential referentialQuadDown = Referential(Vector3Add(roundexBox.ref.origin, Vector3Scale(Vector3Negate(roundexBox.ref.j), roundexBox.extension.y)));
+
+	referentialQuadUp.RotateByQuaternion(qUp);
+	referentialQuadFront.RotateByQuaternion(qFront);
+	referentialQuadBack.RotateByQuaternion(qBack);
+	referentialQuadLeft.RotateByQuaternion(qLeft);
+	referentialQuadRight.RotateByQuaternion(qRight);
+	referentialQuadDown.RotateByQuaternion(qDown);
+
+	Quad quadUp = { referentialQuadUp, {roundexBox.extension.x, 0, roundexBox.extension.z} };
+	Quad quadFront = { referentialQuadFront, {roundexBox.extension.y, 0, roundexBox.extension.z} };
+	Quad quadBack = { referentialQuadBack, {roundexBox.extension.y, 0, roundexBox.extension.z} };
+	Quad quadLeft = { referentialQuadLeft, {roundexBox.extension.x, 0, roundexBox.extension.y} };
+	Quad quadRight = { referentialQuadRight, {roundexBox.extension.x, 0, roundexBox.extension.y} };
+	Quad quadDown = { referentialQuadDown, {roundexBox.extension.x, 0, roundexBox.extension.z} };
+
+	MyDrawQuad2(qUp, quadUp, RED);
+	MyDrawQuad2(qLeft, quadLeft, YELLOW);
+	MyDrawQuad2(qRight, quadRight, GREEN);
+	MyDrawQuad2(qFront, quadFront, BLUE);
+	MyDrawQuad2(qBack, quadBack, PURPLE);
+	MyDrawQuad2(qDown, quadDown, DARKGRAY);
+
+
+	Vector3 iPrime = Vector3Add(roundexBox.ref.origin, Vector3Scale(roundexBox.ref.i, roundexBox.extension.x));
+	Vector3 jPrime = Vector3Add(roundexBox.ref.origin, Vector3Scale(roundexBox.ref.j, roundexBox.extension.y));
+	Vector3 zPrime = Vector3Add(roundexBox.ref.origin, Vector3Scale(roundexBox.ref.k, roundexBox.extension.z));
+	Referential referentialCapsUp = Referential(Vector3Add(iPrime, jPrime));
+	Referential referentialCapsDown = Referential(Vector3Add(iPrime, Vector3Negate(jPrime)));
+	Referential referentialCapsRight = Referential(Vector3Add(iPrime, zPrime));
+	Referential referentialCapsLeft = Referential(Vector3Add(iPrime, Vector3Negate(zPrime)));
+
+	Capsule capsuleUp = { referentialCapsUp, roundexBox.radius };
+	Capsule capsuleDown = { referentialCapsDown, roundexBox.radius };
+	Capsule capsuleRight = { referentialCapsRight, roundexBox.radius };
+	Capsule capsuleLeft = { referentialCapsLeft, roundexBox.radius };
+
+	MyDrawCapsule(qLeft, capsuleUp, color);
+	//MyDrawCapsule(qUp, capsuleRight, color);
+	//MyDrawCapsule(qUp, capsuleLeft, color);
+	MyDrawCapsule(qLeft, capsuleDown, color);
+
+	/*Referential referentiaCapsUpBack = Referential({-1, 0.5f, -0.5f});
+	Referential referentialCapsDownBack = Referential({ -1, -0.5f, -0.5f });
+	Referential referentialCapsLeftBack = Referential({ -1, -0.5f, -0.5f });
+	Referential referentialCapsRightBack = Referential({ -1, -0.5f, 0.5f });
+
+	Capsule capsuleUpBack = { referentiaCapsUpBack, roundexBox.radius };
+	Capsule capsuleDownBack = { referentialCapsDownBack, roundexBox.radius };
+	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundexBox.radius };
+	Capsule capsuleRightBack = { referentialCapsRightBack, roundexBox.radius };
+
+	MyDrawCapsule(qLeft, capsuleUpBack, color);
+	MyDrawCapsule(qLeft, capsuleDownBack, color);
+	MyDrawCapsule(qUp, capsuleLeftBack, color);
+	MyDrawCapsule(qUp, capsuleRightBack, color);
+
+	Referential referentiaCapsUpLeft = Referential({ -1, 0.5f, -0.5f });
+	Referential referentialCapsDownLeft = Referential({ -1, -0.5f, -0.5f });
+
+	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundexBox.radius };
+	Capsule capsuleDownRight = { referentialCapsDownLeft, roundexBox.radius };
+
+	MyDrawCapsule(qFront, capsuleUpRight, color);
+	MyDrawCapsule(qFront, capsuleDownRight, color);
+
+	Referential referentiaCapsUpRight = Referential({ -1, 0.5f, 0.5f });
+	Referential referentialCapsDownRight = Referential({ -1, -0.5f, 0.5f });
+
+	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundexBox.radius };
+	Capsule capsuleDownLeft = { referentialCapsDownRight, roundexBox.radius };
+
+	MyDrawCapsule(qFront, capsuleUpLeft, color);
+	MyDrawCapsule(qFront, capsuleDownLeft, color);*/
 
 	rlPopMatrix();
 }
