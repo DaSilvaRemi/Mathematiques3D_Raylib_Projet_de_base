@@ -78,6 +78,7 @@ struct Plane {
 	Vector3 normal;
 	float d;
 
+
 	Plane(Vector3 _normal, Vector3 pt) {
 		normal = _normal;
 		d = Vector3DotProduct(_normal, pt);
@@ -123,6 +124,7 @@ struct Disk {
 struct Capsule {
 	Referential referential;
 	float radius;
+	float height;
 };
 
 struct RoundedBox{

@@ -83,7 +83,7 @@ bool InterSegQuad(Segment seg, Quad quad, Vector3& interPt, Vector3& interNormal
 	if (!isIntersec) return false;
 
 	Vector3 localPos = GlobalToLocalPos(interPt, quad.referential);
-	return ((fabsf(localPos.x) <= quad.extension.x) && (fabsf(localPos.z) <= quad.extension.z));
+	//return isIntersec && ((fabsf(localPos.x) <= quad.extension.x) && (fabsf(localPos.z) <= quad.extension.z));
 }
 
 bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal) {
@@ -91,6 +91,7 @@ bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal
 
 	return isIntersec && (fabsf(interPt.x) <= disk.radius && fabsf(interPt.z) <= disk.radius);
 }
+
 
 /**
 *

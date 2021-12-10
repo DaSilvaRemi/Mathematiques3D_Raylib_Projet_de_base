@@ -120,8 +120,8 @@ int main(int argc, char* argv[])
 		quaternions.push_back(qRandom);
 	}
 
-	Vector3 omega = { 2.95f, 1, 0 };
-	Vector3 vitesse = { 3.5f, 0, 0 };
+	Vector3 omega = { 0, 1, 0 };
+	Vector3 vitesse = { 0, 0, 1 };
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -144,59 +144,54 @@ int main(int argc, char* argv[])
 
 		BeginMode3D(camera);
 		{
-			TestDisplayRoundBox();
+			Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+			Quaternion q = QuaternionIdentity();
+			Referential referentialQuadLeft = Referential({ 0, 0, -4 });
+			Referential referentialQuadRight = Referential({ 0, 0, 4 });
+			Quad quadLeft = { referentialQuadLeft, {3, 3, 3} };
+			Quad quadRight = { referentialQuadRight, {3, 3, 3} };
 
-			//Vector3 size = {5, 5, 5};
-			//RoundedBox boxBack = {Referential({-4, 0, 0}), size,  0.25f };
-			//RoundedBox boxFront = { Referential({ 4, 0, 0 }), size, 0.25f };
-			//Quaternion qFront = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * 0.5f);
-			//Quaternion qBack = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * -0.5f);
-			//boxFront.ref.RotateByQuaternion(qFront);
-			//boxBack.ref.RotateByQuaternion(qBack);
-			//boxFront.ref.q = qFront;
-			//boxBack.ref.q = qBack;
+			referentialQuadLeft.RotateByQuaternion(q);
+			referentialQuadRight.RotateByQuaternion(q);
 
-			//MyDrawRoundBox(qFront, boxBack, BLUE);
-			//MyDrawRoundBoxWires(qFront, boxBack, WHITE);
+			MyDrawQuad2(q, quadLeft, BLUE);
+			//MyDrawQuad2(qRight, quadRight, BLUE);
 
-			//MyDrawRoundBox(qFront, boxFront, BLUE);
-			//MyDrawRoundBoxWires(qFront, boxFront, WHITE);
-
-			//Vector3 nextOmega = {3.05f, 1, 0};// Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
-
-			/*Quaternion qTime = QuaternionFromAxisAngle({0, 0, 1}, PI * .2f * time);
-
+			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
 			Sphere sphere = { omega, 1 };
 
-			//MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
-			//MyDrawSphereWiresEx2(qTime, sphere, 25, 25, RED);
+			MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
+			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, WHITE);
 
-			Segment seg = { {0, 1, 3}, {6, 1, 3} };
-			MyDrawSegment(QuaternionIdentity(), seg, DARKPURPLE);
+			Vector3 omegaSeg = Vector3AddValue(omega, 1);
+			Segment seg = { omegaSeg, Vector3Add(omegaSeg, vitesse) };
+
+			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
+			omegaSeg = { nextOmega.x + 1 * vitesse.x, nextOmega.y + 1 * vitesse.y, nextOmega.z + 1 * vitesse.z };*/
+			//seg = { omegaSeg , Vector3Add(omegaSeg, vitesse) };
+			Segment seg = { {0, 1, 0} , {0, -1, 0} };
+			MyDrawSegment(q, seg, RED);
 
 			Vector3 interPt;
 			Vector3 interNormal;
-			bool isIntersec = IntersecRoundedBox(seg, boxBack, interPt, interNormal);
-			
+			bool isIntersec = InterSegQuad(seg, quadRight, interPt, interNormal);
 
 			if (isIntersec) {
-				Vector3Reflect(vitesse, interNormal);
-				DrawLine3D(interPt, interNormal, BLUE);
-				DrawSphere(interPt, .2f, DARKBROWN);
+				DrawSphere(interPt, 0.25f, DARKBROWN);
+				vitesse = Vector3Reflect(vitesse, interNormal);
 			}
 
-			isIntersec = IntersecRoundedBox(seg, boxBack, interPt, interNormal);
-			
+			interPt;
+			interNormal;
+			isIntersec = InterSegQuad(seg, quadLeft, interPt, interNormal);
 
 			if (isIntersec) {
-				Vector3Reflect(vitesse, interNormal);
-				DrawLine3D(interPt, interNormal, BLUE);
-				DrawSphere(interPt, .2f, DARKBROWN);
-			}*/
-
+				//DrawSphere(interPt, 0.25f, DARKBROWN);
+				//vitesse = Vector3Reflect(vitesse, interNormal);
+			}
 			//nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			//omega = nextOmega;
-
 
 			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
 			Quaternion q = QuaternionIdentity();
@@ -206,8 +201,8 @@ int main(int argc, char* argv[])
 			MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
 			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, WHITE);
 
-
-			Segment seg = { omega, Vector3Add(omega, vitesse) };
+			Vector3 omegaSeg = Vector3AddValue(omega, 1);
+			Segment seg = { omegaSeg, Vector3Add(omegaSeg, vitesse) };
 			MyDrawSegment(q, seg, RED);
 
 			Quad quad = { Referential({0, 0, 0}), {50, 1, 50} };
@@ -238,8 +233,8 @@ int main(int argc, char* argv[])
 
 
 			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
-
-			seg = { nextOmega, Vector3Add(nextOmega, vitesse) };
+			omegaSeg = Vector3AddValue(nextOmega, 1);
+			seg = { omegaSeg , Vector3Add(omegaSeg, vitesse) };
 
 			for (int i = 0; i < roundedBoxes.size(); i++) {
 				MyDrawRoundBox(quaternions.at(i), roundedBoxes.at(i), GREEN);
@@ -286,7 +281,7 @@ int main(int argc, char* argv[])
 				vitesse = Vector3Reflect(vitesse, interNormal);
 			}
 
-			vitesse.y -= 1 * deltaTime;
+			//vitesse.y -= 1 * deltaTime;
 
 			nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			omega = nextOmega;*/
