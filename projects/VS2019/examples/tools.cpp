@@ -79,16 +79,19 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 }
 
 bool InterSegQuad(Segment seg, Quad quad, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegPlane(seg, Plane(quad.referential.j, LocalToGlobalPos(quad.referential.origin, quad.referential), { 0,0,0 }), interPt, interNormal);
+	bool isIntersec = InterSegPlane(seg, Plane(quad.referential.j, quad.referential.origin), interPt, interNormal);
+	if (!isIntersec) return false;
 
-	return isIntersec && (fabsf(interPt.x) <= quad.extension.x && fabsf(interPt.z) <= quad.extension.z);
+	Vector3 localPos = GlobalToLocalPos(interPt, quad.referential);
+	//return isIntersec && ((fabsf(localPos.x) <= quad.extension.x) && (fabsf(localPos.z) <= quad.extension.z));
 }
 
 bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegPlane(seg, Plane(disk.referential.i, LocalToGlobalPos(disk.referential.origin, disk.referential), { 0,0,0 }), interPt, interNormal);
+	bool isIntersec = InterSegPlane(seg, Plane(disk.referential.i, disk.referential.origin), interPt, interNormal);
 
 	return isIntersec && (fabsf(interPt.x) <= disk.radius && fabsf(interPt.z) <= disk.radius);
 }
+
 
 /**
 *
@@ -293,22 +296,22 @@ bool IntersecRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt, Ve
 	interPt = { FLT_MAX };
 	interNormal = { FLT_MAX };
 
-	Quaternion qUp = QuaternionIdentity();
-	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
-	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
-	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
-	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+	Quaternion qUp = QuaternionMultiply(roundedBox.ref.q, QuaternionIdentity());
+	Quaternion qLeft = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f));
+	Quaternion qRight = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f));
+	Quaternion qFront = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f));
+	Quaternion qBack = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f));
 	
 	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
 	Quaternion qDown = QuaternionMultiply(qX, qY);
 
-	Referential referentialQuadUp = Referential({ -0.5f, 0.75f, 0 }); // ok
-	Referential referentialQuadFront = Referential({ 0.25f, 0, 0 }); // ok
-	Referential referentialQuadBack = Referential({ -1.25f, 0, 0 }); // ok
-	Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.75f });
-	Referential referentialQuadRight = Referential({ -0.5f, 0, -0.75f }); // ok
-	Referential referentialQuadDown = Referential({ -0.5f, -0.75f, 0 });
+	Referential referentialQuadUp = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, 0.75f, 0 })); // ok
+	Referential referentialQuadFront = Referential(Vector3Add(roundedBox.ref.origin, { 0.25f, 0, 0 })); // ok
+	Referential referentialQuadBack = Referential(Vector3Add(roundedBox.ref.origin, { -1.25f, 0, 0 })); // ok
+	Referential referentialQuadLeft = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, 0, 0.75f }));
+	Referential referentialQuadRight = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, 0, -0.75f })); // ok
+	Referential referentialQuadDown = Referential(Vector3Add(roundedBox.ref.origin, { -0.5f, -0.75f, 0 }));
 
 	referentialQuadUp.RotateByQuaternion(qUp);
 	referentialQuadFront.RotateByQuaternion(qFront);
@@ -316,12 +319,12 @@ bool IntersecRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt, Ve
 	referentialQuadLeft.RotateByQuaternion(qLeft);
 	referentialQuadDown.RotateByQuaternion(qDown);
 
-	Quad quadUp = { referentialQuadUp, {1, 1, 1} };
-	Quad quadFront = { referentialQuadFront, {1, 1, 1} };
-	Quad quadBack = { referentialQuadBack, {1, 1, 1} };
-	Quad quadLeft = { referentialQuadLeft, {1, 1, 1} };
-	Quad quadRight = { referentialQuadRight, {1, 1, 1} };
-	Quad quadDown = { referentialQuadDown, {1, 1, 1} };
+	Quad quadUp = { referentialQuadUp, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadFront = { referentialQuadFront, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadBack = { referentialQuadBack, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadLeft = { referentialQuadLeft, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadRight = { referentialQuadRight, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadDown = { referentialQuadDown, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
 
 	Vector3 tmpInterPt;
 	Vector3 tmpInterNormal;
@@ -541,12 +544,6 @@ bool IntersecBox(Segment seg, Box roundedBox, Vector3& interPt, Vector3& interNo
 	Referential referentialQuadLeft = Referential({ -0.5f, 0, 0.5f });
 	Referential referentialQuadRight = Referential({ -0.5f, 0, -0.5f });
 	Referential referentialQuadDown = Referential({ -0.5f, -0.5f, 0 });
-
-	referentialQuadUp = Vector3Add(referentialQuadUp.origin, roundedBox.ref.origin);
-	referentialQuadFront = Vector3Add(referentialQuadFront.origin, roundedBox.ref.origin);
-	referentialQuadBack = Vector3Add(referentialQuadBack.origin, roundedBox.ref.origin);
-	referentialQuadLeft = Vector3Add(referentialQuadLeft.origin, roundedBox.ref.origin);
-	referentialQuadDown = Vector3Add(referentialQuadDown.origin, roundedBox.ref.origin);
 
 	referentialQuadUp.RotateByQuaternion(qUp);
 	referentialQuadFront.RotateByQuaternion(qFront);
