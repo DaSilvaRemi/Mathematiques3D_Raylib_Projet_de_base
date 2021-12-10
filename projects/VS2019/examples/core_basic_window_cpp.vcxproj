@@ -326,7 +326,6 @@
     <ClCompile Include="BouncingSphere.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="MyDrawMethods.cpp" />
-    <ClCompile Include="Struct.cpp" />
     <ClCompile Include="Tools.cpp" />
   </ItemGroup>
   <ItemGroup>

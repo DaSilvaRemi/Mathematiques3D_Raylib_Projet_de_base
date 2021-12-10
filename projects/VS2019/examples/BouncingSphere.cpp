@@ -147,16 +147,16 @@ int main(int argc, char* argv[])
 			Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
 			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
 			Quaternion q = QuaternionIdentity();
-			Referential referentialQuadLeft = Referential({ 0, 0, -4 });
-			Referential referentialQuadRight = Referential({ 0, 0, 4 });
+			Referential referentialQuadLeft = Referential({ 0, 0, 4 });
+			Referential referentialQuadRight = Referential({ 0, 0, 0 });
 			Quad quadLeft = { referentialQuadLeft, {3, 3, 3} };
 			Quad quadRight = { referentialQuadRight, {3, 3, 3} };
 
-			referentialQuadLeft.RotateByQuaternion(q);
+			referentialQuadLeft.RotateByQuaternion(qLeft);
 			referentialQuadRight.RotateByQuaternion(q);
 
-			MyDrawQuad2(q, quadLeft, BLUE);
-			//MyDrawQuad2(qRight, quadRight, BLUE);
+			MyDrawQuad2(qRight, quadLeft, BLUE);
+			MyDrawQuad2(qLeft, quadRight, BLUE);
 
 			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
 			Sphere sphere = { omega, 1 };
@@ -170,26 +170,19 @@ int main(int argc, char* argv[])
 			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			omegaSeg = { nextOmega.x + 1 * vitesse.x, nextOmega.y + 1 * vitesse.y, nextOmega.z + 1 * vitesse.z };*/
 			//seg = { omegaSeg , Vector3Add(omegaSeg, vitesse) };
-			Segment seg = { {0, 1, 0} , {0, -1, 0} };
+			Segment seg = { {0, 1, 6} , {0, 1, -3} };
 			MyDrawSegment(q, seg, RED);
 
 			Vector3 interPt;
 			Vector3 interNormal;
-			bool isIntersec = InterSegQuad(seg, quadRight, interPt, interNormal);
+			bool isIntersec = InterSegQuad(seg, quadLeft, interPt, interNormal);
 
 			if (isIntersec) {
 				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);
 			}
 
-			interPt;
-			interNormal;
-			isIntersec = InterSegQuad(seg, quadLeft, interPt, interNormal);
-
-			if (isIntersec) {
-				//DrawSphere(interPt, 0.25f, DARKBROWN);
-				//vitesse = Vector3Reflect(vitesse, interNormal);
-			}
+			
 			//nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			//omega = nextOmega;
 
