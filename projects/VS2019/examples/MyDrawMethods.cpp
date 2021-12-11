@@ -478,7 +478,7 @@ void MyDrawCapsule(Quaternion q, Capsule capsule, Color color) {
 
 	rlScalef(capsule.radius, capsule.radius, capsule.radius);
 
-	Vector3 up = { 0, 4, 0 };
+	Vector3 up = { 0, capsule.height, 0 };
 	Vector3 down = { 0, 0, 0 };
 
 	Quaternion qUp = QuaternionFromAxisAngle({ 0, 0, 1 }, 0.5 * PI);
@@ -487,7 +487,7 @@ void MyDrawCapsule(Quaternion q, Capsule capsule, Color color) {
 
 	Referential ref = Referential(down);
 	ref.RotateByQuaternion(qIdentity);
-	Cylinder cylinder = Cylinder(ref, 1, 4);
+	Cylinder cylinder = Cylinder(ref, 1, capsule.height);
 
 	Sphere sphereUp = { up, 1 };
 	Sphere sphereDown = { down, 1 };
@@ -511,7 +511,7 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color) {
 
 	rlScalef(capsule.radius, capsule.radius, capsule.radius);
 
-	Vector3 up = { 0, 4, 0 };
+	Vector3 up = { 0, capsule.height, 0 };
 	Vector3 down = { 0, 0, 0 };
 
 	Quaternion qUp = QuaternionFromAxisAngle({ 0, 0, 1 }, 0.5 * PI);
@@ -520,7 +520,7 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color) {
 
 	Referential ref = Referential(down);
 	ref.RotateByQuaternion(qIdentity);
-	Cylinder cylinder = Cylinder(ref, 1, 4);
+	Cylinder cylinder = Cylinder(ref, 1, capsule.height);
 
 	Sphere sphereUp = { up, 1 };
 	Sphere sphereDown = { down, 1 };
@@ -532,9 +532,9 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color) {
 	rlPopMatrix();
 }
 
-void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
+void MyDrawRoundBox(Quaternion q, RoundedBox roundedBox, Color color) {
 	rlPushMatrix();
-	rlTranslatef(roundexBox.ref.origin.x, roundexBox.ref.origin.y, roundexBox.ref.origin.z);
+	rlTranslatef(roundedBox.ref.origin.x, roundedBox.ref.origin.y, roundedBox.ref.origin.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -542,7 +542,7 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(roundexBox.extension.x, roundexBox.extension.y, roundexBox.extension.z);
+	rlScalef(roundedBox.extension.x, roundedBox.extension.y, roundedBox.extension.z);
 
 	Quaternion qUp = QuaternionIdentity();
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
@@ -588,10 +588,10 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentialCapsRight = Referential({ 0, -0.5f, -0.5f });
 	Referential referentialCapsLeft = Referential({ 0, -0.5f, 0.5f });
 
-	Capsule capsuleUp = { referentiaCapsUp, roundexBox.radius};
-	Capsule capsuleDown = { referentialCapsDown, roundexBox.radius };
-	Capsule capsuleRight = { referentialCapsRight, roundexBox.radius };
-	Capsule capsuleLeft = { referentialCapsLeft, roundexBox.radius };
+	Capsule capsuleUp = { referentiaCapsUp, roundedBox.radius, 4};
+	Capsule capsuleDown = { referentialCapsDown, roundedBox.radius, 4};
+	Capsule capsuleRight = { referentialCapsRight, roundedBox.radius, 4};
+	Capsule capsuleLeft = { referentialCapsLeft, roundedBox.radius, 4};
 
 	MyDrawCapsule(qLeft, capsuleUp, color);
 	MyDrawCapsule(qUp, capsuleRight, color);
@@ -603,10 +603,10 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentialCapsLeftBack = Referential({ -1, -0.5f, -0.5f });
 	Referential referentialCapsRightBack = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpBack = { referentiaCapsUpBack, roundexBox.radius };
-	Capsule capsuleDownBack = { referentialCapsDownBack, roundexBox.radius };
-	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundexBox.radius };
-	Capsule capsuleRightBack = { referentialCapsRightBack, roundexBox.radius };
+	Capsule capsuleUpBack = { referentiaCapsUpBack, roundedBox.radius, 4 };
+	Capsule capsuleDownBack = { referentialCapsDownBack, roundedBox.radius, 4};
+	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundedBox.radius, 4 };
+	Capsule capsuleRightBack = { referentialCapsRightBack, roundedBox.radius, 4 };
 
 	MyDrawCapsule(qLeft, capsuleUpBack, color);
 	MyDrawCapsule(qLeft, capsuleDownBack, color);
@@ -616,8 +616,8 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentiaCapsUpLeft = Referential({ -1, 0.5f, -0.5f });
 	Referential referentialCapsDownLeft = Referential({ -1, -0.5f, -0.5f });
 
-	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundexBox.radius };
-	Capsule capsuleDownRight = { referentialCapsDownLeft, roundexBox.radius };
+	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundedBox.radius };
+	Capsule capsuleDownRight = { referentialCapsDownLeft, roundedBox.radius };
 
 	MyDrawCapsule(qFront, capsuleUpRight, color);
 	MyDrawCapsule(qFront, capsuleDownRight, color);
@@ -625,8 +625,8 @@ void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentiaCapsUpRight = Referential({ -1, 0.5f, 0.5f });
 	Referential referentialCapsDownRight = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundexBox.radius };
-	Capsule capsuleDownLeft = { referentialCapsDownRight, roundexBox.radius };
+	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundedBox.radius, 4 };
+	Capsule capsuleDownLeft = { referentialCapsDownRight, roundedBox.radius, 4 };
 
 	MyDrawCapsule(qFront, capsuleUpLeft, color);
 	MyDrawCapsule(qFront, capsuleDownLeft, color);
@@ -795,10 +795,10 @@ void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentialCapsRight = Referential({ 0, -0.5f, -0.5f });
 	Referential referentialCapsLeft = Referential({ 0, -0.5f, 0.5f });
 
-	Capsule capsuleUp = { referentiaCapsUp, roundexBox.radius };
-	Capsule capsuleDown = { referentialCapsDown, roundexBox.radius };
-	Capsule capsuleRight = { referentialCapsRight, roundexBox.radius };
-	Capsule capsuleLeft = { referentialCapsLeft, roundexBox.radius };
+	Capsule capsuleUp = { referentiaCapsUp, roundexBox.radius, 4 };
+	Capsule capsuleDown = { referentialCapsDown, roundexBox.radius, 4 };
+	Capsule capsuleRight = { referentialCapsRight, roundexBox.radius, 4 };
+	Capsule capsuleLeft = { referentialCapsLeft, roundexBox.radius, 4 };
 
 	MyDrawCapsuleWires(qLeft, capsuleUp, color);
 	MyDrawCapsuleWires(qUp, capsuleRight, color);
@@ -810,10 +810,10 @@ void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentialCapsLeftBack = Referential({ -1, -0.5f, -0.5f });
 	Referential referentialCapsRightBack = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpBack = { referentiaCapsUpBack, roundexBox.radius };
-	Capsule capsuleDownBack = { referentialCapsDownBack, roundexBox.radius };
-	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundexBox.radius };
-	Capsule capsuleRightBack = { referentialCapsRightBack, roundexBox.radius };
+	Capsule capsuleUpBack = { referentiaCapsUpBack, roundexBox.radius, 4 };
+	Capsule capsuleDownBack = { referentialCapsDownBack, roundexBox.radius, 4 };
+	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundexBox.radius, 4 };
+	Capsule capsuleRightBack = { referentialCapsRightBack, roundexBox.radius, 4 };
 
 	MyDrawCapsuleWires(qLeft, capsuleUpBack, color);
 	MyDrawCapsuleWires(qLeft, capsuleDownBack, color);
@@ -823,8 +823,8 @@ void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentiaCapsUpLeft = Referential({ -1, 0.5f, -0.5f });
 	Referential referentialCapsDownLeft = Referential({ -1, -0.5f, -0.5f });
 
-	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundexBox.radius };
-	Capsule capsuleDownRight = { referentialCapsDownLeft, roundexBox.radius };
+	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundexBox.radius, 4 };
+	Capsule capsuleDownRight = { referentialCapsDownLeft, roundexBox.radius, 4 };
 
 	MyDrawCapsuleWires(qFront, capsuleUpRight, color);
 	MyDrawCapsuleWires(qFront, capsuleDownRight, color);
@@ -832,8 +832,8 @@ void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color) {
 	Referential referentiaCapsUpRight = Referential({ -1, 0.5f, 0.5f });
 	Referential referentialCapsDownRight = Referential({ -1, -0.5f, 0.5f });
 
-	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundexBox.radius };
-	Capsule capsuleDownLeft = { referentialCapsDownRight, roundexBox.radius };
+	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundexBox.radius, 4 };
+	Capsule capsuleDownLeft = { referentialCapsDownRight, roundexBox.radius, 4 };
 
 	MyDrawCapsuleWires(qFront, capsuleUpLeft, color);
 	MyDrawCapsuleWires(qFront, capsuleDownLeft, color);

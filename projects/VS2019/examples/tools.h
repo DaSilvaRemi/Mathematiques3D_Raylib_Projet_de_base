@@ -37,8 +37,8 @@ bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vec
 
 bool InterSegmentCapsule(Segment seg, Capsule cyl, Vector3& interPt, Vector3& interNormal);
 
-bool IntersecRoundedBox(Segment seg, RoundedBox roundedBox, Vector3& interPt, Vector3& interNormal);
+bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3& interPt, Vector3& interNormal);
 
-bool IntersecBox(Segment seg, Box roundedBox, Vector3& interPt, Vector3& interNormal);
+bool IntersecSegBox(Segment seg, Box roundedBox, Vector3& interPt, Vector3& interNormal);
 
 float random_float(float a, float b);
