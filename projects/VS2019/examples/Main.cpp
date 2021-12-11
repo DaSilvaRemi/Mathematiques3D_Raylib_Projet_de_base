@@ -147,18 +147,29 @@ int main(int argc, char* argv[])
 			Quaternion qUp = QuaternionIdentity();
 			Quaternion qLeft = QuaternionFromAxisAngle({1, 0, 0}, PI * 0.5f);
 			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
-			Quaternion q = QuaternionIdentity();
 
 			Capsule capsuleLeft = { Referential({0, 0, 6}), 2, 4 };
+			capsuleLeft.referential.RotateByQuaternion(qUp);
+			MyDrawCapsuleWires(qUp, capsuleLeft, BLUE);
+
+			Segment seg = { {0, -1, 0}, {0, -1, 6} };
+			MyDrawSegment(qUp, seg, RED);
+
+			Vector3 interPt;
+			Vector3 interNormal;
+			bool isIntersec = InterSegmentCapsule(seg, capsuleLeft, interPt, interNormal);
+			if (isIntersec) {
+				DrawSphere(interPt, 0.25f, DARKBROWN);
+				vitesse = Vector3Reflect(vitesse, interNormal);
+			}
+
+			/*Capsule capsuleLeft = {Referential({0, 0, 6}), 2, 4};
 			Capsule capsuleRight = { Referential({0, 0, -6}), 2, 4 };
 			capsuleLeft.referential.RotateByQuaternion(qUp);
 			capsuleRight.referential.RotateByQuaternion(qUp);
 
 			MyDrawCapsuleWires(qUp, capsuleLeft, BLUE);
-			MyDrawCapsuleWires(qUp, capsuleRight, BLUE);
-
-			Segment seg = { {0, 15, 3}, {0, 15, 7} };
-			MyDrawSegment(qUp, seg, RED);
+			MyDrawCapsuleWires(qUp, capsuleRight, BLUE);*/
 
 			/*Vector3 omegaSeg = omegaSeg = {omega.x + 1 * vitesse.x, omega.y + 1 * vitesse.y, omega.z + 1 * vitesse.z};
 			Segment seg = { omega, Vector3Add(omegaSeg, vitesse) };
@@ -174,19 +185,11 @@ int main(int argc, char* argv[])
 			omegaSeg = { nextOmega.x + 1 * vitesse.x, nextOmega.y + 1 * vitesse.y, nextOmega.z + 1 * vitesse.z };
 			seg = { omega , Vector3Add(omegaSeg, vitesse) };*/
 
-			Vector3 interPt;
-			Vector3 interNormal;
-			bool isIntersec = InterSegmentCapsule(seg, capsuleLeft, interPt, interNormal);
+			/*isIntersec = InterSegmentCapsule(seg, capsuleRight, interPt, interNormal);
 			if (isIntersec) {
 				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);
-			}
-
-			isIntersec = InterSegmentCapsule(seg, capsuleRight, interPt, interNormal);
-			if (isIntersec) {
-				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-			}
+			}*/
 
 			//omega = nextOmega;
 			
@@ -206,35 +209,6 @@ int main(int argc, char* argv[])
 				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);
 			}*/
-
-
-
-			//MyDrawCapsule(qUp, capsuleLeft, BLUE);
-
-			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
-			Sphere sphere = { omega, 1 };
-
-			MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
-			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, WHITE);
-
-			Vector3 omegaSeg = Vector3AddValue(omega, 1);
-			Segment seg = { omegaSeg, Vector3Add(omegaSeg, vitesse) };
-
-			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
-			omegaSeg = { nextOmega.x + 1 * vitesse.x, nextOmega.y + 1 * vitesse.y, nextOmega.z + 1 * vitesse.z };
-			seg = { omegaSeg , Vector3Add(omegaSeg, vitesse) };*/
-
-			/*interPt;
-			interNormal;
-			isIntersec = InterSegmentCapsule(seg, capsuleLeft, interPt, interNormal);
-
-			if (isIntersec) {
-				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-			}*/
-
-			/*nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
-			omega = nextOmega;*/
 
 			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
 			Quaternion q = QuaternionIdentity();
