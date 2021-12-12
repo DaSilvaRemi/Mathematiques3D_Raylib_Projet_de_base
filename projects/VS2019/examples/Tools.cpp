@@ -207,14 +207,15 @@ bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, V
 }
 
 bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegmentInfiniteCylinder(seg, cyl, interPt, interNormal);
+	bool cylinderIsIntersec = InterSegmentInfiniteCylinder(seg, cyl, interPt, interNormal);
+	bool isIntersec = false;
 	
 	Vector3 PInter = Vector3Subtract(interPt, cyl.pt1);
 	Vector3 PQ = Vector3Subtract(cyl.pt2, cyl.pt1);
 	float PInterdotPQ = Vector3DotProduct(PInter, PQ);
 	float PQcarre = Vector3DotProduct(PQ, PQ);
 
-	if (isIntersec) {
+	if (cylinderIsIntersec) {
 		if (PInterdotPQ < 0 || PInterdotPQ > PQcarre) {
 			Vector3 maxInterPt = { FLT_MAX };
 			Vector3 tmpInterPt;
@@ -282,6 +283,7 @@ bool InterSegmentCapsule(Segment seg, Capsule caps, Vector3& interPt, Vector3& i
 	Referential ref = Referential(down);
 	ref.RotateByQuaternion(caps.referential.q);
 	Cylinder cylinder = Cylinder(ref, caps.radius, caps.height);
+	cylinder.UpdateCylinder();
 
 	Sphere sphereUp = { up, caps.radius };
 	Sphere sphereDown = { down, caps.radius };

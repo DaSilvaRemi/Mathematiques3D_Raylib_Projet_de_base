@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 			Quaternion qLeft = QuaternionFromAxisAngle({0, 0, 1}, PI );
 			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
 
-			Capsule capsuleLeft = {Referential({0, 0, 0}), 2, 4};
+			Capsule capsuleLeft = {Referential({0, 0, 3}), 2, 4};
 			capsuleLeft.referential.RotateByQuaternion(qUp);
 			MyDrawCapsuleWires(qUp, capsuleLeft, BLUE);
 
