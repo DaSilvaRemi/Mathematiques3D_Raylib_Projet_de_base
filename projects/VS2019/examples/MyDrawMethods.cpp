@@ -478,8 +478,8 @@ void MyDrawCapsule(Quaternion q, Capsule capsule, Color color) {
 
 	rlScalef(capsule.radius, capsule.radius, capsule.radius);
 
-	Vector3 up = LocalToGlobalPos({ 0, capsule.height, 0 }, capsule.referential);
-	Vector3 down = LocalToGlobalPos({ 0, 0, 0 }, capsule.referential);
+	Vector3 up = { 0, capsule.height, 0 };
+	Vector3 down = { 0, 0, 0 };
 
 	Quaternion qUp = QuaternionFromAxisAngle({ 0, 0, 1 }, 0.5 * PI);
 	Quaternion qDown = QuaternionFromAxisAngle({ 0, 0, 1 }, -0.5 * PI);
@@ -511,10 +511,8 @@ void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color) {
 
 	rlScalef(capsule.radius, capsule.radius, capsule.radius);
 
-	Vector3 up = LocalToGlobalPos({0, capsule.height, 0}, capsule.referential);
-	Vector3 down = LocalToGlobalPos({ 0, 0, 0 }, capsule.referential);
-	/*Vector3 up = {0, capsule.height, 0};
-	Vector3 down = { 0, 0, 0 };*/
+	Vector3 up = {0, capsule.height, 0};
+	Vector3 down = { 0, 0, 0 };
 
 	Quaternion qUp = QuaternionFromAxisAngle({ 0, 0, 1 }, 0.5 * PI);
 	Quaternion qDown = QuaternionFromAxisAngle({ 0, 0, 1 }, 1.5 * PI);

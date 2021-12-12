@@ -148,11 +148,11 @@ int main(int argc, char* argv[])
 			Quaternion qLeft = QuaternionFromAxisAngle({0, 0, 1}, PI );
 			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
 
-			Capsule capsuleLeft = {Referential({0, 0, 0}), 2, 4};
+			Capsule capsuleLeft = {Referential({0, 1, 3}), 2, 4};
 			capsuleLeft.referential.RotateByQuaternion(qUp);
 			MyDrawCapsuleWires(qUp, capsuleLeft, BLUE);
 
-			Segment seg = { {0, 1, -3}, {0, 1, 6} };
+			Segment seg = { {0, 10, -6}, {0, 10, 6} };
 			MyDrawSegment(qUp, seg, PURPLE);
 
 			Vector3 interPt;
@@ -193,13 +193,12 @@ int main(int argc, char* argv[])
 
 			//omega = nextOmega;
 			
-
 			/*RoundedBox roundedBox = {Referential({0, 1, -4}), {3, 3, 3}, 0.25f};
-			roundedBox.ref.RotateByQuaternion(q);
+			roundedBox.ref.RotateByQuaternion(qUp);
 			Segment seg = { {0, 1, -6}, {0, 1, 6} };
 
-			MyDrawRoundBoxWires(q, roundedBox, RED);
-			MyDrawSegment(q, seg, RED);
+			MyDrawRoundBoxWires(qUp, roundedBox, RED);
+			MyDrawSegment(qUp, seg, RED);
 
 			Vector3 interPt;
 			Vector3 interNormal;

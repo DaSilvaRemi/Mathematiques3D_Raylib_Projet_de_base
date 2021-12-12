@@ -273,7 +273,10 @@ bool InterSegmentCapsule(Segment seg, Capsule caps, Vector3& interPt, Vector3& i
 	interPt = { FLT_MAX };
 	interNormal = { FLT_MAX };
 
-	Vector3 up = LocalToGlobalPos({ 0, caps.height, 0 }, caps.referential);
+	/*Vector3 up = {0, caps.height, 0};
+	Vector3 down = { 0, 0, 0 };*/
+
+	Vector3 up = LocalToGlobalPos({0, caps.height, 0}, caps.referential);
 	Vector3 down = LocalToGlobalPos({ 0, 0, 0 }, caps.referential);
 
 	Quaternion qUp = QuaternionFromAxisAngle({ 0, 0, 1 }, 0.5 * PI);
