@@ -87,9 +87,11 @@ bool InterSegQuad(Segment seg, Quad quad, Vector3& interPt, Vector3& interNormal
 }
 
 bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegPlane(seg, Plane(disk.referential.i, disk.referential.origin), interPt, interNormal);
+	bool isIntersec = InterSegPlane(seg, Plane(GlobalToLocalPos(disk.referential.i, disk.referential), disk.referential.origin), interPt, interNormal);
+	if (!isIntersec) return false;
 
-	return isIntersec && (fabsf(interPt.x) <= disk.radius && fabsf(interPt.z) <= disk.radius);
+	Vector3 localPos = GlobalToLocalPos(interPt, disk.referential);
+	return (fabsf(localPos.x) <= disk.radius && fabsf(localPos.z) <= disk.radius);
 }
 
 
@@ -121,8 +123,8 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 		float t2 = (-b - discrimin) / (2 * a);
 		t = t1 < t2 ? t1 : t2;
 
-		//interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
-		interPt = Vector3Scale(seg.pt1, t);
+		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
+		//interPt = Vector3Scale(seg.pt1, t);
 
 		interNormal = Vector3Normalize({ -AB.z, 0, AB.x });
 	}
@@ -212,12 +214,12 @@ bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vec
 
 	if (isCylinderIntersec) {
 		if (PInterdotPQ < 0 || PInterdotPQ > PQcarre) {
-			bool isDiskIntersec = InterSegDisk(seg, { cyl.pt1, cyl.radius }, interPt, interNormal);
+			bool isDiskIntersec = InterSegDisk(seg, { Referential(cyl.pt1), cyl.radius }, interPt, interNormal);
 			if (isDiskIntersec) {
 				return isDiskIntersec;
 			}
 
-			bool isDiskIntersec2 = InterSegDisk(seg, { cyl.pt2, cyl.radius }, interPt, interNormal);
+			bool isDiskIntersec2 = InterSegDisk(seg, { Referential(cyl.pt2), cyl.radius }, interPt, interNormal);
 			if (isDiskIntersec2) {
 				return isDiskIntersec2;
 			}
@@ -227,12 +229,12 @@ bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vec
 		}
 	}
 	else {
-		bool isDiskIntersec = InterSegDisk(seg, { cyl.pt1, cyl.radius }, interPt, interNormal);
+		bool isDiskIntersec = InterSegDisk(seg, { Referential(cyl.pt1), cyl.radius }, interPt, interNormal);
 		if (isDiskIntersec) {
 			return isDiskIntersec;
 		}
 
-		bool isDiskIntersec2 = InterSegDisk(seg, { cyl.pt2, cyl.radius }, interPt, interNormal);
+		bool isDiskIntersec2 = InterSegDisk(seg, { Referential(cyl.pt2), cyl.radius }, interPt, interNormal);
 		if (isDiskIntersec2) {
 			return isDiskIntersec2;
 		}

@@ -69,8 +69,8 @@ void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float e
 	{
 		Quaternion qX = QuaternionFromAxisAngle({1, 0, 0}, PI);
 		Quaternion qY = QuaternionFromAxisAngle({0, 1, 0}, startTheta);
-		MyDrawDiskPortion(QuaternionMultiply(qX, qY), {0, 0, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
-		MyDrawDiskPortion(QuaternionIdentity(), {0, 1, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
+		MyDrawDiskPortion(QuaternionMultiply(qX, qY), { Referential({0, 0, 0}), 1 }, startTheta, endTheta, nSegmentsTheta, color);
+		MyDrawDiskPortion(QuaternionIdentity(), { Referential({0, 1, 0}), 1 }, startTheta, endTheta, nSegmentsTheta, color);
 	}
 	
 	rlEnd();
@@ -134,8 +134,8 @@ void MyDrawCylinderWiresPortion(Quaternion q, Cylinder cyl, float startTheta, fl
 	{
 		Quaternion qX = QuaternionFromAxisAngle({1, 0, 0}, PI);
 		Quaternion qY = QuaternionFromAxisAngle({0, 1, 0}, startTheta);
-		MyDrawDiskWiresPortion(QuaternionMultiply(qX, qY), {0, 0, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
-		MyDrawDiskWiresPortion(QuaternionIdentity(), {0, 1, 0}, 1, startTheta, endTheta, nSegmentsTheta, color);
+		MyDrawDiskWiresPortion(QuaternionMultiply(qX, qY), { Referential({0, 0, 0}), 1 }, startTheta, endTheta, nSegmentsTheta, color);
+		MyDrawDiskWiresPortion(QuaternionIdentity(), { Referential({0, 1, 0}), 1 }, startTheta, endTheta, nSegmentsTheta, color);
 	}
 
 	rlEnd();
@@ -374,15 +374,15 @@ void MyDrawCylinderWires(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool dr
 	MyDrawCylinderWiresPortion(q, cyl, 0, 2 * PI, nSegmentsTheta, drawCaps, color);
 }
 
-void MyDrawDisk(Quaternion q, Vector3 center, float radius, int nSegmentsTheta, Color color) {
-	MyDrawDiskPortion(q, center, radius, 0, 2 * PI, nSegmentsTheta, color);
+void MyDrawDisk(Quaternion q, Disk disk, int nSegmentsTheta, Color color) {
+	MyDrawDiskPortion(q, disk, 0, 2 * PI, nSegmentsTheta, color);
 }
 
-void MyDrawDiskWires(Quaternion q, Vector3 center, float radius, int nSegmentsTheta, Color color) {
-	MyDrawDiskWiresPortion(q, center, radius, 0, 2 * PI, nSegmentsTheta, color);
+void MyDrawDiskWires(Quaternion q, Disk disk, int nSegmentsTheta, Color color) {
+	MyDrawDiskWiresPortion(q, disk, 0, 2 * PI, nSegmentsTheta, color);
 }
 
-void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color)
+void MyDrawDiskPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color)
 {
 	if (nSegmentsTheta < 3) return;
 	int numVertex = nSegmentsTheta * 3;
@@ -390,14 +390,14 @@ void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTh
 	if (rlCheckBufferLimit(numVertex)) rlglDraw();
 	
 	rlPushMatrix();
-	rlTranslatef(center.x, center.y, center.z);
+	rlTranslatef(disk.referential.origin.x, disk.referential.origin.y, disk.referential.origin.z);
 
 	//ROTATION
 	Vector3 vect;
 	float angle;
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
-	rlScalef(radius, 0, radius);
+	rlScalef(disk.radius, 0, disk.radius);
 
 	rlBegin(RL_TRIANGLES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
@@ -423,19 +423,19 @@ void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTh
 	rlPopMatrix();
 }
 
-void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color)
+void MyDrawDiskWiresPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color)
 {
 	if (nSegmentsTheta < 3) return;
 	
 	rlPushMatrix();
-	rlTranslatef(center.x, center.y, center.z);
+	rlTranslatef(disk.referential.origin.x, disk.referential.origin.y, disk.referential.origin.z);
 
 	//ROTATION
 	Vector3 vect;
 	float angle;
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
-	rlScalef(radius, radius, radius);
+	rlScalef(disk.radius, 0, disk.radius);
 
 	rlBegin(RL_LINES);
 	rlColor4ub(color.r, color.g, color.b, color.a);

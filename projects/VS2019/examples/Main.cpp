@@ -148,16 +148,20 @@ int main(int argc, char* argv[])
 			Quaternion qLeft = QuaternionFromAxisAngle({1, 0, 0}, PI * 0.5f);
 			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
 
-			Capsule capsuleLeft = { Referential({0, 0, 6}), 2, 4 };
+			/*Capsule capsuleLeft = {Referential({0, 0, 6}), 2, 4};
 			capsuleLeft.referential.RotateByQuaternion(qUp);
-			MyDrawCapsuleWires(qUp, capsuleLeft, BLUE);
+			MyDrawCapsuleWires(qUp, capsuleLeft, BLUE);*/
 
-			Segment seg = { {0, -1, 0}, {0, -1, 6} };
-			MyDrawSegment(qUp, seg, RED);
+			Cylinder cyl = { Referential({0, 1, 1}), 2, 4 };
+			cyl.ref.RotateByQuaternion(qUp);
+			MyDrawCylinderWires(qUp, cyl, 25, true, RED);
+
+			Segment seg = { {0, 7, 1}, {0, -3, 1} };
+			MyDrawSegment(qUp, seg, PURPLE);
 
 			Vector3 interPt;
 			Vector3 interNormal;
-			bool isIntersec = InterSegmentCapsule(seg, capsuleLeft, interPt, interNormal);
+			bool isIntersec = InterSegmentFiniteCylinder(seg, cyl, interPt, interNormal);
 			if (isIntersec) {
 				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);

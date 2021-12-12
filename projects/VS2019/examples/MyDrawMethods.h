@@ -36,13 +36,13 @@ void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float e
 
 void MyDrawCylinderWiresPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
 
-void MyDrawDisk(Quaternion q, Vector3 center, float radius, int nSegmentsTheta, Color color);
+void MyDrawDisk(Quaternion q, Disk disk, int nSegmentsTheta, Color color);
 
-void MyDrawDiskWires(Quaternion q, Vector3 center, float radius, int nSegmentsTheta, Color color);
+void MyDrawDiskWires(Quaternion q, Disk disk, int nSegmentsTheta, Color color);
 
-void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
-void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskWiresPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
 void MyDrawCapsule(Quaternion q, Capsule capsule, Color color);
 

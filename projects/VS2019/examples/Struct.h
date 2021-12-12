@@ -14,7 +14,7 @@ struct Cylindrical {
 	float y;
 
 	inline Cylindrical operator+(Cylindrical a) {
-		return { a.rho + rho,a.theta + theta,a.y + y };
+		return { a.rho + rho, a.theta + theta, a.y + y };
 	}
 };
 
