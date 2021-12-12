@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 		BeginMode3D(camera);
 		{
 			Quaternion qUp = QuaternionIdentity();
-			Quaternion qLeft = QuaternionFromAxisAngle({1, 0, 0}, PI * 0.5f);
+			Quaternion qLeft = QuaternionFromAxisAngle({0, 0, 1}, PI );
 			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
 
 			/*Capsule capsuleLeft = {Referential({0, 0, 6}), 2, 4};
@@ -155,8 +155,9 @@ int main(int argc, char* argv[])
 			Cylinder cyl = { Referential({0, 1, 1}), 2, 4 };
 			cyl.ref.RotateByQuaternion(qUp);
 			MyDrawCylinderWires(qUp, cyl, 25, true, RED);
+			cyl.UpdateCylinder();
 
-			Segment seg = { {0, 7, 1}, {0, -3, 1} };
+			Segment seg = { {0, 3, -4}, {0, 4, 4} };
 			MyDrawSegment(qUp, seg, PURPLE);
 
 			Vector3 interPt;

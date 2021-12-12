@@ -118,6 +118,11 @@ struct Cylinder {
 		this->pt1 = ref.origin;
 		this->pt2 = Vector3Add(this->pt1, Vector3Scale(ref.j, height));
 	}
+
+	void UpdateCylinder() {
+		this->pt1 = ref.origin;
+		this->pt2 = Vector3Add(this->pt1, Vector3Scale(ref.j, height));
+	}
 };
 
 struct Disk {

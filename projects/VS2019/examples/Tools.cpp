@@ -91,7 +91,7 @@ bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal
 	if (!isIntersec) return false;
 
 	Vector3 localPos = GlobalToLocalPos(interPt, disk.referential);
-	return (fabsf(localPos.x) <= disk.radius && fabsf(localPos.z) <= disk.radius);
+	return (fabsf(localPos.x) <= disk.radius && fabsf(localPos.y) <= 1 && fabsf(localPos.z) <= disk.radius);
 }
 
 
@@ -126,7 +126,7 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 		interPt = Vector3Add(seg.pt1, Vector3Scale(AB, t));
 		//interPt = Vector3Scale(seg.pt1, t);
 
-		interNormal = Vector3Normalize({ -AB.z, 0, AB.x });
+		interNormal = Vector3Normalize(Vector3Subtract(interPt, sphere.omega));
 	}
 
 	if (t >= 0 && t <= 1) return true;
@@ -168,6 +168,8 @@ bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, V
 	float b = 2 * (ABdotPA - ABPQsurPQcarre * PAdotPQ - PAPQsurPQcarre * ABdotPQ + ABPQsurPQcarre * PAPQsurPQcarre * PQcarre);
 	float c = PAcarre - 2 * PAPQcarreeSurPQcaree + powf(PAPQsurPQcarre, 2) * PQcarre - powf(r, 2);
 
+	if (a < EPSILON) return false;
+
 	// Discriminant
 	float discriminant = powf(b, 2) - 4 * a * c;
 
@@ -205,42 +207,63 @@ bool InterSegmentInfiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, V
 }
 
 bool InterSegmentFiniteCylinder(Segment seg, Cylinder cyl, Vector3& interPt, Vector3& interNormal) {
-	bool isCylinderIntersec = InterSegmentInfiniteCylinder(seg, cyl, interPt, interNormal);
+	bool isIntersec = InterSegmentInfiniteCylinder(seg, cyl, interPt, interNormal);
 	
 	Vector3 PInter = Vector3Subtract(interPt, cyl.pt1);
 	Vector3 PQ = Vector3Subtract(cyl.pt2, cyl.pt1);
 	float PInterdotPQ = Vector3DotProduct(PInter, PQ);
 	float PQcarre = Vector3DotProduct(PQ, PQ);
 
-	if (isCylinderIntersec) {
+	if (isIntersec) {
 		if (PInterdotPQ < 0 || PInterdotPQ > PQcarre) {
-			bool isDiskIntersec = InterSegDisk(seg, { Referential(cyl.pt1), cyl.radius }, interPt, interNormal);
-			if (isDiskIntersec) {
-				return isDiskIntersec;
+			Vector3 maxInterPt = { FLT_MAX };
+			Vector3 tmpInterPt;
+			Vector3 tmpInterNormal;
+
+
+			bool isDiskIntersec = InterSegDisk(seg, { Referential(cyl.pt1), cyl.radius }, tmpInterPt, tmpInterNormal);
+
+			if (isDiskIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(maxInterPt, seg.pt1)) {
+				interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+				interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+				maxInterPt = interPt;
+				isIntersec = true;
 			}
 
-			bool isDiskIntersec2 = InterSegDisk(seg, { Referential(cyl.pt2), cyl.radius }, interPt, interNormal);
-			if (isDiskIntersec2) {
-				return isDiskIntersec2;
+			bool isDiskIntersec2 = InterSegDisk(seg, { Referential(cyl.pt2), cyl.radius }, tmpInterPt, tmpInterNormal);
+			if (isDiskIntersec2 && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(maxInterPt, seg.pt1)) {
+				interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+				interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+				isIntersec = true;
 			}
 		}
 		else {
-			return true;
+			isIntersec = true;
 		}
 	}
 	else {
-		bool isDiskIntersec = InterSegDisk(seg, { Referential(cyl.pt1), cyl.radius }, interPt, interNormal);
-		if (isDiskIntersec) {
-			return isDiskIntersec;
+		Vector3 maxInterPt = { FLT_MAX };
+		Vector3 tmpInterPt;
+		Vector3 tmpInterNormal;
+
+		bool isDiskIntersec = InterSegDisk(seg, { Referential(cyl.pt1), cyl.radius }, tmpInterPt, tmpInterNormal);
+
+		if (isDiskIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(maxInterPt, seg.pt1)) {
+			interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+			interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+			maxInterPt = interPt;
+			isIntersec = true;
 		}
 
-		bool isDiskIntersec2 = InterSegDisk(seg, { Referential(cyl.pt2), cyl.radius }, interPt, interNormal);
-		if (isDiskIntersec2) {
-			return isDiskIntersec2;
+		bool isDiskIntersec2 = InterSegDisk(seg, { Referential(cyl.pt2), cyl.radius }, tmpInterPt, tmpInterNormal);
+		if (isDiskIntersec2 && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(maxInterPt, seg.pt1)) {
+			interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+			interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+			isIntersec = true;
 		}
 	}
 	
-	return false;
+	return isIntersec;
 }
 
 bool InterSegmentCapsule(Segment seg, Capsule caps, Vector3& interPt, Vector3& interNormal) {
