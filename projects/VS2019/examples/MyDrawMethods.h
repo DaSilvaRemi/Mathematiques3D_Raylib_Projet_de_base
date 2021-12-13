@@ -12,9 +12,9 @@ void MyDrawSegment(Quaternion q, Segment seg, Color color);
 
 void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
 
-void MyDrawDiskPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
-void MyDrawDiskWiresPortion(Quaternion q, Vector3 center, float radius, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskWiresPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
 void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color);
 
