@@ -145,8 +145,25 @@ int main(int argc, char* argv[])
 		BeginMode3D(camera);
 		{
 			Quaternion qUp = QuaternionIdentity();
-			Quaternion qLeft = QuaternionFromAxisAngle({0, 0, 1}, PI );
+			Quaternion qLeft = QuaternionFromAxisAngle({ 0, 0, 1 }, PI);
 			Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+
+			Quad quad = { Referential({0, 1, 1}), {2, 2, 2 } };
+			quad.referential.RotateByQuaternion(qRight);
+
+			MyDrawQuad2(qRight, quad, BLUE);
+			MyDrawQuadWire2(qRight, quad, RED);
+
+			Segment seg = { {0, 1, -1}, {0, 1, 5} };
+			//MyDrawSegment(qUp, seg, DARKGREEN); //Décommenter pour voir le segment
+
+			Vector3 interPt;
+			Vector3 interNormal;
+			bool isIntersec = InterSegQuad(seg, quad, interPt, interNormal);
+			if (isIntersec) {
+				DrawSphere(interPt, 0.25f, DARKBROWN);
+				DrawLine3D(interPt, Vector3Add(interPt, interNormal), DARKPURPLE);
+			}
 
 			/*Capsule capsuleLeft = {Referential({0, 1, 3}), 2, 4};
 			capsuleLeft.referential.RotateByQuaternion(qUp);
@@ -192,9 +209,9 @@ int main(int argc, char* argv[])
 			}*/
 
 			//omega = nextOmega;
-			
-			Quaternion q = QuaternionIdentity();
-			RoundedBox roundedBox = {Referential({0, 1, 1}), {3, 3, 3}, 0.25f};
+
+			/*Quaternion q = QuaternionIdentity();
+			RoundedBox roundedBox = { Referential({0, 1, 1}), {3, 3, 3}, 0.25f };
 			roundedBox.ref.RotateByQuaternion(q);
 			Segment seg = { {-2, 1, -6}, {-2, 1, 3} };
 
@@ -205,10 +222,10 @@ int main(int argc, char* argv[])
 			Vector3 interNormal;
 			bool isIntersec = IntersecSegRoundedBox(seg, roundedBox, interPt, interNormal);
 
-			if(isIntersec){
+			if (isIntersec) {
 				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);
-			}
+			}*/
 
 			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
 			Quaternion q = QuaternionIdentity();
