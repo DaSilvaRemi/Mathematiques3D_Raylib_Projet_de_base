@@ -79,7 +79,7 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 }
 
 bool InterSegQuad(Segment seg, Quad quad, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegPlane(seg, Plane(LocalToGlobalPos(quad.referential.j, quad.referential), quad.referential.origin), interPt, interNormal);
+	bool isIntersec = InterSegPlane(seg, Plane(quad.referential.j, quad.referential.origin), interPt, interNormal);
 	if (!isIntersec) return false;
 
 	Vector3 localPos = GlobalToLocalPos(interPt, quad.referential);

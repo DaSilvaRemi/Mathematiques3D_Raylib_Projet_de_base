@@ -57,14 +57,14 @@ struct Referential {
 		i = { 1, 0, 0 };
 		j = { 0, 1, 0 };
 		k = { 0, 0, 1 };
-		this->q = q;
+		this->RotateByQuaternion(q);
 	}
 
 	void RotateByQuaternion(Quaternion q) {
 		i = Vector3RotateByQuaternion(i, q);
 		j = Vector3RotateByQuaternion(j, q);
 		k = Vector3RotateByQuaternion(k, q);
-		this->q = q;
+		this->q = QuaternionMultiply(this->q, q);
 	}
 };
 
