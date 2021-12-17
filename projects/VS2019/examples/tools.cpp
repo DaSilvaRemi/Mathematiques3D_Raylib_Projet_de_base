@@ -324,203 +324,169 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 	bool isIntersec = false;
 	interPt = { FLT_MAX };
 	interNormal = { FLT_MAX };
-
-	Quaternion qUp = QuaternionMultiply(roundedBox.ref.q, QuaternionIdentity());
-	Quaternion qLeft = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f));
-	Quaternion qRight = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f));
-	Quaternion qFront = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f));
-	Quaternion qBack = QuaternionMultiply(roundedBox.ref.q, QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f));
 	
-	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
-	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
-	Quaternion qDown = QuaternionMultiply(qX, qY);
 
-	Referential referentialQuadUp = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, 0.75f, 0 }, roundedBox.extension.y), roundedBox.ref), qUp);
-	Referential referentialQuadFront = Referential(LocalToGlobalPos(Vector3Scale({ 0.25f, 0, 0 }, roundedBox.extension.x), roundedBox.ref), qFront);
-	Referential referentialQuadBack = Referential(LocalToGlobalPos(Vector3Scale({ -1.25f, 0, 0 }, roundedBox.extension.x), roundedBox.ref), qBack);
-	Referential referentialQuadLeft = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, 0, 0.75f }, roundedBox.extension.z), roundedBox.ref), qLeft);
-	Referential referentialQuadRight = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, 0, -0.75f }, roundedBox.extension.z), roundedBox.ref), qRight);
-	Referential referentialQuadDown = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, -0.75f, 0 }, roundedBox.extension.y), roundedBox.ref), qDown);
-
-	Quad quadUp = { referentialQuadUp, roundedBox.extension};
-	Quad quadFront = { referentialQuadFront, roundedBox.extension };
-	Quad quadBack = { referentialQuadBack, roundedBox.extension };
-	Quad quadLeft = { referentialQuadLeft, roundedBox.extension };
-	Quad quadRight = { referentialQuadRight, roundedBox.extension };
-	Quad quadDown = { referentialQuadDown, roundedBox.extension };
+	// référentiel de capsules
+	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, -PI * 0.5f);
+	Capsule capsLeftBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.z };
 
 	Vector3 tmpInterPt;
 	Vector3 tmpInterNormal;
-	tmpIsIntersec = InterSegQuad(seg, quadUp, tmpInterPt, tmpInterNormal);
-
+	
+	tmpIsIntersec = InterSegmentCapsule(seg, capsLeftBottom, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
 		isIntersec = true;
 	}
 
+	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, -PI * 0.5f);
+	Capsule capsFrontBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.x };
+
+	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontBottom, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Quaternion qUp = QuaternionIdentity();
+	Capsule capsFrontLeft = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.y };
+
+	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontLeft, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+
+	// toutes les autres capsules
+	Capsule capsFrontTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.x };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontTop, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsFrontRight = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x, 0, 0})), roundedBox.radius, roundedBox.extension.y };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontRight, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsRightBottom = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, 0 })), roundedBox.radius, roundedBox.extension.z };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsRightBottom, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsRightTop = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsRightTop, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsLeftTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsLeftTop, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsBackBottom = { Referential(Vector3Add(roundedBox.ref.origin, {0, 0, -roundedBox.extension.z})), roundedBox.radius, roundedBox.extension.x };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsBackBottom, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsBackTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.x };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsBackTop, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsBackLeft = { Referential(Vector3Add(roundedBox.ref.origin, { 0, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsBackLeft, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Capsule capsBackRight = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	tmpIsIntersec = InterSegmentCapsule(seg, capsBackRight, tmpInterPt, tmpInterNormal);
+	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
+		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
+		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
+		isIntersec = true;
+	}
+
+	Quaternion qFrontQuad = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+	Quad quadFront = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x / 2, roundedBox.extension.y / 2, roundedBox.radius}), qFrontQuad), {roundedBox.extension.x, roundedBox.extension.z, roundedBox.extension.y } };
+	
 	tmpIsIntersec = InterSegQuad(seg, quadFront, tmpInterPt, tmpInterNormal);
-
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
 		isIntersec = true;
 	}
 
+	Quaternion qBackQuad = QuaternionFromAxisAngle({ 1, 0, 0 }, -PI * 0.5f);
+	Quad quadBack = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x / 2,  roundedBox.extension.y / 2, -(roundedBox.extension.z + roundedBox.radius)}), qBackQuad), {roundedBox.extension.x, roundedBox.extension.z, roundedBox.extension.y} };
+	
 	tmpIsIntersec = InterSegQuad(seg, quadBack, tmpInterPt, tmpInterNormal);
-
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
 		isIntersec = true;
 	}
 
-	tmpIsIntersec = InterSegQuad(seg, quadLeft, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
+	Quaternion qRightQuad = QuaternionFromAxisAngle({ 0, 0, 1 }, -PI * 0.5f);
+	Quad quadRight = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x + roundedBox.radius, roundedBox.extension.y / 2, -roundedBox.extension.z / 2}), qRightQuad), {roundedBox.extension.y, roundedBox.extension.x, roundedBox.extension.z} };
+	
 	tmpIsIntersec = InterSegQuad(seg, quadRight, tmpInterPt, tmpInterNormal);
-
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
 		isIntersec = true;
 	}
 
-	tmpIsIntersec = InterSegQuad(seg, quadDown, tmpInterPt, tmpInterNormal);
-
+	Quaternion qLeftQuad = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
+	Quad quadLeft = { Referential(Vector3Add(roundedBox.ref.origin, {-roundedBox.radius, roundedBox.extension.y / 2, -roundedBox.extension.z / 2}), qLeftQuad), {roundedBox.extension.y, roundedBox.extension.x, roundedBox.extension.z } };
+	
+	tmpIsIntersec = InterSegQuad(seg, quadLeft, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
 		isIntersec = true;
 	}
 
-	Referential referentiaCapsUp = Referential(LocalToGlobalPos(Vector3Scale({ 0, 0.5f, -0.5f }, roundedBox.extension.y), roundedBox.ref.origin), qLeft);
-	Referential referentialCapsDown = Referential(LocalToGlobalPos(Vector3Scale({ 0, -0.5f, -0.5f }, roundedBox.extension.y), roundedBox.ref.origin), qLeft);
-	Referential referentialCapsRight = Referential(LocalToGlobalPos(Vector3Scale({ 0, -0.5f, -0.5f }, roundedBox.extension.x), roundedBox.ref.origin), qUp);
-	Referential referentialCapsLeft = Referential(LocalToGlobalPos(Vector3Scale({0, -0.5f, 0.5f }, roundedBox.extension.x), roundedBox.ref.origin), qUp);
-
-	Capsule capsuleUp = { referentiaCapsUp, roundedBox.radius, roundedBox.extension.z };
-	Capsule capsuleDown = { referentialCapsDown, roundedBox.radius, roundedBox.extension.z };
-	Capsule capsuleRight = { referentialCapsRight, roundedBox.radius, roundedBox.extension.y };
-	Capsule capsuleLeft = { referentialCapsLeft, roundedBox.radius, roundedBox.extension.y };
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleUp, tmpInterPt, tmpInterNormal);
-
+	Quaternion qTopQuad = QuaternionIdentity();
+	Quad quadTop = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x / 2, roundedBox.extension.y + roundedBox.radius, -roundedBox.extension.z / 2}), qTopQuad), {roundedBox.extension.x, roundedBox.extension.y, roundedBox.extension.z } };
+	
+	tmpIsIntersec = InterSegQuad(seg, quadTop, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
 		isIntersec = true;
 	}
 
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleDown, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleRight, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleLeft, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	Referential referentiaCapsUpBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, 0.5f, -0.5f }, roundedBox.extension.y + roundedBox.extension.x), roundedBox.ref.origin), qLeft);
-	Referential referentialCapsDownBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, -0.5f }, roundedBox.extension.y + roundedBox.extension.x), roundedBox.ref.origin), qLeft);
-	Referential referentialCapsLeftBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, -0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qUp);
-	Referential referentialCapsRightBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, 0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qUp);
-
-	Capsule capsuleUpBack = { referentiaCapsUpBack, roundedBox.radius, roundedBox.extension.z };
-	Capsule capsuleDownBack = { referentialCapsDownBack, roundedBox.radius, roundedBox.extension.z };
-	Capsule capsuleLeftBack = { referentialCapsLeftBack, roundedBox.radius, roundedBox.extension.y };
-	Capsule capsuleRightBack = { referentialCapsRightBack, roundedBox.radius, roundedBox.extension.y };
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleUpBack, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleDownBack, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleLeftBack, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleRightBack, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	Referential referentiaCapsUpLeft = Referential(LocalToGlobalPos(Vector3Scale({ -1, 0.5f, -0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
-	Referential referentialCapsDownLeft = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, -0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
-
-	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundedBox.radius, roundedBox.extension.x };
-	Capsule capsuleDownRight = { referentialCapsDownLeft, roundedBox.radius, roundedBox.extension.x };
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleUpRight, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleDownRight, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	Referential referentiaCapsUpRight = Referential(LocalToGlobalPos(Vector3Scale({ -1, 0.5f, 0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
-	Referential referentialCapsDownRight = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, 0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
-
-	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundedBox.radius, roundedBox.extension.x };
-	Capsule capsuleDownLeft = { referentialCapsDownRight, roundedBox.radius, roundedBox.extension.x };
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleUpLeft, tmpInterPt, tmpInterNormal);
-
-	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
-		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
-		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };
-		isIntersec = true;
-	}
-
-	tmpIsIntersec = InterSegmentCapsule(seg, capsuleDownLeft, tmpInterPt, tmpInterNormal);
-
+	Quaternion qBottomQuad = QuaternionFromAxisAngle({ 0, 0, 1 }, PI);
+	Quad quadBottom = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x / 2, -roundedBox.radius, -roundedBox.extension.z / 2}), qBottomQuad), {roundedBox.extension.x, roundedBox.extension.y, roundedBox.extension.z } };
+	tmpIsIntersec = InterSegQuad(seg, quadBottom, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 		interNormal = { tmpInterNormal.x, tmpInterNormal.y, tmpInterNormal.z };

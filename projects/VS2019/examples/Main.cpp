@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
 			Segment seg = { {3, 3, -1}, {-3, 3, -1} };
 
 			//MyDrawRoundBox(q, roundedBox, RED);
-			MyDrawRoundedBoxV2(roundedBox, BLUE);
+			//MyDrawRoundedBoxV2(roundedBox, BLUE);
 			MyDrawRoundBoxWiresV2(roundedBox, RED);
 			MyDrawSegment(q, seg, RED);
 
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
 			bool isIntersec = IntersecSegRoundedBox(seg, roundedBox, interPt, interNormal);
 
 			if (isIntersec) {
-				//DrawSphere(interPt, 0.25f, DARKBROWN);
+				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);
 			}
 
