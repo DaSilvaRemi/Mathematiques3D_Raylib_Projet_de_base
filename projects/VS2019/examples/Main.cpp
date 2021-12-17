@@ -192,10 +192,10 @@ int main(int argc, char* argv[])
 			Quaternion q = QuaternionIdentity();
 			RoundedBox roundedBox = { Referential({ 0, 3, 1 }), {5, 5, 8} , 0.5f };
 			roundedBox.ref.RotateByQuaternion(q);
-			Segment seg = { {3, 3, -1}, {-3, 3, -1} };
+			Segment seg = { {-5, 5, -1}, {7, 5, -1} };
 
 			//MyDrawRoundBox(q, roundedBox, RED);
-			//MyDrawRoundedBoxV2(roundedBox, BLUE);
+			MyDrawRoundedBoxV2(roundedBox, BLUE);
 			MyDrawRoundBoxWiresV2(roundedBox, RED);
 			MyDrawSegment(q, seg, RED);
 

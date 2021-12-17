@@ -328,7 +328,7 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 
 	// référentiel de capsules
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, -PI * 0.5f);
-	Capsule capsLeftBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsLeftBottom = { Referential(roundedBox.ref.origin, qLeft), roundedBox.radius, roundedBox.extension.z };
 
 	Vector3 tmpInterPt;
 	Vector3 tmpInterNormal;
@@ -341,7 +341,7 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 	}
 
 	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, -PI * 0.5f);
-	Capsule capsFrontBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsFrontBottom = { Referential(roundedBox.ref.origin, qFront), roundedBox.radius, roundedBox.extension.x };
 
 	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontBottom, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
@@ -351,7 +351,7 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 	}
 
 	Quaternion qUp = QuaternionIdentity();
-	Capsule capsFrontLeft = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsFrontLeft = { Referential(roundedBox.ref.origin, qUp), roundedBox.radius, roundedBox.extension.y };
 
 	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontLeft, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
@@ -360,9 +360,9 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-
 	// toutes les autres capsules
-	Capsule capsFrontTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsFrontTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 }), qFront), roundedBox.radius, roundedBox.extension.x };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontTop, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -370,7 +370,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsFrontRight = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x, 0, 0})), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsFrontRight = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x, 0, 0}), qUp), roundedBox.radius, roundedBox.extension.y };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsFrontRight, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -378,7 +379,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsRightBottom = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsRightBottom = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsRightBottom, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -386,7 +388,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsRightTop = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsRightTop = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsRightTop, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -394,7 +397,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsLeftTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsLeftTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsLeftTop, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -402,7 +406,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsBackBottom = { Referential(Vector3Add(roundedBox.ref.origin, {0, 0, -roundedBox.extension.z})), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsBackBottom = { Referential(Vector3Add(roundedBox.ref.origin, {0, 0, -roundedBox.extension.z}), qFront), roundedBox.radius, roundedBox.extension.x };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsBackBottom, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -410,7 +415,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsBackTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsBackTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, -roundedBox.extension.z }), qFront), roundedBox.radius, roundedBox.extension.x };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsBackTop, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -418,7 +424,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsBackLeft = { Referential(Vector3Add(roundedBox.ref.origin, { 0, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsBackLeft = { Referential(Vector3Add(roundedBox.ref.origin, { 0, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsBackLeft, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -426,7 +433,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Capsule capsBackRight = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsBackRight = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
+	
 	tmpIsIntersec = InterSegmentCapsule(seg, capsBackRight, tmpInterPt, tmpInterNormal);
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };

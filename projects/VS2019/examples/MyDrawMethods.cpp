@@ -543,45 +543,44 @@ void MyDrawRoundedBoxV2(RoundedBox roundedBox, Color color) {
 
 	// référentiel de capsules
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, -PI * 0.5f);
-	Capsule capsLeftBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsLeftBottom = { Referential(roundedBox.ref.origin, qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsule(qLeft, capsLeftBottom, color);
 
 	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, -PI * 0.5f);
-	Capsule capsFrontBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsFrontBottom = { Referential(roundedBox.ref.origin, qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsule(qFront, capsFrontBottom, color);
 
 	Quaternion qUp = QuaternionIdentity();
-	Capsule capsFrontLeft = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsFrontLeft = { Referential(roundedBox.ref.origin, qUp), roundedBox.radius, roundedBox.extension.y };
 	MyDrawCapsule(qUp, capsFrontLeft, color);
 	// fin référentiel de capsules
 
-
 	// toutes les autres capsules
-	Capsule capsFrontTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsFrontTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 }), qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsule(qFront, capsFrontTop, color);
 
-	Capsule capsFrontRight = {Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x, 0, 0})), roundedBox.radius, roundedBox.extension.y};
+	Capsule capsFrontRight = {Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x, 0, 0}), qUp), roundedBox.radius, roundedBox.extension.y};
 	MyDrawCapsule(qUp, capsFrontRight, color);
 
-	Capsule capsRightBottom = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsRightBottom = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsule(qLeft, capsRightBottom, color);
 
-	Capsule capsRightTop = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsRightTop = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsule(qLeft, capsRightTop, color);
 
-	Capsule capsLeftTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsLeftTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsule(qLeft, capsLeftTop, color);
 
-	Capsule capsBackBottom = {Referential(Vector3Add(roundedBox.ref.origin, {0, 0, -roundedBox.extension.z})), roundedBox.radius, roundedBox.extension.x};
+	Capsule capsBackBottom = {Referential(Vector3Add(roundedBox.ref.origin, {0, 0, -roundedBox.extension.z}), qFront), roundedBox.radius, roundedBox.extension.x};
 	MyDrawCapsule(qFront, capsBackBottom, color);
 
-	Capsule capsBackTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsBackTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, -roundedBox.extension.z }), qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsule(qFront, capsBackTop, color);
 
-	Capsule capsBackLeft = { Referential(Vector3Add(roundedBox.ref.origin, { 0, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsBackLeft = { Referential(Vector3Add(roundedBox.ref.origin, { 0, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
 	MyDrawCapsule(qUp, capsBackLeft, color);
 
-	Capsule capsBackRight = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsBackRight = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
 	MyDrawCapsule(qUp, capsBackRight, color);
 
 	Quaternion qFrontQuad = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
@@ -622,45 +621,45 @@ void MyDrawRoundBoxWiresV2(RoundedBox roundedBox, Color color) {
 
 	// référentiel de capsules
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, -PI * 0.5f);
-	Capsule capsLeftBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsLeftBottom = { Referential(roundedBox.ref.origin, qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsuleWires(qLeft, capsLeftBottom, color);
 
 	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, -PI * 0.5f);
-	Capsule capsFrontBottom = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsFrontBottom = { Referential(roundedBox.ref.origin, qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsuleWires(qFront, capsFrontBottom, color);
 
 	Quaternion qUp = QuaternionIdentity();
-	Capsule capsFrontLeft = { Referential(roundedBox.ref.origin), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsFrontLeft = { Referential(roundedBox.ref.origin, qUp), roundedBox.radius, roundedBox.extension.y };
 	MyDrawCapsuleWires(qUp, capsFrontLeft, color);
 	// fin référentiel de capsules
 
 
 	// toutes les autres capsules
-	Capsule capsFrontTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsFrontTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 }), qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsuleWires(qFront, capsFrontTop, color);
 
-	Capsule capsFrontRight = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x, 0, 0})), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsFrontRight = { Referential(Vector3Add(roundedBox.ref.origin, {roundedBox.extension.x, 0, 0}), qUp), roundedBox.radius, roundedBox.extension.y };
 	MyDrawCapsuleWires(qUp, capsFrontRight, color);
 
-	Capsule capsRightBottom = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsRightBottom = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsuleWires(qLeft, capsRightBottom, color);
 
-	Capsule capsRightTop = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsRightTop = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsuleWires(qLeft, capsRightTop, color);
 
-	Capsule capsLeftTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 })), roundedBox.radius, roundedBox.extension.z };
+	Capsule capsLeftTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
 	MyDrawCapsuleWires(qLeft, capsLeftTop, color);
 
-	Capsule capsBackBottom = { Referential(Vector3Add(roundedBox.ref.origin, {0, 0, -roundedBox.extension.z})), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsBackBottom = { Referential(Vector3Add(roundedBox.ref.origin, {0, 0, -roundedBox.extension.z}), qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsuleWires(qFront, capsBackBottom, color);
 
-	Capsule capsBackTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.x };
+	Capsule capsBackTop = { Referential(Vector3Add(roundedBox.ref.origin, { 0, roundedBox.extension.y, -roundedBox.extension.z }), qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsuleWires(qFront, capsBackTop, color);
 
-	Capsule capsBackLeft = { Referential(Vector3Add(roundedBox.ref.origin, { 0, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsBackLeft = { Referential(Vector3Add(roundedBox.ref.origin, { 0, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
 	MyDrawCapsuleWires(qUp, capsBackLeft, color);
 
-	Capsule capsBackRight = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, -roundedBox.extension.z })), roundedBox.radius, roundedBox.extension.y };
+	Capsule capsBackRight = { Referential(Vector3Add(roundedBox.ref.origin, { roundedBox.extension.x, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
 	MyDrawCapsuleWires(qUp, capsBackRight, color);
 
 	Quaternion qFrontQuad = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
