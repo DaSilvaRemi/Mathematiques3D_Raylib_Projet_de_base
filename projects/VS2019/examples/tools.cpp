@@ -79,11 +79,11 @@ bool InterSegPlane(Segment seg, Plane plane, Vector3& interPt, Vector3& interNor
 }
 
 bool InterSegQuad(Segment seg, Quad quad, Vector3& interPt, Vector3& interNormal) {
-	bool isIntersec = InterSegPlane(seg, Plane(LocalToGlobalPos(quad.referential.j, quad.referential), quad.referential.origin), interPt, interNormal);
+	bool isIntersec = InterSegPlane(seg, Plane(quad.referential.j, quad.referential.origin), interPt, interNormal);
 	if (!isIntersec) return false;
 
 	Vector3 localPos = GlobalToLocalPos(interPt, quad.referential);
-	return ((fabsf(localPos.x) <= quad.extension.x) && (fabsf(localPos.z) <= quad.extension.z));
+	return ((fabsf(localPos.x) <= quad.extension.x / 2) && (fabsf(localPos.z) <= quad.extension.z / 2));
 }
 
 bool InterSegDisk(Segment seg, Disk disk, Vector3& interPt, Vector3& interNormal) {
@@ -335,25 +335,19 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
 	Quaternion qDown = QuaternionMultiply(qX, qY);
 
-	Referential referentialQuadUp = Referential(LocalToGlobalPos({ -0.5f, 0.75f, 0 }, roundedBox.ref.origin)); // ok
-	Referential referentialQuadFront = Referential(LocalToGlobalPos({ 0.25f, 0, 0 }, roundedBox.ref.origin)); // ok
-	Referential referentialQuadBack = Referential(LocalToGlobalPos({ -1.25f, 0, 0 }, roundedBox.ref.origin)); // ok
-	Referential referentialQuadLeft = Referential(LocalToGlobalPos({ -0.5f, 0, 0.75f }, roundedBox.ref.origin));
-	Referential referentialQuadRight = Referential(LocalToGlobalPos({ -0.5f, 0, -0.75f }, roundedBox.ref.origin)); // ok
-	Referential referentialQuadDown = Referential(LocalToGlobalPos({ -0.5f, -0.75f, 0 }, roundedBox.ref.origin));
+	Referential referentialQuadUp = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, 0.75f, 0 }, roundedBox.extension.y), roundedBox.ref), qUp);
+	Referential referentialQuadFront = Referential(LocalToGlobalPos(Vector3Scale({ 0.25f, 0, 0 }, roundedBox.extension.x), roundedBox.ref), qFront);
+	Referential referentialQuadBack = Referential(LocalToGlobalPos(Vector3Scale({ -1.25f, 0, 0 }, roundedBox.extension.x), roundedBox.ref), qBack);
+	Referential referentialQuadLeft = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, 0, 0.75f }, roundedBox.extension.z), roundedBox.ref), qLeft);
+	Referential referentialQuadRight = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, 0, -0.75f }, roundedBox.extension.z), roundedBox.ref), qRight);
+	Referential referentialQuadDown = Referential(LocalToGlobalPos(Vector3Scale({ -0.5f, -0.75f, 0 }, roundedBox.extension.y), roundedBox.ref), qDown);
 
-	referentialQuadUp.RotateByQuaternion(qUp);
-	referentialQuadFront.RotateByQuaternion(qFront);
-	referentialQuadBack.RotateByQuaternion(qBack);
-	referentialQuadLeft.RotateByQuaternion(qLeft);
-	referentialQuadDown.RotateByQuaternion(qDown);
-
-	Quad quadUp = { referentialQuadUp, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
-	Quad quadFront = { referentialQuadFront, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
-	Quad quadBack = { referentialQuadBack, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
-	Quad quadLeft = { referentialQuadLeft, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
-	Quad quadRight = { referentialQuadRight, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
-	Quad quadDown = { referentialQuadDown, Vector3Multiply({1, 1, 1}, roundedBox.extension) };
+	Quad quadUp = { referentialQuadUp, roundedBox.extension};
+	Quad quadFront = { referentialQuadFront, roundedBox.extension };
+	Quad quadBack = { referentialQuadBack, roundedBox.extension };
+	Quad quadLeft = { referentialQuadLeft, roundedBox.extension };
+	Quad quadRight = { referentialQuadRight, roundedBox.extension };
+	Quad quadDown = { referentialQuadDown, roundedBox.extension };
 
 	Vector3 tmpInterPt;
 	Vector3 tmpInterNormal;
@@ -405,15 +399,10 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Referential referentiaCapsUp = Referential(LocalToGlobalPos({ 0, 0.5f, -0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsDown = Referential(LocalToGlobalPos({ 0, -0.5f, -0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsRight = Referential(LocalToGlobalPos({ 0, -0.5f, -0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsLeft = Referential(LocalToGlobalPos({ 0, -0.5f, 0.5f }, roundedBox.ref.origin));
-
-	referentiaCapsUp.RotateByQuaternion(qLeft);
-	referentialCapsRight.RotateByQuaternion(qUp);
-	referentialCapsLeft.RotateByQuaternion(qUp);
-	referentialCapsDown.RotateByQuaternion(qLeft);
+	Referential referentiaCapsUp = Referential(LocalToGlobalPos(Vector3Scale({ 0, 0.5f, -0.5f }, roundedBox.extension.y), roundedBox.ref.origin), qLeft);
+	Referential referentialCapsDown = Referential(LocalToGlobalPos(Vector3Scale({ 0, -0.5f, -0.5f }, roundedBox.extension.y), roundedBox.ref.origin), qLeft);
+	Referential referentialCapsRight = Referential(LocalToGlobalPos(Vector3Scale({ 0, -0.5f, -0.5f }, roundedBox.extension.x), roundedBox.ref.origin), qUp);
+	Referential referentialCapsLeft = Referential(LocalToGlobalPos(Vector3Scale({0, -0.5f, 0.5f }, roundedBox.extension.x), roundedBox.ref.origin), qUp);
 
 	Capsule capsuleUp = { referentiaCapsUp, roundedBox.radius, roundedBox.extension.z };
 	Capsule capsuleDown = { referentialCapsDown, roundedBox.radius, roundedBox.extension.z };
@@ -452,15 +441,10 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Referential referentiaCapsUpBack = Referential(LocalToGlobalPos({ -1, 0.5f, -0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsDownBack = Referential(LocalToGlobalPos({ -1, -0.5f, -0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsLeftBack = Referential(LocalToGlobalPos({ -1, -0.5f, -0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsRightBack = Referential(LocalToGlobalPos({ -1, -0.5f, 0.5f }, roundedBox.ref.origin));
-
-	referentiaCapsUpBack.RotateByQuaternion(qLeft);
-	referentialCapsDownBack.RotateByQuaternion(qLeft);
-	referentialCapsLeftBack.RotateByQuaternion(qUp);
-	referentialCapsRightBack.RotateByQuaternion(qUp);
+	Referential referentiaCapsUpBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, 0.5f, -0.5f }, roundedBox.extension.y + roundedBox.extension.x), roundedBox.ref.origin), qLeft);
+	Referential referentialCapsDownBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, -0.5f }, roundedBox.extension.y + roundedBox.extension.x), roundedBox.ref.origin), qLeft);
+	Referential referentialCapsLeftBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, -0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qUp);
+	Referential referentialCapsRightBack = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, 0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qUp);
 
 	Capsule capsuleUpBack = { referentiaCapsUpBack, roundedBox.radius, roundedBox.extension.z };
 	Capsule capsuleDownBack = { referentialCapsDownBack, roundedBox.radius, roundedBox.extension.z };
@@ -499,11 +483,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Referential referentiaCapsUpLeft = Referential(LocalToGlobalPos({ -1, 0.5f, -0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsDownLeft = Referential(LocalToGlobalPos({ -1, -0.5f, -0.5f }, roundedBox.ref.origin));
-
-	referentiaCapsUpLeft.RotateByQuaternion(qFront);
-	referentialCapsDownLeft.RotateByQuaternion(qFront);
+	Referential referentiaCapsUpLeft = Referential(LocalToGlobalPos(Vector3Scale({ -1, 0.5f, -0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
+	Referential referentialCapsDownLeft = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, -0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
 
 	Capsule capsuleUpRight = { referentiaCapsUpLeft, roundedBox.radius, roundedBox.extension.x };
 	Capsule capsuleDownRight = { referentialCapsDownLeft, roundedBox.radius, roundedBox.extension.x };
@@ -524,11 +505,8 @@ bool IntersecSegRoundedBox(Segment seg, RoundedBox roundedBox, Vector3 &interPt,
 		isIntersec = true;
 	}
 
-	Referential referentiaCapsUpRight = Referential(LocalToGlobalPos({ -1, 0.5f, 0.5f }, roundedBox.ref.origin));
-	Referential referentialCapsDownRight = Referential(LocalToGlobalPos({ -1, -0.5f, 0.5f }, roundedBox.ref.origin));
-
-	referentiaCapsUpRight.RotateByQuaternion(qFront);
-	referentialCapsDownRight.RotateByQuaternion(qFront);
+	Referential referentiaCapsUpRight = Referential(LocalToGlobalPos(Vector3Scale({ -1, 0.5f, 0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
+	Referential referentialCapsDownRight = Referential(LocalToGlobalPos(Vector3Scale({ -1, -0.5f, 0.5f }, roundedBox.extension.x + roundedBox.extension.y + roundedBox.extension.z), roundedBox.ref.origin), qFront);
 
 	Capsule capsuleUpLeft = { referentiaCapsUpRight, roundedBox.radius, roundedBox.extension.x };
 	Capsule capsuleDownLeft = { referentialCapsDownRight, roundedBox.radius, roundedBox.extension.x };

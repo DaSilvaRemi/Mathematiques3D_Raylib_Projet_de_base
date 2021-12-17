@@ -48,9 +48,9 @@ void MyDrawCapsule(Quaternion q, Capsule capsule, Color color);
 
 void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color);
 
-void MyDrawRoundBox(Quaternion q, RoundedBox roundexBox, Color color);
+void MyDrawRoundedBoxV2(RoundedBox roundedBox, Color color);
 
-void MyDrawRoundBoxWires(Quaternion q, RoundedBox roundexBox, Color color);
+void MyDrawRoundBoxWiresV2(RoundedBox roundedBox, Color color);
 
 void MyDrawBox(Quaternion q, Box box, Color color);
 

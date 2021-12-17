@@ -57,6 +57,7 @@ struct Referential {
 		i = { 1, 0, 0 };
 		j = { 0, 1, 0 };
 		k = { 0, 0, 1 };
+		this->q = QuaternionIdentity();
 		this->RotateByQuaternion(q);
 	}
 
