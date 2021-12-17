@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 	}
 
 	Vector3 omega = { 0, 2, 0 };
-	Vector3 vitesse = { 0, -1, 0 };
+	Vector3 vitesse = { 0, 0, 3 };
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -190,23 +190,46 @@ int main(int argc, char* argv[])
 			omega = nextOmega;*/
 
 			Quaternion q = QuaternionIdentity();
-			RoundedBox roundedBox = { Referential({ 0, 3, 1 }), {5, 5, 8} , 0.5f };
-			roundedBox.ref.RotateByQuaternion(q);
-			Segment seg = { {-5, 5, -1}, {7, 5, -1} };
+			Quaternion qTimeBox = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * .1 * time);
+			RoundedBox roundedBoxLeft = { Referential({ -2, 1, 10 }, qTimeBox), {5, 5, 5} , 0.5f };
+			RoundedBox roundedBoxRight = { Referential({ -2, 1, -5 }, qTimeBox), {5, 5, 5} , 0.5f };
 
-			//MyDrawRoundBox(q, roundedBox, RED);
-			MyDrawRoundedBoxV2(roundedBox, BLUE);
-			MyDrawRoundBoxWiresV2(roundedBox, RED);
+			Quaternion qTime = QuaternionFromAxisAngle({ -1, 0, 0 }, PI * .2f * time);
+			
+			Sphere sphere = { omega, 1 };
+
+			MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
+			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, WHITE);
+
+			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
+			Segment seg = { omega, Vector3Add(nextOmega, vitesse) };
+
+			MyDrawRoundedBoxV2(roundedBoxLeft, BLUE);
+			MyDrawRoundBoxWiresV2(roundedBoxLeft, RED);
 			MyDrawSegment(q, seg, RED);
 
 			Vector3 interPt;
 			Vector3 interNormal;
-			bool isIntersec = IntersecSegRoundedBox(seg, roundedBox, interPt, interNormal);
+			bool isIntersec = IntersecSegRoundedBox(seg, roundedBoxLeft, interPt, interNormal);
 
 			if (isIntersec) {
 				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);
+				qTime = QuaternionInvert(qTime);
 			}
+
+			MyDrawRoundedBoxV2(roundedBoxRight, BLUE);
+			MyDrawRoundBoxWiresV2(roundedBoxRight, RED);
+
+			isIntersec = IntersecSegRoundedBox(seg, roundedBoxRight, interPt, interNormal);
+			if (isIntersec) {
+				DrawSphere(interPt, 0.25f, DARKBROWN);
+				vitesse = Vector3Reflect(vitesse, interNormal);
+				qTime = QuaternionInvert(qTime);
+			}
+
+			nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
+			omega = nextOmega;
 
 			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
 			Quaternion q = QuaternionIdentity();
