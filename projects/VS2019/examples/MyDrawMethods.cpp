@@ -546,68 +546,68 @@ void MyDrawRoundedBoxV2(RoundedBox roundedBox, Color color) {
 	// référentiel de capsules
 	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, -PI * 0.5f);
 	Capsule capsLeftBottom = { Referential(posRef, qLeft), roundedBox.radius, roundedBox.extension.z };
-	MyDrawCapsule(qLeft, capsLeftBottom, BLUE);
+	MyDrawCapsule(qLeft, capsLeftBottom, color);
 
 	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, -PI * 0.5f);
 	Capsule capsFrontBottom = { Referential(posRef, qFront), roundedBox.radius, roundedBox.extension.x };
-	MyDrawCapsule(qFront, capsFrontBottom, RED);
+	MyDrawCapsule(qFront, capsFrontBottom, color);
 
 	Quaternion qUp = QuaternionIdentity();
 	Capsule capsFrontLeft = { Referential(posRef, qUp), roundedBox.radius, roundedBox.extension.y };
-	MyDrawCapsule(qUp, capsFrontLeft, GREEN);
+	MyDrawCapsule(qUp, capsFrontLeft, color);
 	// fin référentiel de capsules
 
 	// toutes les autres capsules
 	Capsule capsFrontTop = { Referential(Vector3Add(posRef, { 0, roundedBox.extension.y, 0 }), qFront), roundedBox.radius, roundedBox.extension.x };
-	MyDrawCapsule(qFront, capsFrontTop, DARKGRAY);
+	MyDrawCapsule(qFront, capsFrontTop, color);
 
 	Capsule capsFrontRight = {Referential(Vector3Add(posRef, {roundedBox.extension.x, 0, 0}), qUp), roundedBox.radius, roundedBox.extension.y};
-	MyDrawCapsule(qUp, capsFrontRight, DARKGREEN);
+	MyDrawCapsule(qUp, capsFrontRight, color);
 
 	Capsule capsRightBottom = { Referential(Vector3Add(posRef, { roundedBox.extension.x, 0, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
-	MyDrawCapsule(qLeft, capsRightBottom, DARKBROWN);
+	MyDrawCapsule(qLeft, capsRightBottom, color);
 
 	Capsule capsRightTop = { Referential(Vector3Add(posRef, { roundedBox.extension.x, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
-	MyDrawCapsule(qLeft, capsRightTop, DARKPURPLE);
+	MyDrawCapsule(qLeft, capsRightTop, color);
 
 	Capsule capsLeftTop = { Referential(Vector3Add(posRef, { 0, roundedBox.extension.y, 0 }), qLeft), roundedBox.radius, roundedBox.extension.z };
-	MyDrawCapsule(qLeft, capsLeftTop, SKYBLUE);
+	MyDrawCapsule(qLeft, capsLeftTop, color);
 
 	Capsule capsBackBottom = {Referential(Vector3Add(posRef, {0, 0, -roundedBox.extension.z}), qFront), roundedBox.radius, roundedBox.extension.x};
-	MyDrawCapsule(qFront, capsBackBottom, DARKBLUE);
+	MyDrawCapsule(qFront, capsBackBottom, color);
 
 	Capsule capsBackTop = { Referential(Vector3Add(posRef, { 0, roundedBox.extension.y, -roundedBox.extension.z }), qFront), roundedBox.radius, roundedBox.extension.x };
-	MyDrawCapsule(qFront, capsBackTop, GRAY);
+	MyDrawCapsule(qFront, capsBackTop, color);
 
 	Capsule capsBackLeft = { Referential(Vector3Add(posRef, { 0, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
-	MyDrawCapsule(qUp, capsBackLeft, RAYWHITE);
+	MyDrawCapsule(qUp, capsBackLeft, color);
 
 	Capsule capsBackRight = { Referential(Vector3Add(posRef, { roundedBox.extension.x, 0, -roundedBox.extension.z }), qUp), roundedBox.radius, roundedBox.extension.y };
-	MyDrawCapsule(qUp, capsBackRight, BROWN);
+	MyDrawCapsule(qUp, capsBackRight, color);
 
 	Quaternion qFrontQuad = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
 	Quad quadFront = { Referential(Vector3Add(posRef, {roundedBox.extension.x / 2, roundedBox.extension.y / 2, roundedBox.radius}), qFrontQuad), {roundedBox.extension.x, roundedBox.extension.z, roundedBox.extension.y } };
-	MyDrawQuad2(qFrontQuad, quadFront, YELLOW);
+	MyDrawQuad2(qFrontQuad, quadFront, color);
 
 	Quaternion qBackQuad = QuaternionFromAxisAngle({ 1, 0, 0 }, -PI * 0.5f);
 	Quad quadBack = { Referential(Vector3Add(posRef, {roundedBox.extension.x / 2,  roundedBox.extension.y / 2, -(roundedBox.extension.z + roundedBox.radius)}), qBackQuad), {roundedBox.extension.x, roundedBox.extension.z, roundedBox.extension.y} };
-	MyDrawQuad2(qBackQuad, quadBack, YELLOW);
+	MyDrawQuad2(qBackQuad, quadBack, color);
 
 	Quaternion qRightQuad = QuaternionFromAxisAngle({0, 0, 1}, -PI * 0.5f);
 	Quad quadRight = { Referential(Vector3Add(posRef, {roundedBox.extension.x + roundedBox.radius, roundedBox.extension.y / 2, -roundedBox.extension.z / 2}), qRightQuad), {roundedBox.extension.y, roundedBox.extension.x, roundedBox.extension.z} };
-	MyDrawQuad2(qRightQuad, quadRight, YELLOW);
+	MyDrawQuad2(qRightQuad, quadRight, color);
 
 	Quaternion qLeftQuad = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
 	Quad quadLeft = { Referential(Vector3Add(posRef, {-roundedBox.radius, roundedBox.extension.y / 2, -roundedBox.extension.z / 2}), qLeftQuad), {roundedBox.extension.y, roundedBox.extension.x, roundedBox.extension.z } };
-	MyDrawQuad2(qLeftQuad, quadLeft, YELLOW);
+	MyDrawQuad2(qLeftQuad, quadLeft, color);
 
 	Quaternion qTopQuad = QuaternionIdentity();
 	Quad quadTop = { Referential(Vector3Add(posRef, {roundedBox.extension.x / 2, roundedBox.extension.y + roundedBox.radius, -roundedBox.extension.z / 2}), qTopQuad), {roundedBox.extension.x, roundedBox.extension.y, roundedBox.extension.z } };
-	MyDrawQuad2(qTopQuad, quadTop, YELLOW);
+	MyDrawQuad2(qTopQuad, quadTop, color);
 
 	Quaternion qBottomQuad = QuaternionFromAxisAngle({ 0, 0, 1 }, PI);
 	Quad quadBottom = { Referential(Vector3Add(posRef, {roundedBox.extension.x / 2, -roundedBox.radius, -roundedBox.extension.z / 2}), qBottomQuad), {roundedBox.extension.x, roundedBox.extension.y, roundedBox.extension.z } };
-	MyDrawQuad2(qBottomQuad, quadBottom, YELLOW);
+	MyDrawQuad2(qBottomQuad, quadBottom, color);
 
 	rlPopMatrix();
 }
