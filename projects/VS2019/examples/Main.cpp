@@ -189,12 +189,7 @@ int main(int argc, char* argv[])
 			nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			omega = nextOmega;*/
 
-			Quaternion q = QuaternionIdentity();
-			Quaternion qTimeBox = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * .1 * time);
-			RoundedBox roundedBoxLeft = { Referential({ -2, 1, 10 }, qTimeBox), {5, 5, 5} , 0.5f };
-			RoundedBox roundedBoxRight = { Referential({ -2, 1, -5 }, qTimeBox), {5, 5, 5} , 0.5f };
-
-			Quaternion qTime = QuaternionFromAxisAngle({ -1, 0, 0 }, PI * .2f * time);
+			/*Quaternion qTime = QuaternionFromAxisAngle({-1, 0, 0}, PI * .2f * time);
 			
 			Sphere sphere = { omega, 1 };
 
@@ -202,34 +197,43 @@ int main(int argc, char* argv[])
 			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, WHITE);
 
 			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
-			Segment seg = { omega, Vector3Add(nextOmega, vitesse) };
+			Segment seg = { omega, Vector3Add(nextOmega, vitesse) };*/
 
-			MyDrawRoundedBoxV2(roundedBoxLeft, BLUE);
-			MyDrawRoundBoxWiresV2(roundedBoxLeft, RED);
+
+			Quaternion q = QuaternionIdentity();
+			Quaternion qTimeBox = QuaternionFromAxisAngle({ 0, 1, 0 }, PI * 0.5f);
+			RoundedBox roundedBoxLeft = { Referential({ 0, 0, 0 }, qTimeBox), {5, 5, 5} , 0.5f };
+			RoundedBox roundedBoxRight = { Referential({ 0, 0, 0 }, q), {5, 5, 5} , 0.5f };
+
+			Segment seg = { {10, 2, -3}, {0, 2, -3} };
+
+			MyDrawRoundedBoxV2(roundedBoxLeft, DARKBLUE);
+			MyDrawRoundBoxWiresV2(roundedBoxLeft, GREEN);
+
 			MyDrawSegment(q, seg, RED);
 
 			Vector3 interPt;
 			Vector3 interNormal;
-			bool isIntersec = IntersecSegRoundedBox(seg, roundedBoxLeft, interPt, interNormal);
+			bool isIntersec = IntersecSegRoundedBox(seg, roundedBoxRight, interPt, interNormal);
 
 			if (isIntersec) {
 				DrawSphere(interPt, 0.25f, DARKBROWN);
 				vitesse = Vector3Reflect(vitesse, interNormal);
-				qTime = QuaternionInvert(qTime);
+				//qTime = QuaternionInvert(qTime);
 			}
 
-			MyDrawRoundedBoxV2(roundedBoxRight, BLUE);
-			MyDrawRoundBoxWiresV2(roundedBoxRight, RED);
+			//MyDrawRoundedBoxV2(roundedBoxRight, DARKGREEN);
+			//MyDrawRoundBoxWiresV2(roundedBoxRight, RED);
 
-			isIntersec = IntersecSegRoundedBox(seg, roundedBoxRight, interPt, interNormal);
+			/*isIntersec = IntersecSegRoundedBox(seg, roundedBoxRight, interPt, interNormal);
 			if (isIntersec) {
 				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-				qTime = QuaternionInvert(qTime);
-			}
+				//vitesse = Vector3Reflect(vitesse, interNormal);
+				//qTime = QuaternionInvert(qTime);
+			}*/
 
-			nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
-			omega = nextOmega;
+			//nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
+			//omega = nextOmega;
 
 			/*Quaternion qTime = QuaternionFromAxisAngle({1, 0, 0}, PI * .2f * time);
 			Quaternion q = QuaternionIdentity();
