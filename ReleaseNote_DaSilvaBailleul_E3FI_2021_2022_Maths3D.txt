@@ -9,7 +9,7 @@ Mathématiques pour la 3D
 
 
 Chemin relatif du projet
-\E3FI_2021_2022_Maths3D_DaSilvaBailleul\projects\VS2019\raylib.sln
+\projects\VS2019\raylib.sln
 
 
 Remarques particulières
@@ -52,4 +52,4 @@ Valentin Bailleul :
 
 
 Courte vidéo du projet
-Dans le répertoire
+https://drive.google.com/file/d/1Tb73aJxSwJBbJnyB7VOgOq8hKEaePGPa/view?usp=sharing
