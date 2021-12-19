@@ -184,7 +184,7 @@ bool InterSegSphere(Segment seg, Sphere sphere, Vector3& interPt, Vector3& inter
 
 	float a = Vector3DotProduct(AB, AB);
 	float b = 2 * Vector3DotProduct(AB, OmegaA);
-	float c = Vector3DotProduct(OmegaA, OmegaA) - powf(sphere.rayon, 2);
+	float c = Vector3DotProduct(OmegaA, OmegaA) - powf(sphere.radius, 2);
 
 	float discrimin = b * b - 4 * a * c; // Delta = b²-4ac
 	if (discrimin < 0)
