@@ -205,8 +205,6 @@ int main(int argc, char* argv[])
 				// Y a-t-il une intersection ?
 				if (isIntersec) {
 					// On tourne le vecteur vitesse en fonction de la manière dont la sphère a intersecté l'obstacle
-					//////////////vitesse = Vector3Reflect(vitesse, interNormal);
-					//////////////qTime = QuaternionInvert(qTime);
 					intersecPoints.push_back(interPt);
 					intersecPoints.push_back(interNormal);
 				}
