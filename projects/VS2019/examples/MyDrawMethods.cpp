@@ -782,10 +782,10 @@ void MyDrawRoundedBoxV2(RoundedBox roundedBox, Color color)
     QuaternionToAxisAngle(roundedBox.ref.q, &vect, &angle);
     rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-    /* For drawing our RoundedBox we don't take the center referential but we take a translated referential because we start our draw from a sphere referential */
-    Vector3 posRef = Vector3Add(roundedBox.ref.origin, {
-                                    -roundedBox.extension.x / 2, -roundedBox.extension.y / 2, roundedBox.extension.z / 2
-                                });
+    // The origin of the RoundedBox is originally set in share sphere set in the intersection of third priamry capsules
+    // We need to translate it of one negative extension in X and Y, and one positive extension in Z
+    // Example : We have a roundedBox.extension which is the length of the cylinder of the caps (so x2 to real extension)
+    Vector3 posRef = Vector3Add(roundedBox.ref.origin, {-roundedBox.extension.x / 2, -roundedBox.extension.y / 2, roundedBox.extension.z / 2 });
 
     // We take 3 caps to our referential and move all the shapes from this referential
     //Move to the translation referential and resize to the Z to have the left corner (Z local ref)
