@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	float x = -10;
 	float z = -10;
 
-	for (int i = 0, x = -10; i < 9; i++) {
+	for (int i = 0; i < 9; i++) {
 		if (i != 0 && i % 3 == 0) {
 			x = -10;
 			z += 10;
@@ -232,7 +232,7 @@ int main(int argc, char* argv[])
 			vitesse.y -= 1 * deltaTime;
 
 			nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
-			omega = nextOmega;
+			omega = nextOmega;*/
 
 			//
 			//3D REFERENTIAL

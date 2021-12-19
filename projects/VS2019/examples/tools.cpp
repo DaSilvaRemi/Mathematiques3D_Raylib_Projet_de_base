@@ -512,40 +512,33 @@ bool IntersecSegBox(Segment seg, Box box, Vector3& interPt, Vector3& interNormal
 	interPt = { FLT_MAX };
 	interNormal = { FLT_MAX };
 
-	Quaternion qUp = QuaternionIdentity();
-	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
-	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
+	Quaternion qTop = QuaternionIdentity();
 	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
 	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
-	//Quaternion qDown = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 1);
+	Quaternion qLeft = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
+	Quaternion qRight = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * -0.5f);
 
 	Quaternion qX = QuaternionFromAxisAngle({ 1, 0, 0 }, PI);
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
-	Quaternion qDown = QuaternionMultiply(qX, qY);
+	Quaternion qBottom = QuaternionMultiply(qX, qY);
 
-	Referential referentialQuadUp = Referential(GlobalToLocalPos({ -0.5f, 0.5f, 0 }, box.ref));
-	Referential referentialQuadFront = Referential(GlobalToLocalPos({ 0, 0, 0 }, box.ref));
-	Referential referentialQuadBack = Referential(GlobalToLocalPos({ -1, 0, 0 }, box.ref));
-	Referential referentialQuadLeft = Referential(GlobalToLocalPos({ -0.5f, 0, 0.5f }, box.ref));
-	Referential referentialQuadRight = Referential(GlobalToLocalPos({ -0.5f, 0, -0.5f }, box.ref));
-	Referential referentialQuadDown = Referential(GlobalToLocalPos({ -0.5f, -0.5f, 0 }, box.ref));
+	Referential referentialQuadTop = Referential( Vector3Add(box.ref.origin, {0, box.extension.y / 2, 0}), qTop);
+	Referential referentialQuadFront = Referential(Vector3Add(box.ref.origin, {box.extension.x / 2, 0, 0}), qFront);
+	Referential referentialQuadBack = Referential(Vector3Add(box.ref.origin, {-box.extension.x / 2, 0, 0}), qBack);
+	Referential referentialQuadLeft = Referential(Vector3Add(box.ref.origin, {0, 0, box.extension.z / 2}), qLeft);
+	Referential referentialQuadRight = Referential(Vector3Add(box.ref.origin, {0, 0, -box.extension.z / 2}), qRight);
+	Referential referentialQuadBottom = Referential( Vector3Add(box.ref.origin, {0, -box.extension.y / 2, 0}), qBottom);
 
-	referentialQuadUp.RotateByQuaternion(qUp);
-	referentialQuadFront.RotateByQuaternion(qFront);
-	referentialQuadBack.RotateByQuaternion(qBack);
-	referentialQuadLeft.RotateByQuaternion(qLeft);
-	referentialQuadDown.RotateByQuaternion(qDown);
-
-	Quad quadUp = { referentialQuadUp, box.extension };
-	Quad quadFront = { referentialQuadFront, box.extension };
-	Quad quadBack = { referentialQuadBack, box.extension };
-	Quad quadLeft = { referentialQuadLeft, box.extension };
-	Quad quadRight = { referentialQuadRight, box.extension };
-	Quad quadDown = { referentialQuadDown, box.extension };
+	Quad quadTop = { referentialQuadTop, box.extension };
+	Quad quadFront = { referentialQuadFront, {box.extension.y, box.extension.x, box.extension.z} };
+	Quad quadBack = { referentialQuadBack, {box.extension.y, box.extension.x, box.extension.z} };
+	Quad quadLeft = { referentialQuadLeft, {box.extension.x, box.extension.z, box.extension.y} };
+	Quad quadRight = { referentialQuadRight, {box.extension.x, box.extension.z, box.extension.y} };
+	Quad quadBottom = { referentialQuadBottom, box.extension };
 
 	Vector3 tmpInterPt;
 	Vector3 tmpInterNormal;
-	tmpIsIntersec = InterSegQuad(seg, quadUp, tmpInterPt, tmpInterNormal);
+	tmpIsIntersec = InterSegQuad(seg, quadTop, tmpInterPt, tmpInterNormal);
 
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
@@ -583,7 +576,7 @@ bool IntersecSegBox(Segment seg, Box box, Vector3& interPt, Vector3& interNormal
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
 	}
 
-	tmpIsIntersec = InterSegQuad(seg, quadDown, tmpInterPt, tmpInterNormal);
+	tmpIsIntersec = InterSegQuad(seg, quadBottom, tmpInterPt, tmpInterNormal);
 
 	if (tmpIsIntersec && Vector3Distance(tmpInterPt, seg.pt1) < Vector3Distance(interPt, seg.pt1)) {
 		interPt = { tmpInterPt.x, tmpInterPt.y, tmpInterPt.z };
