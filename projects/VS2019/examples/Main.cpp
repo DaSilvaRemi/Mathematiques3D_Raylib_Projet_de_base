@@ -91,11 +91,6 @@ int main(int argc, char* argv[])
 	camera.type = CAMERA_PERSPECTIVE;
 	SetCameraMode(camera, CAMERA_CUSTOM);  // Set an orbital camera mode
 
-	//TEST CONVERSION CARTESIAN->CYLINDRICAL
-	/*Vector3 pos = {1,1,1};
-	Cylindrical cyl = CartesianToCylindrical(pos);
-	cyl = cyl + cyl;*/
-
 	std::vector<RoundedBox> roundedBoxes;
 	Quaternion q = QuaternionIdentity();
 	Vector3 size = { 3, 3, 3 };
@@ -115,7 +110,6 @@ int main(int argc, char* argv[])
 
 		x += 10;
 	}
-
 
 	Vector3 omega = { 1, 5, 5 };
 	Vector3 vitesse = { 1, 0, 3 };
@@ -161,23 +155,23 @@ int main(int argc, char* argv[])
 			Quad quad = { Referential({0, 0, 0}), {25, 1, 25} };
 			Quad quadLeft = { Referential({ 0, 7, -12.5f }, qLeft), { 25, 1, 15 } };
 			Quad quadRight = { Referential({ 0, 7, 12.5f }, qRight), { 25, 1, 15 } };
-			Quad quadBack = { Referential({ -12.5f, 7, 0 }, qFront), { 15, 1, 25 } };
+			Quad quadBack = { Referential({ -12.5f, 7, 0 }, qBack), { 15, 1, 25 } };
 			Quad quadFront = { Referential({ 12.5f, 7, 0 }, qFront), { 15, 1, 25 } };
 
-			MyDrawQuad2(qUp, quad, DARKGREEN);
-			MyDrawQuadWire2(qUp, quad, WHITE);
+			MyDrawQuad2(quad, DARKGREEN);
+			MyDrawQuadWire2(quad, WHITE);
 
-			MyDrawQuad2(qBack, quadBack, GRAY);
-			MyDrawQuadWire2(qBack, quadBack, WHITE);
+			MyDrawQuad2(quadBack, GRAY);
+			MyDrawQuadWire2(quadBack, WHITE);
 
-			MyDrawQuad2(qLeft, quadLeft, GRAY);
-			MyDrawQuadWire2(qLeft, quadLeft, WHITE);
+			MyDrawQuad2(quadLeft, GRAY);
+			MyDrawQuadWire2(quadLeft, WHITE);
 
-			MyDrawQuad2(qRight, quadRight, GRAY);
-			MyDrawQuadWire2(qRight, quadRight, WHITE);
+			MyDrawQuad2(quadRight, GRAY);
+			MyDrawQuadWire2(quadRight, WHITE);
 
-			MyDrawQuad2(qFront, quadFront, GRAY);
-			MyDrawQuadWire2(qFront, quadFront, WHITE);
+			MyDrawQuad2(quadFront, GRAY);
+			MyDrawQuadWire2(quadFront, WHITE);
 
 			for (int i = 0; i < roundedBoxes.size(); i++) {
 				MyDrawRoundedBoxV2(roundedBoxes.at(i), GREEN);

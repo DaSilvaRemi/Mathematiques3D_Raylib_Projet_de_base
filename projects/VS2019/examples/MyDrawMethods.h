@@ -10,11 +10,11 @@
 
 void MyDrawSegment(Quaternion q, Segment seg, Color color);
 
-void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
+void MyDrawCylinderPortion(Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
 
-void MyDrawDiskPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskPortion(Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
-void MyDrawDiskWiresPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskWiresPortion(Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
 void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTheta, float startPhi, float endPhi, int nSegmentsTheta, int nSegmentsPhi, Color color);
 
@@ -24,34 +24,34 @@ void MyDrawSphereEx2(Quaternion q, Sphere sph, int nSegmentsTheta, int nSegments
 
 void MyDrawSphereWiresEx2(Quaternion q, Sphere sph, int nSegmentsTheta, int nSegmentsPhi, Color color);
 
-void MyDrawQuad2(Quaternion q, Quad quad, Color color);
+void MyDrawQuad2(Quad quad, Color color);
 
-void MyDrawQuadWire2(Quaternion q, Quad quad, Color color);
+void MyDrawQuadWire2(Quad quad, Color color);
 
-void MyDrawCylinder(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color);
+void MyDrawCylinder(Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color);
 
-void MyDrawCylinderWires(Quaternion q, Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color);
+void MyDrawCylinderWires(Cylinder cyl, int nSegmentsTheta, bool drawCaps, Color color);
 
-void MyDrawCylinderPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
+void MyDrawCylinderPortion(Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
 
-void MyDrawCylinderWiresPortion(Quaternion q, Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
+void MyDrawCylinderWiresPortion(Cylinder cyl, float startTheta, float endTheta, int nSegmentsTheta, bool drawCaps, Color color);
 
-void MyDrawDisk(Quaternion q, Disk disk, int nSegmentsTheta, Color color);
+void MyDrawDisk(Disk disk, int nSegmentsTheta, Color color);
 
-void MyDrawDiskWires(Quaternion q, Disk disk, int nSegmentsTheta, Color color);
+void MyDrawDiskWires(Disk disk, int nSegmentsTheta, Color color);
 
-void MyDrawDiskPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskPortion(Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
-void MyDrawDiskWiresPortion(Quaternion q, Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
+void MyDrawDiskWiresPortion(Disk disk, float startTheta, float endTheta, int nSegmentsTheta, Color color);
 
-void MyDrawCapsule(Quaternion q, Capsule capsule, Color color);
+void MyDrawCapsule(Capsule capsule, Color color);
 
-void MyDrawCapsuleWires(Quaternion q, Capsule capsule, Color color);
+void MyDrawCapsuleWires(Capsule capsule, Color color);
 
 void MyDrawRoundedBoxV2(RoundedBox roundedBox, Color color);
 
 void MyDrawRoundBoxWiresV2(RoundedBox roundedBox, Color color);
 
-void MyDrawBox(Quaternion q, Box box, Color color);
+void MyDrawBox(Box box, Color color);
 
-void MyDrawBoxWires(Quaternion q, Box box, Color color);
+void MyDrawBoxWires(Box box, Color color);
