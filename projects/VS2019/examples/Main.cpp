@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 	float z = random_float(-11.0f, -9.0f);
 	for (int i = 0; i < 9; i++) {
 		y = random_float(1.0f, 5.0f);
-		Vector3 size = { random_float(1.7f, 3.5f), y, random_float(1.7f, 3.5f) };
+		Vector3 size = { random_float(1.0f, 3.0f), y, random_float(1.0f, 3.0f) };
 		if (i != 0 && i % 3 == 0) {
 			x = -10.0f;
 			z += 10.0f;
@@ -121,13 +121,13 @@ int main(int argc, char* argv[])
 
 	// RoundedBox décentrées :
 	y = random_float(1.0f, 5.0f);
-	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(-6.0f, -4.0f), y, random_float(-6.0f, -4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(-6.0f, -4.0f), y, random_float(-6.0f, -4.0f) }, q), { random_float(1.0f, 3.5f), y,random_float(1.7f, 3.0f) }, random_float(0.2f, 0.5f) });
 	y = random_float(1.0f, 5.0f);
-	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(6.0f, 4.0f), y, random_float(-6.0f, -4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(6.0f, 4.0f), y, random_float(-6.0f, -4.0f) }, q), { random_float(1.0f, 3.5f), y,random_float(1.7f, 3.0f) }, random_float(0.2f, 0.5f) });
 	y = random_float(1.0f, 5.0f);
-	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(-6.0f, -4.0f), y, random_float(6.0f, 4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(-6.0f, -4.0f), y, random_float(6.0f, 4.0f) }, q), { random_float(1.0f, 3.5f), y,random_float(1.7f, 3.0f) }, random_float(0.2f, 0.5f) });
 	y = random_float(1.0f, 5.0f);
-	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(6.0f, 4.0f), y, random_float(6.0f, 4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(6.0f, 4.0f), y, random_float(6.0f, 4.0f) }, q), { random_float(1.0f, 3.5f), y,random_float(1.7f, 3.0f) }, random_float(0.2f, 0.5f) });
 	//		*fin* Création des RoundedBox de la scène de jeu
 
 
@@ -205,6 +205,8 @@ int main(int argc, char* argv[])
 				// Y a-t-il une intersection ?
 				if (isIntersec) {
 					// On tourne le vecteur vitesse en fonction de la manière dont la sphère a intersecté l'obstacle
+					//////////////vitesse = Vector3Reflect(vitesse, interNormal);
+					//////////////qTime = QuaternionInvert(qTime);
 					intersecPoints.push_back(interPt);
 					intersecPoints.push_back(interNormal);
 				}
@@ -274,6 +276,7 @@ int main(int argc, char* argv[])
 
 			// Vider la liste quand on a checké tous les points de la frame actuelle
 			intersecPoints.clear();
+
 
 			vitesse.y -= 1 * deltaTime;
 
