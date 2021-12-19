@@ -34,6 +34,11 @@ template <typename T> int sgn(T val) {
 	return (T(0) < val) - (val < T(0));
 }
 
+/**
+*	@brief Création de la scène panoramique
+*	@param camera Camera dont on set les arguments dans la fonction 'main'
+*	@param deltaTime Durée que l'on set à GetFrameTime()
+*/
 void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 {
 	static Spherical sphPos = { 20 , PI / 4 , PI / 4 };
@@ -64,9 +69,7 @@ void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
 }
 
 /**
-*
-*	Méthode principale du projet
-*
+*	@brief Méthode principale du projet
 */
 int main(int argc, char* argv[])
 {
@@ -92,22 +95,39 @@ int main(int argc, char* argv[])
 	SetCameraMode(camera, CAMERA_CUSTOM);  // Set an orbital camera mode
 
 	//		Création des RoundedBox de la scène de jeu
+	// 
 	// Liste des RoundedBox
+	time_t t = 0;
+	time(&t);
+	srand(t);
+
 	std::vector<RoundedBox> roundedBoxes;
 	Quaternion q = QuaternionIdentity();
-	Vector3 size = { 3, 3, 3 };
-	float x = -10;
-	float z = -10;
+	float x = random_float(-11.0f, -9.0f);
+	float y = random_float(1.0f, 5.0f);
+	float z = random_float(-11.0f, -9.0f);
 	for (int i = 0; i < 9; i++) {
+		y = random_float(1.0f, 5.0f);
+		Vector3 size = { random_float(1.7f, 3.5f), y, random_float(1.7f, 3.5f) };
 		if (i != 0 && i % 3 == 0) {
-			x = -10;
-			z += 10;
+			x = -10.0f;
+			z += 10.0f;
 		}
-		Vector3 pos = { x, 2, z };
+		Vector3 pos = { x , y , z };
 		RoundedBox roundedBox = { Referential(pos, q), size, 0.5f };
 		roundedBoxes.push_back(roundedBox);
-		x += 10;
+		x += 10.0f;
 	}
+
+	// RoundedBox décentrées :
+	y = random_float(1.0f, 5.0f);
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(-6.0f, -4.0f), y, random_float(-6.0f, -4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
+	y = random_float(1.0f, 5.0f);
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(6.0f, 4.0f), y, random_float(-6.0f, -4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
+	y = random_float(1.0f, 5.0f);
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(-6.0f, -4.0f), y, random_float(6.0f, 4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
+	y = random_float(1.0f, 5.0f);
+	roundedBoxes.push_back(RoundedBox{ Referential(Vector3{ random_float(6.0f, 4.0f), y, random_float(6.0f, 4.0f) }, q), { random_float(1.7f, 3.5f), y,random_float(1.7f, 3.5f) }, random_float(0.3f, 0.7f) });
 	//		*fin* Création des RoundedBox de la scène de jeu
 
 
@@ -122,8 +142,6 @@ int main(int argc, char* argv[])
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
 		// Update
-		//----------------------------------------------------------------------------------
-		// TODO: Update your variables here
 		//----------------------------------------------------------------------------------
 
 		float deltaTime = GetFrameTime();
@@ -142,10 +160,14 @@ int main(int argc, char* argv[])
 			Quaternion qUp = QuaternionIdentity();
 			Quaternion qTime = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * .2f * time);
 
+			// Liste des points d'intersection dans la frame actuelle :
+			std::vector<Vector3> intersecPoints;
+
 			// Balle du jeu
 			Sphere sphere = { omega, 1 };
 			MyDrawSphereEx2(qTime, sphere, 25, 25, BLUE);
 			MyDrawSphereWiresEx2(qTime, sphere, 25, 25, WHITE);
+
 			// Segment de détection de collision de la balle de jeu
 			Vector3 nextOmega = Vector3Add(omega, Vector3Scale(vitesse, deltaTime));
 			Segment seg = { omega, Vector3Add(nextOmega, Vector3Scale(vitesse, deltaTime)) };
@@ -173,7 +195,7 @@ int main(int argc, char* argv[])
 
 			//		Dessin des RoundedBox de jeu qui se trouvent dans la liste 'roundedBoxes'
 			for (int i = 0; i < roundedBoxes.size(); i++) {
-				MyDrawRoundedBoxV2(roundedBoxes.at(i), GREEN);
+				MyDrawRoundedBoxV2(roundedBoxes.at(i), DARKBLUE);
 				MyDrawRoundBoxWiresV2(roundedBoxes.at(i), WHITE);
 
 				Vector3 interPt;
@@ -183,8 +205,10 @@ int main(int argc, char* argv[])
 				// Y a-t-il une intersection ?
 				if (isIntersec) {
 					// On tourne le vecteur vitesse en fonction de la manière dont la sphère a intersecté l'obstacle
-					vitesse = Vector3Reflect(vitesse, interNormal);
-					qTime = QuaternionInvert(qTime);
+					//////////////vitesse = Vector3Reflect(vitesse, interNormal);
+					//////////////qTime = QuaternionInvert(qTime);
+					intersecPoints.push_back(interPt);
+					intersecPoints.push_back(interNormal);
 				}
 			}
 			//		*fin* Dessin des RoundedBox de jeu qui se trouvent dans la liste 'roundedBoxes'
@@ -192,41 +216,66 @@ int main(int argc, char* argv[])
 			//		Recherche de toutes les intersections avec les murs de la scène
 			Vector3 interPt;
 			Vector3 interNormal;
+
+
 			bool isIntersec = InterSegQuad(seg, quad, interPt, interNormal);
 			if (isIntersec) {
-				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-				qTime = QuaternionInvert(qTime);
+				//DrawSphere(interPt, 0.25f, DARKBROWN);
+				intersecPoints.push_back(interPt);
+				intersecPoints.push_back(interNormal);
 			}
 
 			isIntersec = InterSegQuad(seg, quadFront, interPt, interNormal);
 			if (isIntersec) {
-				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-				qTime = QuaternionInvert(qTime);
+				//DrawSphere(interPt, 0.25f, DARKBROWN);
+				intersecPoints.push_back(interPt);
+				intersecPoints.push_back(interNormal);
 			}
 
 			isIntersec = InterSegQuad(seg, quadBack, interPt, interNormal);
 			if (isIntersec) {
-				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-				qTime = QuaternionInvert(qTime);
+				//DrawSphere(interPt, 0.25f, DARKBROWN);
+				intersecPoints.push_back(interPt);
+				intersecPoints.push_back(interNormal);
 			}
 
 			isIntersec = InterSegQuad(seg, quadLeft, interPt, interNormal);
 			if (isIntersec) {
-				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-				qTime = QuaternionInvert(qTime);
+				//DrawSphere(interPt, 0.25f, DARKBROWN);
+				intersecPoints.push_back(interPt);
+				intersecPoints.push_back(interNormal);
 			}
 
 			isIntersec = InterSegQuad(seg, quadRight, interPt, interNormal);
 			if (isIntersec) {
-				DrawSphere(interPt, 0.25f, DARKBROWN);
-				vitesse = Vector3Reflect(vitesse, interNormal);
-				qTime = QuaternionInvert(qTime);
+				//DrawSphere(interPt, 0.25f, DARKBROWN);
+				intersecPoints.push_back(interPt);
+				intersecPoints.push_back(interNormal);
 			}
 			//		*fin* Recherche de toutes les intersections avec les murs de la scène
+
+
+			//		Recherche de l'interPt le plus proche de la position actuelle de la sphère
+			if (intersecPoints.size() > 0)
+			{ // On a trouvé des points d'intersection dans la frame actuelle
+				Vector3 interPtNearest = intersecPoints.at(0);
+				Vector3 interNormalNearest = intersecPoints.at(1);
+
+				for (int i = 2; i < intersecPoints.size(); i += 2)
+				{
+					if (Vector3Distance(omega, interPtNearest) > Vector3Distance(omega, intersecPoints.at(i))) {
+						interPtNearest = intersecPoints.at(i);
+						interNormalNearest = intersecPoints.at(i + 1);
+					}
+				}
+
+				vitesse = Vector3Reflect(vitesse, interNormalNearest);
+				qTime = QuaternionInvert(qTime);
+			}
+			//		*fin* Recherche de l'interPt le plus proche de la position actuelle de la sphère
+
+			// Vider la liste quand on a checké tous les points de la frame actuelle
+			intersecPoints.clear();
 
 			vitesse.y -= 1 * deltaTime;
 
