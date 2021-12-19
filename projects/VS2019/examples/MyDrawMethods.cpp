@@ -97,7 +97,7 @@ void MyDrawSpherePortion(Quaternion q, Sphere sph, float startTheta, float endTh
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(sph.rayon, sph.rayon, sph.rayon);
+	rlScalef(sph.radius, sph.radius, sph.radius);
 
 	rlBegin(RL_TRIANGLES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
@@ -189,7 +189,7 @@ void MyDrawSphereWiresPortion(Quaternion q, Sphere sph, float startTheta, float 
 	QuaternionToAxisAngle(q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(sph.rayon, sph.rayon, sph.rayon);
+	rlScalef(sph.radius, sph.radius, sph.radius);
 
 	rlBegin(RL_LINES);
 	rlColor4ub(color.r, color.g, color.b, color.a);
@@ -888,9 +888,13 @@ void MyDrawRoundBoxWiresV2(RoundedBox roundedBox, Color color) {
 	// end referential of capsules
 
 	// All other capsules calculated from the translated referential
+	/* We start on the ref plus the extension Y to go top
+	 * We size the caps with X extension
+	 * All other capsule are the same working we translate on one axes and we resize it
+	 */
 	Capsule capsFrontTop = { Referential(Vector3Add(posRef, { 0, roundedBox.extension.y, 0 }), qFront), roundedBox.radius, roundedBox.extension.x };
 	MyDrawCapsuleWires(capsFrontTop, color);
-
+	
 	Capsule capsFrontRight = {Referential(Vector3Add(posRef, {roundedBox.extension.x, 0, 0}), qUp), roundedBox.radius, roundedBox.extension.y};
 	MyDrawCapsuleWires(capsFrontRight, color);
 
@@ -919,7 +923,10 @@ void MyDrawRoundBoxWiresV2(RoundedBox roundedBox, Color color) {
 	//All the quad calculate from translated referential.
 	//Because of the radius of the caps we need to take part of the radius in the coordinates of the quads
 
-	//The front quad set to be push in Z local axes
+	/* We start on the ref plus the extension /2 to have exactly into cylinder and we set the radius to the set to out the quad
+	* We size the caps with X extension, and Z to the Y and Y to Z because we turn to PI / 2
+	* All other quad are the same working we translate it and resize it according local referential
+	*/
 	Quaternion qFrontQuad = QuaternionFromAxisAngle({ 1, 0, 0 }, PI * 0.5f);
 	Referential refQuadFront = Referential(Vector3Add(posRef, {roundedBox.extension.x / 2, roundedBox.extension.y / 2, roundedBox.radius}), qFrontQuad);
 	Quad quadFront = { refQuadFront, {roundedBox.extension.x, roundedBox.extension.z, roundedBox.extension.y } };
@@ -967,7 +974,6 @@ void MyDrawRoundBoxWiresV2(RoundedBox roundedBox, Color color) {
  */
 void MyDrawBox(Box box, Color color) {
 	rlPushMatrix();
-	rlTranslatef(box.ref.origin.x, box.ref.origin.y, box.ref.origin.z);
 
 	//ROTATION
 	Vector3 vect;
@@ -975,8 +981,7 @@ void MyDrawBox(Box box, Color color) {
 	QuaternionToAxisAngle(box.ref.q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(box.extension.x, box.extension.y, box.extension.z);
-
+	//Set all quaternions
 	Quaternion qTop = QuaternionIdentity();
 	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
 	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
@@ -987,6 +992,7 @@ void MyDrawBox(Box box, Color color) {
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
 	Quaternion qBottom = QuaternionMultiply(qX, qY);
 
+	//Set the referential of all quad according to the referential of box and it extension
 	Referential referentialQuadTop = Referential( Vector3Add(box.ref.origin, {0, box.extension.y / 2, 0}), qTop);
 	Referential referentialQuadFront = Referential(Vector3Add(box.ref.origin, {box.extension.x / 2, 0, 0}), qFront);
 	Referential referentialQuadBack = Referential(Vector3Add(box.ref.origin, {-box.extension.x / 2, 0, 0}), qBack);
@@ -994,6 +1000,8 @@ void MyDrawBox(Box box, Color color) {
 	Referential referentialQuadRight = Referential(Vector3Add(box.ref.origin, {0, 0, -box.extension.z / 2}), qRight);
 	Referential referentialQuadBottom = Referential( Vector3Add(box.ref.origin, {0, -box.extension.y / 2, 0}), qBottom);
 
+	// Set all the quad with referential and the extension according to local ref of the quad
+	// Example if we turn to 90° or PI/2 around X axes the Z extension become Y extension and Y extension become Z extension
 	Quad quadTop = { referentialQuadTop, box.extension };
 	Quad quadFront = { referentialQuadFront, {box.extension.y, box.extension.x, box.extension.z} };
 	Quad quadBack = { referentialQuadBack, {box.extension.y, box.extension.x, box.extension.z} };
@@ -1001,19 +1009,26 @@ void MyDrawBox(Box box, Color color) {
 	Quad quadRight = { referentialQuadRight, {box.extension.x, box.extension.z, box.extension.y} };
 	Quad quadBottom = { referentialQuadBottom, box.extension };
 
-	MyDrawQuad2(quadTop, RED);
-	MyDrawQuad2(quadFront, BROWN);
-	MyDrawQuad2(quadBack, PURPLE);
-	MyDrawQuad2(quadLeft, YELLOW);
-	MyDrawQuad2(quadRight, BLUE);
-	MyDrawQuad2(quadBottom, DARKGREEN);
+	//Draw all the quads
+	MyDrawQuad2(quadTop, color);
+	MyDrawQuad2(quadFront, color);
+	MyDrawQuad2(quadBack, color);
+	MyDrawQuad2(quadLeft, color);
+	MyDrawQuad2(quadRight, color);
+	MyDrawQuad2(quadBottom, color);
 
 	rlPopMatrix();
 }
 
+/**
+ * @brief Draw Box wires
+ * @remarks The quaternion need to be set in the referential 
+ *
+ * @param box The maths Box
+ * @param color The color will be display for the shape
+ */
 void MyDrawBoxWires(Box box, Color color) {
-		rlPushMatrix();
-	rlTranslatef(box.ref.origin.x, box.ref.origin.y, box.ref.origin.z);
+	rlPushMatrix();
 
 	//ROTATION
 	Vector3 vect;
@@ -1021,8 +1036,7 @@ void MyDrawBoxWires(Box box, Color color) {
 	QuaternionToAxisAngle(box.ref.q, &vect, &angle);
 	rlRotatef(angle * RAD2DEG, vect.x, vect.y, vect.z);
 
-	rlScalef(box.extension.x, box.extension.y, box.extension.z);
-
+	//Set all quaternions
 	Quaternion qTop = QuaternionIdentity();
 	Quaternion qFront = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * -0.5f);
 	Quaternion qBack = QuaternionFromAxisAngle({ 0, 0, 1 }, PI * 0.5f);
@@ -1033,6 +1047,7 @@ void MyDrawBoxWires(Box box, Color color) {
 	Quaternion qY = QuaternionFromAxisAngle({ 0, 1, 0 }, 0);
 	Quaternion qBottom = QuaternionMultiply(qX, qY);
 
+	//Set the referential of all quad according to the referential of box and it extension
 	Referential referentialQuadTop = Referential( Vector3Add(box.ref.origin, {0, box.extension.y / 2, 0}), qTop);
 	Referential referentialQuadFront = Referential(Vector3Add(box.ref.origin, {box.extension.x / 2, 0, 0}), qFront);
 	Referential referentialQuadBack = Referential(Vector3Add(box.ref.origin, {-box.extension.x / 2, 0, 0}), qBack);
@@ -1040,6 +1055,8 @@ void MyDrawBoxWires(Box box, Color color) {
 	Referential referentialQuadRight = Referential(Vector3Add(box.ref.origin, {0, 0, -box.extension.z / 2}), qRight);
 	Referential referentialQuadBottom = Referential( Vector3Add(box.ref.origin, {0, -box.extension.y / 2, 0}), qBottom);
 
+	// Set all the quad with referential and the extension according to local ref of the quad
+	// Example if we turn to 90° or PI/2 around X axes the Z extension become Y extension and Y extension become Z extension
 	Quad quadTop = { referentialQuadTop, box.extension };
 	Quad quadFront = { referentialQuadFront, {box.extension.y, box.extension.x, box.extension.z} };
 	Quad quadBack = { referentialQuadBack, {box.extension.y, box.extension.x, box.extension.z} };
@@ -1047,6 +1064,7 @@ void MyDrawBoxWires(Box box, Color color) {
 	Quad quadRight = { referentialQuadRight, {box.extension.x, box.extension.z, box.extension.y} };
 	Quad quadBottom = { referentialQuadBottom, box.extension };
 
+	//Draw all the quads wires
 	MyDrawQuadWire2(quadTop, RED);
 	MyDrawQuadWire2(quadFront, BROWN);
 	MyDrawQuadWire2(quadBack, PURPLE);
