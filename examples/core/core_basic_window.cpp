@@ -36,8 +36,10 @@
 #define EPSILON 1.e-6f
 
 
-template <typename T> int sgn(T val) {
-	return (T(0) < val) - (val < T(0));
+template <typename T>
+int sgn(T val)
+{
+    return (T(0) < val) - (val < T(0));
 }
 
 /*void MyUpdateOrbitalCamera(Camera* camera, float deltaTime)
@@ -96,85 +98,85 @@ template <typename T> int sgn(T val) {
 
 	/*	TEST INTERSECTIONS	*/
 
-	/*Quaternion qOrient = QuaternionFromAxisAngle({ 0,0,1 }, PI * .2f);
+/*Quaternion qOrient = QuaternionFromAxisAngle({ 0,0,1 }, PI * .2f);
 
-	//TEST INTERSECTION SEGMENT PLANE
-	Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
-	Plane plane = { Vector3RotateByQuaternion({ 0,1,0 }, qOrient), 2 };
+//TEST INTERSECTION SEGMENT PLANE
+Segment segment = { { -4, 0, -5 } , { 4, 0, 5 } };
+Plane plane = { Vector3RotateByQuaternion({ 0,1,0 }, qOrient), 2 };
 
-	Vector3 interSectPt = { 0, 0, 0 };
-	Vector3 interSecNormal = { 0, 0, 0 };
-	bool planeHaveIntersec = InterSegPlane(segment, plane, interSectPt, interSecNormal);
+Vector3 interSectPt = { 0, 0, 0 };
+Vector3 interSecNormal = { 0, 0, 0 };
+bool planeHaveIntersec = InterSegPlane(segment, plane, interSectPt, interSecNormal);
 
-	//TEST INTERSECTION SEGMENT PLANE
-	Sphere sphere = { {0, 0, 0}, 2 };
-	bool sphereHaveIntersec = InterSegSphere(segment, sphere, interSectPt, interSecNormal);
+//TEST INTERSECTION SEGMENT PLANE
+Sphere sphere = { {0, 0, 0}, 2 };
+bool sphereHaveIntersec = InterSegSphere(segment, sphere, interSectPt, interSecNormal);
 
-	//TEST INTERSECTION SEGMENT CYLYNDRE
-	Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2};
+//TEST INTERSECTION SEGMENT CYLYNDRE
+Cylinder cylinder = { {0, 0, 0}, {0, 4, 0}, 2};
 
-	// Main game loop
-	while (!WindowShouldClose())    // Detect window close button or ESC key
-	{
-		// Update
-		//----------------------------------------------------------------------------------
-		// TODO: Update your variables here
-		//----------------------------------------------------------------------------------
+// Main game loop
+while (!WindowShouldClose())    // Detect window close button or ESC key
+{
+    // Update
+    //----------------------------------------------------------------------------------
+    // TODO: Update your variables here
+    //----------------------------------------------------------------------------------
 
-		float deltaTime = GetFrameTime();
-		float time = (float)GetTime();
+    float deltaTime = GetFrameTime();
+    float time = (float)GetTime();
 
-		MyUpdateOrbitalCamera(&camera, deltaTime);
+    MyUpdateOrbitalCamera(&camera, deltaTime);
 
-		// Draw
-		//----------------------------------------------------------------------------------
-		BeginDrawing();
+    // Draw
+    //----------------------------------------------------------------------------------
+    BeginDrawing();
 
-		ClearBackground(RAYWHITE);
+    ClearBackground(RAYWHITE);
 
-		BeginMode3D(camera);
-		{
-			//
-			//3D REFERENTIAL
-			DrawGrid(20, 1.0f);        // Draw a grid
-			DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
-			DrawSphere({ 10,0,0 }, .2f, RED);
-			DrawSphere({ 0,10,0 }, .2f, GREEN);
-			DrawSphere({ 0,0,10 }, .2f, BLUE);
+    BeginMode3D(camera);
+    {
+        //
+        //3D REFERENTIAL
+        DrawGrid(20, 1.0f);        // Draw a grid
+        DrawLine3D({ 0 }, { 0,10,0 }, DARKGRAY);
+        DrawSphere({ 10,0,0 }, .2f, RED);
+        DrawSphere({ 0,10,0 }, .2f, GREEN);
+        DrawSphere({ 0,0,10 }, .2f, BLUE);
 
-			//INTERSEC BETWEEN SEGMENT AND PLANE
-			/*MyDrawQuadWire2(qOrient, Vector3Scale(plane.normal, plane.d), {2, 2}, WHITE);
-			MyDrawQuad2(qOrient, Vector3Scale(plane.normal, plane.d), { 2, 2 }, BLUE);
+        //INTERSEC BETWEEN SEGMENT AND PLANE
+        /*MyDrawQuadWire2(qOrient, Vector3Scale(plane.normal, plane.d), {2, 2}, WHITE);
+        MyDrawQuad2(qOrient, Vector3Scale(plane.normal, plane.d), { 2, 2 }, BLUE);
 
-			if (planeHaveIntersec) {
-				DrawSphere(interSectPt, .2f, DARKBROWN);
-			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
+        if (planeHaveIntersec) {
+            DrawSphere(interSectPt, .2f, DARKBROWN);
+        }
+        DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);*/
 
-			// INTERSEC BETWEEN SEGMENT AND SPHERE
-			/*Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
-			MyDrawSphereEx2(qOrient, sphere, 40, 20, BLUE);
-			MyDrawSphereWiresEx2(qOrient, sphere, 40, 20, WHITE);
+// INTERSEC BETWEEN SEGMENT AND SPHERE
+/*Quaternion qOrient = QuaternionFromAxisAngle({1,0,0}, PI * .5f);
+MyDrawSphereEx2(qOrient, sphere, 40, 20, BLUE);
+MyDrawSphereWiresEx2(qOrient, sphere, 40, 20, WHITE);
 
-			if (sphereHaveIntersec) {
-				DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
-				DrawSphere(interSectPt, .2f, DARKBROWN);
-			}
-			DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
+if (sphereHaveIntersec) {
+    DrawLine3D(interSectPt, interSecNormal, DARKPURPLE);
+    DrawSphere(interSectPt, .2f, DARKBROWN);
+}
+DrawLine3D(segment.pt1, segment.pt2, DARKGREEN);
 
-			/*MyDrawCylinder(qOrient, cylinder, 25, false, BLUE);
-			MyDrawCylinderWires(qOrient, cylinder, 25, false, WHITE);*/
-		/*}
-		EndMode3D();
+/*MyDrawCylinder(qOrient, cylinder, 25, false, BLUE);
+MyDrawCylinderWires(qOrient, cylinder, 25, false, WHITE);*/
+/*}
+EndMode3D();
 
-		EndDrawing();
-		//----------------------------------------------------------------------------------
-	}
+EndDrawing();
+//----------------------------------------------------------------------------------
+}
 
-	// De-Initialization
-	//--------------------------------------------------------------------------------------  
-	CloseWindow();        // Close window and OpenGL context
-	//--------------------------------------------------------------------------------------
+// De-Initialization
+//--------------------------------------------------------------------------------------  
+CloseWindow();        // Close window and OpenGL context
+//--------------------------------------------------------------------------------------
 
-	return 0;
+return 0;
 }*/
