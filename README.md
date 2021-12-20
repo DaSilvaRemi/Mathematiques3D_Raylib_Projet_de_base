@@ -9,6 +9,22 @@
 ## Chemin relatif du projet
   \projects\VS2019\raylib.sln
 
+### En cas d'erreur d'include
+Si une erreur d'include de fonctions occure, reciblez les projets :
+Pour LES TROIS DOSSIERS 'core_basic_window' , 'core_basic_window_cpp' et 'raylib' :
+    - Clic droit, "Propriétés", "Propriétés de configuration", "Répertoires VC++", "Général", "Répertoire Include"
+    - Selectionnez la flèche vers le bas qui s'affiche au survol de la section Répertoire Include
+    - Cliquez sur "<Modifier...>",
+    - Ouvrez l'explorateur de fichiers de Windows, allez dans "C:\Program Files (x86)\Windows Kits\10\Include"
+    - Copiez le lien "C:\Program Files (x86)\Windows Kits\10\Include" (selon votre configuration, il peut être légèrement modifié)
+    - Revenez sur la fenêtre pop-up Visual Studio
+    - Cliquez sur l'icône jaune représentant un dossier en haut à droite de la fenêtre
+    - Collez le lien C:\ , puis OK, Appliquer, OK
+    - Ensuite, Clic droit sur les 3 dossiers, "Recibler les projets", puis sélectionnez la version qui se trouve dans votre explorateur d'où vous avez trouvé le lien "C:\Program Files (x86)\Windows Kits\10\Include"
+    - Puis "OK"
+
+Une fois ceci fait POUR LES TROIS DOSSIERS, faites F5 pour compiler et lancer le jeu
+
 # Description technique
 
 ## Remarques particulières
